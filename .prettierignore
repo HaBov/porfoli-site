@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# Python environments
+.venv/
+.venv-*/
+venv/
+venv-*/
+
+# Python generated files
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+*.egg-info/
+
+# Build output
+coverage/
+dist/
+build/
+
+# Private materials
+private-assets/
+
+# Lock files
+pnpm-lock.yaml
+
+# Generated and temporary files
+*.log
+*.tmp
+*.temp
