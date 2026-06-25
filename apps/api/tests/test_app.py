@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
-
 client = TestClient(app)
 
 
@@ -13,9 +12,7 @@ def test_openapi_metadata_is_available() -> None:
 
     payload = response.json()
 
-    assert payload["info"]["title"] == (
-        "Khasandjon Babadzhanov — Portfolio API"
-    )
+    assert payload["info"]["title"] == ("Khasandjon Babadzhanov — Portfolio API")
     assert payload["info"]["version"] == "0.1.0"
 
 
