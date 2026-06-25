@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { siteConfig } from "@/config/site";
 
 import "@fontsource-variable/inter/wght.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
@@ -11,12 +12,44 @@ import { ThemeScript } from "@/components/theme/theme-script";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  applicationName: siteConfig.name,
   title: {
-    default: "Khasandjon Babadzhanov — Software Developer",
-    template: "%s | Khasandjon Babadzhanov",
+    default: `${siteConfig.name} — ${siteConfig.title}`,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    "Backend-focused Software Developer building business applications, APIs, integrations, and automation.",
+  description: siteConfig.description,
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  category: "technology",
+  keywords: [
+    "Software Developer",
+    "Backend Developer",
+    "Python Developer",
+    "FastAPI",
+    "PostgreSQL",
+    "TypeScript",
+    "Docker",
+    "Linux",
+    "API Development",
+    "Business Applications",
+    "Process Automation",
+  ],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} — ${siteConfig.title}`,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} — ${siteConfig.title}`,
+    description: siteConfig.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {
