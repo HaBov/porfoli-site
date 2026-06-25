@@ -128,6 +128,8 @@
 
 html {
   min-width: 320px;
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
   background: var(--background);
   text-rendering: optimizeLegibility;
 }
@@ -139,6 +141,36 @@ body {
   color: var(--text-primary);
   font-family: var(--font-inter);
   line-height: 1.5;
+}
+
+main:focus {
+  outline: none;
+}
+
+[id] {
+  scroll-margin-top: 6rem;
+}
+
+img,
+picture,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+pre,
+code {
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 a {
@@ -183,5 +215,12 @@ samp {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid CanvasText;
+    outline-offset: 3px;
   }
 }

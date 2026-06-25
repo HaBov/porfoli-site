@@ -11,6 +11,12 @@ import { Callout } from "@/components/ui/callout";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { AccessibilityPreview } from "@/components/foundation/accessibility-preview";
+import {
+  Eyebrow,
+  Heading,
+  LeadText,
+} from "@/components/typography/typography";
 
 export const metadata: Metadata = {
   title: "Foundation Preview",
@@ -51,17 +57,25 @@ const colorTokens = [
 
 export default function FoundationPage() {
   return (
-    <main className="min-h-screen bg-page text-foreground">
+    <main
+      id="main-content"
+      className="min-h-screen bg-page text-foreground"
+      tabIndex={-1}
+    >
       <Section spacing="large">
         <PageContainer>
           <ContentContainer>
-            <SectionHeader
-              description="Internal preview for validating typography, colors, spacing, reusable controls, and light and dark theme behavior before full page development begins."
-              eyebrow="Foundation preview"
-              headingLevel="h1"
-              size="large"
-              title="Design system foundations"
-            />
+            <Eyebrow>Foundation preview</Eyebrow>
+
+            <Heading as="h1" className="mt-4" size="display">
+              Design system foundations
+            </Heading>
+
+            <LeadText className="mt-6">
+              Internal preview for validating typography, colors,
+              spacing, reusable controls, accessibility, and light and
+              dark theme behavior before full page development begins.
+            </LeadText>
 
             <div className="mt-8">
               <ThemeSwitcher />
@@ -310,6 +324,7 @@ export default function FoundationPage() {
           </Card>
         </PageContainer>
       </Section>
+      <AccessibilityPreview />
     </main>
   );
 }

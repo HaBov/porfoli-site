@@ -1,6 +1,6 @@
 export default function HomePage() {
   return (
-    <main id="main-content">
+    <main id="main-content" tabIndex={-1}>
       <section aria-labelledby="hero-heading">
         <p>SOFTWARE DEVELOPER · PYTHON · BACKEND SYSTEMS</p>
 

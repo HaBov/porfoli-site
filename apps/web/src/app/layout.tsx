@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 
 import "@fontsource-variable/inter/wght.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
+import { SkipLink } from "@/components/accessibility/skip-link";
 
 import { ThemeScript } from "@/components/theme/theme-script";
 
@@ -41,7 +42,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <ThemeScript />
       </head>
 
-      <body>{children}</body>
+      <body>
+        <SkipLink />
+        {children}
+      </body>
     </html>
   );
 }
