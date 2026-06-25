@@ -1,10 +1,21 @@
 import type { Metadata } from "next";
 
+import { ContentContainer } from "@/components/layout/content-container";
+import { PageContainer } from "@/components/layout/page-container";
+import { Section } from "@/components/layout/section";
+import { SectionHeader } from "@/components/layout/section-header";
 import { ThemeSwitcher } from "@/components/theme/theme-switcher";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Callout } from "@/components/ui/callout";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export const metadata: Metadata = {
   title: "Foundation Preview",
-  description: "Internal preview of the portfolio design tokens and theme foundation.",
+  description:
+    "Internal preview of the portfolio design system and interface foundations.",
   robots: {
     index: false,
     follow: false,
@@ -40,110 +51,265 @@ const colorTokens = [
 
 export default function FoundationPage() {
   return (
-    <main className="bg-page text-foreground min-h-screen">
-      <div className="mx-auto w-full max-w-[1200px] px-5 py-16 sm:px-8 lg:px-12">
-        <header className="max-w-[760px]">
-          <p className="text-accent font-mono text-xs font-medium tracking-[0.08em] uppercase">
-            Foundation preview
-          </p>
+    <main className="min-h-screen bg-page text-foreground">
+      <Section spacing="large">
+        <PageContainer>
+          <ContentContainer>
+            <SectionHeader
+              description="Internal preview for validating typography, colors, spacing, reusable controls, and light and dark theme behavior before full page development begins."
+              eyebrow="Foundation preview"
+              headingLevel="h1"
+              size="large"
+              title="Design system foundations"
+            />
 
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.03em] sm:text-5xl">
-            Design tokens and theme system
-          </h1>
+            <div className="mt-8">
+              <ThemeSwitcher />
+            </div>
+          </ContentContainer>
+        </PageContainer>
+      </Section>
 
-          <p className="text-secondary mt-6 text-lg leading-8">
-            Internal preview for validating typography, colors, spacing, controls, and light and
-            dark theme behavior before page development begins.
-          </p>
+      <Section variant="bordered">
+        <PageContainer>
+          <SectionHeader
+            description="Semantic design tokens used across all portfolio pages and components."
+            title="Color tokens"
+          />
 
-          <div className="mt-8">
-            <ThemeSwitcher />
-          </div>
-        </header>
-
-        <section aria-labelledby="colors-heading" className="mt-24">
-          <h2 className="text-3xl font-semibold tracking-[-0.02em]" id="colors-heading">
-            Color tokens
-          </h2>
-
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {colorTokens.map((token) => (
-              <article
+              <Card
                 key={token.name}
-                className="border-line bg-surface overflow-hidden rounded-[var(--radius-lg)] border"
+                as="article"
+                padding="none"
+                className="overflow-hidden"
               >
-                <div aria-hidden="true" className={`h-28 ${token.className}`} />
+                <div
+                  aria-hidden="true"
+                  className={`h-28 ${token.className}`}
+                />
 
-                <div className="border-line border-t p-5">
+                <div className="border-t border-line p-5">
                   <h3 className="font-medium">{token.name}</h3>
                 </div>
-              </article>
+              </Card>
             ))}
           </div>
-        </section>
+        </PageContainer>
+      </Section>
 
-        <section aria-labelledby="typography-heading" className="border-line mt-24 border-t pt-24">
-          <h2 className="text-3xl font-semibold tracking-[-0.02em]" id="typography-heading">
-            Typography
-          </h2>
+      <Section>
+        <PageContainer>
+          <SectionHeader
+            description="Core controls use consistent states, spacing, focus indicators, and disabled behavior."
+            title="Buttons and badges"
+          />
 
-          <div className="mt-8 grid gap-6">
-            <article className="border-line bg-surface rounded-[var(--radius-lg)] border p-6">
-              <p className="text-accent font-mono text-xs tracking-[0.08em] uppercase">Display</p>
+          <div className="mt-10">
+            <Card>
+              <div className="flex flex-wrap gap-4">
+                <Button>Primary action</Button>
 
-              <p className="mt-4 text-4xl font-semibold tracking-[-0.03em] sm:text-6xl">
-                Reliable backend systems.
-              </p>
-            </article>
+                <Button variant="secondary">
+                  Secondary action
+                </Button>
 
-            <article className="border-line bg-surface rounded-[var(--radius-lg)] border p-6">
-              <p className="text-accent font-mono text-xs tracking-[0.08em] uppercase">Body</p>
+                <Button variant="outline">
+                  Outline action
+                </Button>
 
-              <p className="text-secondary mt-4 max-w-[720px] text-base leading-7">
-                The portfolio uses readable long-form typography for project case studies,
-                architecture explanations, technical decisions, and measurable outcomes.
-              </p>
-            </article>
+                <Button variant="ghost">Ghost action</Button>
 
-            <article className="border-line bg-surface rounded-[var(--radius-lg)] border p-6">
-              <p className="text-accent font-mono text-xs tracking-[0.08em] uppercase">Monospace</p>
+                <Button
+                  loading
+                  loadingLabel="Saving"
+                  variant="secondary"
+                >
+                  Save changes
+                </Button>
 
-              <code className="border-line bg-elevated mt-4 block overflow-x-auto rounded-[var(--radius-md)] border p-4 text-sm">
-                GET /api/demo/v1/employees
-              </code>
-            </article>
+                <Button disabled>Disabled</Button>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Badge>Python</Badge>
+                <Badge variant="accent">FastAPI</Badge>
+                <Badge showDot variant="success">
+                  Deployed
+                </Badge>
+                <Badge showDot variant="warning">
+                  Active development
+                </Badge>
+                <Badge variant="information">
+                  Documentation
+                </Badge>
+                <Badge variant="restricted">
+                  Anonymized
+                </Badge>
+              </div>
+            </Card>
           </div>
-        </section>
+        </PageContainer>
+      </Section>
 
-        <section aria-labelledby="controls-heading" className="border-line mt-24 border-t pt-24">
-          <h2 className="text-3xl font-semibold tracking-[-0.02em]" id="controls-heading">
-            Control states
-          </h2>
+      <Section variant="muted">
+        <PageContainer>
+          <SectionHeader
+            description="Cards adapt to content rather than enforcing identical heights."
+            title="Cards"
+          />
 
-          <div className="mt-8 flex flex-wrap gap-4">
-            <button
-              className="bg-accent hover:bg-accent-hover min-h-11 rounded-[var(--radius-md)] px-5 font-medium text-[#08111F] transition-colors"
-              type="button"
-            >
-              Primary action
-            </button>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            <Card as="article">
+              <Badge variant="accent">Backend platform</Badge>
 
-            <button
-              className="border-line-strong bg-surface hover:bg-surface-hover min-h-11 rounded-[var(--radius-md)] border px-5 font-medium transition-colors"
-              type="button"
-            >
-              Secondary action
-            </button>
+              <h3 className="mt-5 text-xl font-semibold">
+                Internal HR Platform
+              </h3>
 
-            <button
-              className="text-secondary hover:bg-surface-hover hover:text-foreground min-h-11 rounded-[var(--radius-md)] px-5 font-medium transition-colors"
-              type="button"
-            >
-              Ghost action
-            </button>
+              <p className="mt-3 leading-7 text-secondary">
+                A multi-module business application covering
+                employee lifecycle workflows.
+              </p>
+            </Card>
+
+            <Card as="article" variant="interactive">
+              <Badge variant="information">Integration</Badge>
+
+              <h3 className="mt-5 text-xl font-semibold">
+                Recording Archive
+              </h3>
+
+              <p className="mt-3 leading-7 text-secondary">
+                Automated archival workflow for high-volume call
+                recordings and long-term storage.
+              </p>
+            </Card>
+
+            <Card as="article" variant="bordered">
+              <Badge variant="outline">Serverless</Badge>
+
+              <h3 className="mt-5 text-xl font-semibold">
+                Finance Telegram Bot
+              </h3>
+
+              <p className="mt-3 leading-7 text-secondary">
+                TypeScript application using webhooks, validation,
+                relational storage, and Cloudflare Workers.
+              </p>
+            </Card>
           </div>
-        </section>
-      </div>
+        </PageContainer>
+      </Section>
+
+      <Section>
+        <PageContainer>
+          <SectionHeader
+            description="Callouts communicate context and status without relying only on color."
+            title="Callouts"
+          />
+
+          <div className="mt-10 grid gap-4">
+            <Callout title="Confidentiality note">
+              The code shown in the portfolio is independently
+              rewritten and does not reproduce proprietary source
+              code or internal business rules.
+            </Callout>
+
+            <Callout
+              title="Synthetic data"
+              variant="information"
+            >
+              Public demonstrations use fictional identities and
+              isolated data.
+            </Callout>
+
+            <Callout title="Validation passed" variant="success">
+              The content and metadata satisfy the current
+              publication rules.
+            </Callout>
+
+            <Callout title="Review required" variant="warning">
+              This screenshot must be anonymized before publication.
+            </Callout>
+
+            <Callout title="Publication blocked" variant="error">
+              A confidential identifier was detected in the asset.
+            </Callout>
+          </div>
+        </PageContainer>
+      </Section>
+
+      <Section variant="bordered">
+        <PageContainer>
+          <SectionHeader
+            description="Form fields preserve visible labels, accessible invalid states, and keyboard focus."
+            title="Form controls"
+          />
+
+          <Card className="mt-10 max-w-[760px]">
+            <form className="grid gap-6">
+              <div>
+                <label
+                  className="mb-2 block text-sm font-medium"
+                  htmlFor="foundation-name"
+                >
+                  Name
+                </label>
+
+                <Input
+                  autoComplete="name"
+                  id="foundation-name"
+                  placeholder="Jordan Lee"
+                />
+              </div>
+
+              <div>
+                <label
+                  className="mb-2 block text-sm font-medium"
+                  htmlFor="foundation-email"
+                >
+                  Email
+                </label>
+
+                <Input
+                  aria-describedby="foundation-email-error"
+                  id="foundation-email"
+                  invalid
+                  placeholder="name@example.com"
+                  type="email"
+                />
+
+                <p
+                  className="mt-2 text-sm text-error"
+                  id="foundation-email-error"
+                >
+                  Enter a valid email address.
+                </p>
+              </div>
+
+              <div>
+                <label
+                  className="mb-2 block text-sm font-medium"
+                  htmlFor="foundation-message"
+                >
+                  Message
+                </label>
+
+                <Textarea
+                  id="foundation-message"
+                  placeholder="Tell me about the role or project."
+                />
+              </div>
+
+              <div>
+                <Button type="submit">Send message</Button>
+              </div>
+            </form>
+          </Card>
+        </PageContainer>
+      </Section>
     </main>
   );
 }
