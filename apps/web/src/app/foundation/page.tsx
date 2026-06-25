@@ -12,16 +12,11 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AccessibilityPreview } from "@/components/foundation/accessibility-preview";
-import {
-  Eyebrow,
-  Heading,
-  LeadText,
-} from "@/components/typography/typography";
+import { Eyebrow, Heading, LeadText } from "@/components/typography/typography";
 
 export const metadata: Metadata = {
   title: "Foundation Preview",
-  description:
-    "Internal preview of the portfolio design system and interface foundations.",
+  description: "Internal preview of the portfolio design system and interface foundations.",
   robots: {
     index: false,
     follow: false,
@@ -57,11 +52,7 @@ const colorTokens = [
 
 export default function FoundationPage() {
   return (
-    <main
-      id="main-content"
-      className="min-h-screen bg-page text-foreground"
-      tabIndex={-1}
-    >
+    <main id="main-content" className="bg-page text-foreground min-h-screen" tabIndex={-1}>
       <Section spacing="large">
         <PageContainer>
           <ContentContainer>
@@ -72,9 +63,8 @@ export default function FoundationPage() {
             </Heading>
 
             <LeadText className="mt-6">
-              Internal preview for validating typography, colors,
-              spacing, reusable controls, accessibility, and light and
-              dark theme behavior before full page development begins.
+              Internal preview for validating typography, colors, spacing, reusable controls,
+              accessibility, and light and dark theme behavior before full page development begins.
             </LeadText>
 
             <div className="mt-8">
@@ -93,18 +83,10 @@ export default function FoundationPage() {
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {colorTokens.map((token) => (
-              <Card
-                key={token.name}
-                as="article"
-                padding="none"
-                className="overflow-hidden"
-              >
-                <div
-                  aria-hidden="true"
-                  className={`h-28 ${token.className}`}
-                />
+              <Card key={token.name} as="article" padding="none" className="overflow-hidden">
+                <div aria-hidden="true" className={`h-28 ${token.className}`} />
 
-                <div className="border-t border-line p-5">
+                <div className="border-line border-t p-5">
                   <h3 className="font-medium">{token.name}</h3>
                 </div>
               </Card>
@@ -125,21 +107,13 @@ export default function FoundationPage() {
               <div className="flex flex-wrap gap-4">
                 <Button>Primary action</Button>
 
-                <Button variant="secondary">
-                  Secondary action
-                </Button>
+                <Button variant="secondary">Secondary action</Button>
 
-                <Button variant="outline">
-                  Outline action
-                </Button>
+                <Button variant="outline">Outline action</Button>
 
                 <Button variant="ghost">Ghost action</Button>
 
-                <Button
-                  loading
-                  loadingLabel="Saving"
-                  variant="secondary"
-                >
+                <Button loading loadingLabel="Saving" variant="secondary">
                   Save changes
                 </Button>
 
@@ -155,12 +129,8 @@ export default function FoundationPage() {
                 <Badge showDot variant="warning">
                   Active development
                 </Badge>
-                <Badge variant="information">
-                  Documentation
-                </Badge>
-                <Badge variant="restricted">
-                  Anonymized
-                </Badge>
+                <Badge variant="information">Documentation</Badge>
+                <Badge variant="restricted">Anonymized</Badge>
               </div>
             </Card>
           </div>
@@ -178,39 +148,31 @@ export default function FoundationPage() {
             <Card as="article">
               <Badge variant="accent">Backend platform</Badge>
 
-              <h3 className="mt-5 text-xl font-semibold">
-                Internal HR Platform
-              </h3>
+              <h3 className="mt-5 text-xl font-semibold">Internal HR Platform</h3>
 
-              <p className="mt-3 leading-7 text-secondary">
-                A multi-module business application covering
-                employee lifecycle workflows.
+              <p className="text-secondary mt-3 leading-7">
+                A multi-module business application covering employee lifecycle workflows.
               </p>
             </Card>
 
             <Card as="article" variant="interactive">
               <Badge variant="information">Integration</Badge>
 
-              <h3 className="mt-5 text-xl font-semibold">
-                Recording Archive
-              </h3>
+              <h3 className="mt-5 text-xl font-semibold">Recording Archive</h3>
 
-              <p className="mt-3 leading-7 text-secondary">
-                Automated archival workflow for high-volume call
-                recordings and long-term storage.
+              <p className="text-secondary mt-3 leading-7">
+                Automated archival workflow for high-volume call recordings and long-term storage.
               </p>
             </Card>
 
             <Card as="article" variant="bordered">
               <Badge variant="outline">Serverless</Badge>
 
-              <h3 className="mt-5 text-xl font-semibold">
-                Finance Telegram Bot
-              </h3>
+              <h3 className="mt-5 text-xl font-semibold">Finance Telegram Bot</h3>
 
-              <p className="mt-3 leading-7 text-secondary">
-                TypeScript application using webhooks, validation,
-                relational storage, and Cloudflare Workers.
+              <p className="text-secondary mt-3 leading-7">
+                TypeScript application using webhooks, validation, relational storage, and
+                Cloudflare Workers.
               </p>
             </Card>
           </div>
@@ -226,22 +188,16 @@ export default function FoundationPage() {
 
           <div className="mt-10 grid gap-4">
             <Callout title="Confidentiality note">
-              The code shown in the portfolio is independently
-              rewritten and does not reproduce proprietary source
-              code or internal business rules.
+              The code shown in the portfolio is independently rewritten and does not reproduce
+              proprietary source code or internal business rules.
             </Callout>
 
-            <Callout
-              title="Synthetic data"
-              variant="information"
-            >
-              Public demonstrations use fictional identities and
-              isolated data.
+            <Callout title="Synthetic data" variant="information">
+              Public demonstrations use fictional identities and isolated data.
             </Callout>
 
             <Callout title="Validation passed" variant="success">
-              The content and metadata satisfy the current
-              publication rules.
+              The content and metadata satisfy the current publication rules.
             </Callout>
 
             <Callout title="Review required" variant="warning">
@@ -265,25 +221,15 @@ export default function FoundationPage() {
           <Card className="mt-10 max-w-[760px]">
             <form className="grid gap-6">
               <div>
-                <label
-                  className="mb-2 block text-sm font-medium"
-                  htmlFor="foundation-name"
-                >
+                <label className="mb-2 block text-sm font-medium" htmlFor="foundation-name">
                   Name
                 </label>
 
-                <Input
-                  autoComplete="name"
-                  id="foundation-name"
-                  placeholder="Jordan Lee"
-                />
+                <Input autoComplete="name" id="foundation-name" placeholder="Jordan Lee" />
               </div>
 
               <div>
-                <label
-                  className="mb-2 block text-sm font-medium"
-                  htmlFor="foundation-email"
-                >
+                <label className="mb-2 block text-sm font-medium" htmlFor="foundation-email">
                   Email
                 </label>
 
@@ -295,19 +241,13 @@ export default function FoundationPage() {
                   type="email"
                 />
 
-                <p
-                  className="mt-2 text-sm text-error"
-                  id="foundation-email-error"
-                >
+                <p className="text-error mt-2 text-sm" id="foundation-email-error">
                   Enter a valid email address.
                 </p>
               </div>
 
               <div>
-                <label
-                  className="mb-2 block text-sm font-medium"
-                  htmlFor="foundation-message"
-                >
+                <label className="mb-2 block text-sm font-medium" htmlFor="foundation-message">
                   Message
                 </label>
 

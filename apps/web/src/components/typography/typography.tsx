@@ -8,14 +8,8 @@ const headingSizeClasses = {
     "sm:text-[3.25rem]",
     "lg:text-[4rem]",
   ].join(" "),
-  page: [
-    "text-[2.125rem] leading-[1.1] tracking-[-0.025em]",
-    "sm:text-5xl",
-  ].join(" "),
-  section: [
-    "text-[1.625rem] leading-[1.2] tracking-[-0.02em]",
-    "sm:text-[2rem]",
-  ].join(" "),
+  page: ["text-[2.125rem] leading-[1.1] tracking-[-0.025em]", "sm:text-5xl"].join(" "),
+  section: ["text-[1.625rem] leading-[1.2] tracking-[-0.02em]", "sm:text-[2rem]"].join(" "),
   subsection: "text-xl leading-[1.3] sm:text-2xl",
 } as const;
 
@@ -34,11 +28,7 @@ export function Heading({
 }: HeadingProps) {
   return (
     <Component
-      className={cn(
-        "font-semibold text-foreground",
-        headingSizeClasses[size],
-        className,
-      )}
+      className={cn("text-foreground font-semibold", headingSizeClasses[size], className)}
       {...props}
     />
   );
@@ -46,15 +36,12 @@ export function Heading({
 
 type EyebrowProps = HTMLAttributes<HTMLParagraphElement>;
 
-export function Eyebrow({
-  className,
-  ...props
-}: EyebrowProps) {
+export function Eyebrow({ className, ...props }: EyebrowProps) {
   return (
     <p
       className={cn(
         "font-mono text-xs font-medium uppercase",
-        "tracking-[0.08em] text-accent",
+        "text-accent tracking-[0.08em]",
         className,
       )}
       {...props}
@@ -64,35 +51,17 @@ export function Eyebrow({
 
 type LeadTextProps = HTMLAttributes<HTMLParagraphElement>;
 
-export function LeadText({
-  className,
-  ...props
-}: LeadTextProps) {
+export function LeadText({ className, ...props }: LeadTextProps) {
   return (
-    <p
-      className={cn(
-        "max-w-[72ch] text-lg leading-8 text-secondary",
-        className,
-      )}
-      {...props}
-    />
+    <p className={cn("text-secondary max-w-[72ch] text-lg leading-8", className)} {...props} />
   );
 }
 
 type BodyTextProps = HTMLAttributes<HTMLParagraphElement>;
 
-export function BodyText({
-  className,
-  ...props
-}: BodyTextProps) {
+export function BodyText({ className, ...props }: BodyTextProps) {
   return (
-    <p
-      className={cn(
-        "max-w-[72ch] text-base leading-7 text-secondary",
-        className,
-      )}
-      {...props}
-    />
+    <p className={cn("text-secondary max-w-[72ch] text-base leading-7", className)} {...props} />
   );
 }
 
@@ -108,17 +77,17 @@ export function ArticleProse({
   return (
     <Component
       className={cn(
-        "max-w-[760px] text-base leading-7 text-secondary",
+        "text-secondary max-w-[760px] text-base leading-7",
         "[&_h2]:mt-16 [&_h2]:text-3xl",
         "[&_h2]:font-semibold [&_h2]:tracking-[-0.02em]",
         "[&_h2]:text-foreground",
         "[&_h3]:mt-10 [&_h3]:text-xl",
-        "[&_h3]:font-semibold [&_h3]:text-foreground",
+        "[&_h3]:text-foreground [&_h3]:font-semibold",
         "[&_p]:mt-5 [&_p]:max-w-[72ch]",
         "[&_ul]:mt-5 [&_ul]:list-disc [&_ul]:pl-6",
         "[&_ol]:mt-5 [&_ol]:list-decimal [&_ol]:pl-6",
         "[&_li]:mt-2",
-        "[&_a]:font-medium [&_a]:text-accent",
+        "[&_a]:text-accent [&_a]:font-medium",
         "[&_a]:underline [&_a]:decoration-transparent",
         "[&_a]:underline-offset-4",
         "[&_a:hover]:decoration-current",

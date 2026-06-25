@@ -7,8 +7,7 @@ const variantClasses = {
   accent: "border-accent/30 bg-accent-muted text-accent",
   success: "border-success/30 bg-success/10 text-success",
   warning: "border-warning/30 bg-warning/10 text-warning",
-  information:
-    "border-information/30 bg-information/10 text-information",
+  information: "border-information/30 bg-information/10 text-information",
   restricted: "border-error/30 bg-error/10 text-error",
   outline: "border-line bg-transparent text-secondary",
 } as const;
@@ -30,18 +29,13 @@ export function Badge({
       className={cn(
         "inline-flex min-h-7 items-center gap-1.5",
         "rounded-[var(--radius-sm)] border px-2.5 py-1",
-        "text-xs font-medium leading-none",
+        "text-xs leading-none font-medium",
         variantClasses[variant],
         className,
       )}
       {...props}
     >
-      {showDot ? (
-        <span
-          aria-hidden="true"
-          className="size-1.5 rounded-full bg-current"
-        />
-      ) : null}
+      {showDot ? <span aria-hidden="true" className="size-1.5 rounded-full bg-current" /> : null}
 
       {children}
     </span>

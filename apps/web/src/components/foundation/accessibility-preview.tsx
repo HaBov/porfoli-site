@@ -1,9 +1,4 @@
-import {
-  Copy,
-  Download,
-  ExternalLink,
-  Menu,
-} from "lucide-react";
+import { Copy, Download, ExternalLink, Menu } from "lucide-react";
 
 import { PageContainer } from "@/components/layout/page-container";
 import { Section } from "@/components/layout/section";
@@ -39,8 +34,8 @@ export function AccessibilityPreview() {
               </Heading>
 
               <LeadText className="mt-5">
-                Large supporting text is limited to a readable line
-                length and remains clear at 200% browser zoom.
+                Large supporting text is limited to a readable line length and remains clear at 200%
+                browser zoom.
               </LeadText>
             </Card>
 
@@ -50,9 +45,8 @@ export function AccessibilityPreview() {
               </Heading>
 
               <BodyText className="mt-4">
-                Standard paragraphs use consistent line height,
-                restrained width, semantic colors, and no justified
-                alignment.
+                Standard paragraphs use consistent line height, restrained width, semantic colors,
+                and no justified alignment.
               </BodyText>
             </Card>
 
@@ -61,9 +55,8 @@ export function AccessibilityPreview() {
                 <h3>Long-form technical content</h3>
 
                 <p>
-                  Project case studies will use this prose foundation
-                  for architecture explanations, technical decisions,
-                  testing notes, challenges, and trade-offs.
+                  Project case studies will use this prose foundation for architecture explanations,
+                  technical decisions, testing notes, challenges, and trade-offs.
                 </p>
 
                 <ul>
@@ -90,24 +83,15 @@ export function AccessibilityPreview() {
                 <Menu size={20} strokeWidth={1.8} />
               </IconButton>
 
-              <IconButton
-                label="Copy code"
-                variant="outline"
-              >
+              <IconButton label="Copy code" variant="outline">
                 <Copy size={20} strokeWidth={1.8} />
               </IconButton>
 
-              <IconButton
-                label="Download resume"
-                variant="secondary"
-              >
+              <IconButton label="Download resume" variant="secondary">
                 <Download size={20} strokeWidth={1.8} />
               </IconButton>
 
-              <IconButton
-                label="Open external resource"
-                variant="outline"
-              >
+              <IconButton label="Open external resource" variant="outline">
                 <ExternalLink size={20} strokeWidth={1.8} />
               </IconButton>
             </div>
@@ -115,9 +99,8 @@ export function AccessibilityPreview() {
             <Separator className="my-8" />
 
             <BodyText>
-              Navigate through these controls with the Tab key. Every
-              control must show a visible focus indicator and expose a
-              descriptive accessible name.
+              Navigate through these controls with the Tab key. Every control must show a visible
+              focus indicator and expose a descriptive accessible name.
             </BodyText>
           </Card>
         </PageContainer>
@@ -143,7 +126,7 @@ export function AccessibilityPreview() {
 
             <Card
               id="foundation-focus-target"
-              className="focus-visible:ring-2 focus-visible:ring-accent"
+              className="focus-visible:ring-accent focus-visible:ring-2"
               tabIndex={-1}
             >
               <Heading as="h3" size="subsection">
@@ -151,8 +134,8 @@ export function AccessibilityPreview() {
               </Heading>
 
               <BodyText className="mt-3">
-                Keyboard focus can move directly to this section
-                without being hidden behind a sticky header.
+                Keyboard focus can move directly to this section without being hidden behind a
+                sticky header.
               </BodyText>
             </Card>
           </div>

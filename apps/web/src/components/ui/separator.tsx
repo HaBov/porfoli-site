@@ -16,14 +16,10 @@ export function Separator({
   return (
     <div
       aria-hidden={decorative || undefined}
-      aria-orientation={
-        decorative ? undefined : orientation
-      }
+      aria-orientation={decorative ? undefined : orientation}
       className={cn(
-        "shrink-0 bg-line",
-        orientation === "horizontal"
-          ? "h-px w-full"
-          : "h-full min-h-6 w-px",
+        "bg-line shrink-0",
+        orientation === "horizontal" ? "h-px w-full" : "h-full min-h-6 w-px",
         className,
       )}
       role={decorative ? "presentation" : "separator"}

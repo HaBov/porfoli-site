@@ -1,21 +1,16 @@
-import type {
-  ButtonHTMLAttributes,
-  ReactNode,
-} from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 
 const variantClasses = {
   primary:
     "border border-accent bg-accent text-page hover:border-accent-hover hover:bg-accent-hover",
-  secondary:
-    "border border-line-strong bg-surface text-foreground hover:bg-surface-hover",
+  secondary: "border border-line-strong bg-surface text-foreground hover:bg-surface-hover",
   outline:
     "border border-line bg-transparent text-foreground hover:border-line-strong hover:bg-surface-hover",
   ghost:
     "border border-transparent bg-transparent text-secondary hover:bg-surface-hover hover:text-foreground",
-  danger:
-    "border border-error bg-error text-white hover:opacity-90",
+  danger: "border border-error bg-error text-white hover:opacity-90",
 } as const;
 
 const sizeClasses = {
@@ -86,12 +81,7 @@ export function Button({
       type={type}
       {...props}
     >
-      <span
-        className={cn(
-          "inline-flex items-center justify-center gap-2",
-          loading && "invisible",
-        )}
-      >
+      <span className={cn("inline-flex items-center justify-center gap-2", loading && "invisible")}>
         {leftIcon}
         {children}
         {rightIcon}

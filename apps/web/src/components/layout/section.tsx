@@ -29,11 +29,7 @@ export function Section({
 }: SectionProps) {
   return (
     <Component
-      className={cn(
-        variantClasses[variant],
-        spacingClasses[spacing],
-        className,
-      )}
+      className={cn(variantClasses[variant], spacingClasses[spacing], className)}
       {...props}
     />
   );

@@ -2,8 +2,10 @@ import type { Metadata, Viewport } from "next";
 
 import "@fontsource-variable/inter/wght.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
-import { SkipLink } from "@/components/accessibility/skip-link";
 
+import { SkipLink } from "@/components/accessibility/skip-link";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
 import { ThemeScript } from "@/components/theme/theme-script";
 
 import "./globals.css";
@@ -44,7 +46,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
       <body>
         <SkipLink />
-        {children}
+
+        <div className="flex min-h-screen flex-col">
+          <SiteHeader />
+
+          <div className="flex-1">{children}</div>
+
+          <SiteFooter />
+        </div>
       </body>
     </html>
   );

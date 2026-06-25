@@ -35,14 +35,9 @@ export function SectionHeader({
         className,
       )}
     >
-      <div
-        className={cn(
-          "max-w-[760px]",
-          align === "center" && "flex flex-col items-center",
-        )}
-      >
+      <div className={cn("max-w-[760px]", align === "center" && "flex flex-col items-center")}>
         {eyebrow ? (
-          <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-accent">
+          <p className="text-accent font-mono text-xs font-medium tracking-[0.08em] uppercase">
             {eyebrow}
           </p>
         ) : null}
@@ -60,7 +55,7 @@ export function SectionHeader({
         </Heading>
 
         {description ? (
-          <p className="mt-4 max-w-[72ch] text-base leading-7 text-secondary sm:text-lg sm:leading-8">
+          <p className="text-secondary mt-4 max-w-[72ch] text-base leading-7 sm:text-lg sm:leading-8">
             {description}
           </p>
         ) : null}

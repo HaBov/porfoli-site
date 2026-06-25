@@ -12,13 +12,6 @@ export function ContentContainer({
   ...props
 }: ContentContainerProps) {
   return (
-    <Component
-      className={cn(
-        "w-full max-w-[760px]",
-        "[&_p]:max-w-[72ch]",
-        className,
-      )}
-      {...props}
-    />
+    <Component className={cn("w-full max-w-[760px]", "[&_p]:max-w-[72ch]", className)} {...props} />
   );
 }

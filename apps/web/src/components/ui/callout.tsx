@@ -4,8 +4,7 @@ import { cn } from "@/lib/cn";
 
 const variantClasses = {
   neutral: "border-line bg-elevated",
-  information:
-    "border-information/40 bg-information/10",
+  information: "border-information/40 bg-information/10",
   success: "border-success/40 bg-success/10",
   warning: "border-warning/40 bg-warning/10",
   error: "border-error/40 bg-error/10",
@@ -44,20 +43,9 @@ export function Callout({
       role={role ?? (variant === "error" ? "alert" : undefined)}
       {...props}
     >
-      {title ? (
-        <p className={cn("font-semibold", labelClasses[variant])}>
-          {title}
-        </p>
-      ) : null}
+      {title ? <p className={cn("font-semibold", labelClasses[variant])}>{title}</p> : null}
 
-      <div
-        className={cn(
-          "text-sm leading-6 text-secondary",
-          title && "mt-2",
-        )}
-      >
-        {children}
-      </div>
+      <div className={cn("text-secondary text-sm leading-6", title && "mt-2")}>{children}</div>
     </div>
   );
 }
