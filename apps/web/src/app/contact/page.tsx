@@ -18,14 +18,13 @@ export default function ContactPage() {
       title="Contact"
     >
       <BodyText>
-        The final page will provide a verified direct contact method and
-        an accessible form with server-side validation, rate limiting,
-        privacy controls, and a reliable email fallback.
+        The final page will provide a verified direct contact method and an accessible form with
+        server-side validation, rate limiting, privacy controls, and a reliable email fallback.
       </BodyText>
 
       <Callout title="No data is currently submitted">
-        The contact form has not been enabled yet. This development
-        scaffold does not collect or transmit visitor information.
+        The contact form has not been enabled yet. This development scaffold does not collect or
+        transmit visitor information.
       </Callout>
     </StaticPage>
   );

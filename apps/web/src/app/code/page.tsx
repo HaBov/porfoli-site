@@ -17,9 +17,9 @@ export default function CodeSamplesPage() {
       title="Code Samples"
     >
       <Callout title="Independently rewritten code">
-        Samples published here will demonstrate real engineering
-        patterns without reproducing proprietary source code, internal
-        identifiers, credentials, or company-specific business rules.
+        Samples published here will demonstrate real engineering patterns without reproducing
+        proprietary source code, internal identifiers, credentials, or company-specific business
+        rules.
       </Callout>
     </StaticPage>
   );

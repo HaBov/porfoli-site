@@ -1,10 +1,6 @@
 import type { ReactNode } from "react";
 
-import {
-  Eyebrow,
-  Heading,
-  LeadText,
-} from "@/components/typography/typography";
+import { Eyebrow, Heading, LeadText } from "@/components/typography/typography";
 
 import { ContentContainer } from "./content-container";
 import { PageContainer } from "./page-container";
@@ -17,12 +13,7 @@ type StaticPageProps = {
   children?: ReactNode;
 };
 
-export function StaticPage({
-  eyebrow,
-  title,
-  description,
-  children,
-}: StaticPageProps) {
+export function StaticPage({ eyebrow, title, description, children }: StaticPageProps) {
   return (
     <main id="main-content" tabIndex={-1}>
       <Section spacing="large">
@@ -42,9 +33,7 @@ export function StaticPage({
       {children ? (
         <Section variant="bordered">
           <PageContainer>
-            <ContentContainer className="grid gap-6">
-              {children}
-            </ContentContainer>
+            <ContentContainer className="grid gap-6">{children}</ContentContainer>
           </PageContainer>
         </Section>
       ) : null}

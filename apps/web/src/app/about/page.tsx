@@ -17,15 +17,14 @@ export default function AboutPage() {
       title="About Me"
     >
       <BodyText>
-        I am a backend-focused Software Developer from Tajikistan,
-        working primarily with Python, PostgreSQL, APIs, automation,
-        Docker, and Linux.
+        I am a backend-focused Software Developer from Tajikistan, working primarily with Python,
+        PostgreSQL, APIs, automation, Docker, and Linux.
       </BodyText>
 
       <BodyText>
-        My earlier experience in technical support and business-process
-        analysis helps me understand both how systems are built and how
-        they affect the people who use, operate, and maintain them.
+        My earlier experience in technical support and business-process analysis helps me understand
+        both how systems are built and how they affect the people who use, operate, and maintain
+        them.
       </BodyText>
     </StaticPage>
   );

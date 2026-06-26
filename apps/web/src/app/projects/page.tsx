@@ -17,9 +17,8 @@ export default function ProjectsPage() {
       title="Projects"
     >
       <Callout title="Confidentiality and technical evidence">
-        Some projects were developed for internal company use and
-        cannot be published as complete repositories. The final case
-        studies will use anonymized architecture, independently
+        Some projects were developed for internal company use and cannot be published as complete
+        repositories. The final case studies will use anonymized architecture, independently
         rewritten code samples, synthetic data, and approved metrics.
       </Callout>
     </StaticPage>

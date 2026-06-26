@@ -14,7 +14,8 @@
     "api:lint": "python -m ruff check apps/api",
     "api:format": "python -m ruff format apps/api",
     "api:fix": "python -m ruff check apps/api --fix && python -m ruff format apps/api",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm build && pnpm api:lint && pnpm api:test"
+    "content:validate": "pnpm --dir apps/web run content:validate",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm content:validate && pnpm build && pnpm api:lint && pnpm api:test"
   },
   "devDependencies": {
     "prettier": "^3.8.4",

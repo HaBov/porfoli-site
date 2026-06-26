@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 type GlobalErrorPageProps = {
   error: Error & {
     digest?: string;
@@ -7,10 +9,7 @@ type GlobalErrorPageProps = {
   reset: () => void;
 };
 
-export default function GlobalErrorPage({
-  error,
-  reset,
-}: GlobalErrorPageProps) {
+export default function GlobalErrorPage({ error, reset }: GlobalErrorPageProps) {
   return (
     <html lang="en">
       <body
@@ -19,8 +18,7 @@ export default function GlobalErrorPage({
           background: "#08111f",
           color: "#f1f5f9",
           display: "flex",
-          fontFamily:
-            'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+          fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
           justifyContent: "center",
           margin: 0,
           minHeight: "100vh",
@@ -64,8 +62,7 @@ export default function GlobalErrorPage({
               margin: "24px auto 0",
             }}
           >
-            Retry the application. If the problem continues, return to
-            the homepage.
+            Retry the application. If the problem continues, return to the homepage.
           </p>
 
           <div
@@ -95,7 +92,7 @@ export default function GlobalErrorPage({
               Retry Application
             </button>
 
-            <a
+            <Link
               href="/"
               style={{
                 alignItems: "center",
@@ -110,7 +107,7 @@ export default function GlobalErrorPage({
               }}
             >
               Back to Home
-            </a>
+            </Link>
           </div>
 
           {error.digest ? (

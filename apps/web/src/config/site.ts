@@ -1,17 +1,23 @@
+import { profile } from "@/content/data/profile";
+
 export type NavigationItem = {
   label: string;
   href: string;
 };
 
 export const siteConfig = {
-  name: "Khasandjon Babadzhanov",
-  shortName: "KB",
-  title: "Software Developer",
-  description:
-    "Backend-focused Software Developer building business applications, APIs, integrations, and automation.",
-  location: "Tajikistan",
-  availability: "Open to relocation and international opportunities",
-  resumeHref: "/resume",
+  name: profile.fullName,
+  shortName: profile.initials,
+  title: profile.primaryTitle,
+  functionalTitle: profile.functionalTitle,
+  description: profile.professionalDescriptor,
+  location: profile.location,
+  availability: profile.relocationStatus,
+  employmentStatus: profile.availabilityStatus,
+  email: profile.email,
+  phone: profile.phone,
+  githubUrl: profile.githubUrl,
+  resumeHref: profile.secondaryCTA.href,
 } as const;
 
 export const primaryNavigation: readonly NavigationItem[] = [
