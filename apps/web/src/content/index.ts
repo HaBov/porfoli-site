@@ -15,6 +15,10 @@ export {
 
 export { profile } from "./data/profile";
 
+export { NAVIGATION_GROUP_LABELS, NAVIGATION_GROUPS } from "./registries/navigation";
+
+export { SKILL_GROUP_TYPE_LABELS, SKILL_GROUP_TYPES } from "./registries/skill";
+
 export {
   getFeaturedProjects,
   getProjectById,
@@ -74,9 +78,23 @@ export type { ContactLink, ContactLinkType } from "./schemas/contact-link.schema
 export type { EducationRecord } from "./schemas/education.schema";
 export type { ExperienceRecord } from "./schemas/experience.schema";
 export type { LanguageRecord } from "./schemas/language.schema";
+
+export {
+  getEnabledNavigation,
+  getFooterNavigation,
+  getMobileNavigation,
+  getPrimaryNavigation,
+  navigationItems,
+} from "./data/navigation";
+
+export { getFeaturedSkillGroups, getSkillGroups, skillGroups } from "./data/skills";
+
 export type { ProjectMetric } from "./schemas/metric.schema";
 export type { SiteProfile } from "./schemas/profile.schema";
 
 export type { ConfidentialityConfig, ProjectRecord } from "./schemas/project.schema";
 
 export type { Technology } from "./schemas/technology.schema";
+
+export type { NavigationItem } from "./schemas/navigation.schema";
+export type { SkillGroup } from "./schemas/skill-group.schema";

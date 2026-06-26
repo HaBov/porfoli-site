@@ -1,9 +1,22 @@
+import {
+  getFooterNavigation,
+  getMobileNavigation,
+  getPrimaryNavigation,
+} from "@/content/data/navigation";
 import { profile } from "@/content/data/profile";
+import type { NavigationItem as ContentNavigationItem } from "@/content/schemas/navigation.schema";
 
 export type NavigationItem = {
   label: string;
   href: string;
 };
+
+function simplifyNavigation(items: readonly ContentNavigationItem[]): NavigationItem[] {
+  return items.map(({ label, href }) => ({
+    label,
+    href,
+  }));
+}
 
 export const siteConfig = {
   name: profile.fullName,
@@ -20,33 +33,11 @@ export const siteConfig = {
   resumeHref: profile.secondaryCTA.href,
 } as const;
 
-export const primaryNavigation: readonly NavigationItem[] = [
-  {
-    label: "Projects",
-    href: "/projects",
-  },
-  {
-    label: "Code Samples",
-    href: "/code",
-  },
-  {
-    label: "Experience",
-    href: "/experience",
-  },
-  {
-    label: "About",
-    href: "/about",
-  },
-  {
-    label: "Contact",
-    href: "/contact",
-  },
-] as const;
+export const primaryNavigation: readonly NavigationItem[] =
+  simplifyNavigation(getPrimaryNavigation());
 
-export const mobileNavigation: readonly NavigationItem[] = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  ...primaryNavigation,
-] as const;
+export const mobileNavigation: readonly NavigationItem[] =
+  simplifyNavigation(getMobileNavigation());
+
+export const footerNavigation: readonly NavigationItem[] =
+  simplifyNavigation(getFooterNavigation());

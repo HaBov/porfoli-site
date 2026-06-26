@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "content:validate": "tsx src/content/validate.ts"
+    "content:validate": "tsx src/content/validate.ts",
+    "content:report": "tsx src/content/report.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",

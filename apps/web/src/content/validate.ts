@@ -14,6 +14,10 @@ import { projectMetricListSchema } from "./schemas/metric.schema";
 import { siteProfileSchema } from "./schemas/profile.schema";
 import { projectListSchema } from "./schemas/project.schema";
 import { technologyListSchema } from "./schemas/technology.schema";
+import { navigationItems } from "./data/navigation";
+import { skillGroups } from "./data/skills";
+import { navigationListSchema } from "./schemas/navigation.schema";
+import { skillGroupListSchema } from "./schemas/skill-group.schema";
 
 function assertCondition(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -249,6 +253,31 @@ function validateContent(): void {
     "project priority",
   );
 
+  assertUnique(
+    skillGroups.map((skillGroup) => skillGroup.id),
+    "skill group ID",
+  );
+
+  assertUnique(
+    skillGroups.map((skillGroup) => skillGroup.displayOrder),
+    "skill group display order",
+  );
+
+  assertUnique(
+    navigationItems.map((navigationItem) => navigationItem.id),
+    "navigation item ID",
+  );
+
+  assertUnique(
+    navigationItems.map((navigationItem) => navigationItem.displayOrder),
+    "navigation display order",
+  );
+
+  assertUnique(
+    navigationItems.map((navigationItem) => navigationItem.href),
+    "navigation path",
+  );
+
   assertCondition(
     experienceEntries.filter((experience) => experience.ongoing).length <= 1,
     "Only one current experience entry is supported.",
@@ -269,6 +298,59 @@ function validateContent(): void {
   console.log(`Project metrics: ${projectMetrics.length}`);
   console.log(`Projects: ${projects.length}`);
   console.log(`Featured projects: ${projects.filter((project) => project.featured).length}`);
+}
+
+function validateSkillRelations(): void {
+  const technologyMap = new Map(technologies.map((technology) => [technology.id, technology]));
+
+  for (const skillGroup of skillGroups) {
+    for (const technologyId of skillGroup.technologyIds) {
+      const technology = technologyMap.get(technologyId);
+
+      assertCondition(
+        technology !== undefined,
+        `Skill group "${skillGroup.id}" references unknown technology "${technologyId}".`,
+      );
+
+      assertCondition(
+        technology.visibility !== "excluded",
+        `Skill group "${skillGroup.id}" references excluded technology "${technologyId}".`,
+      );
+    }
+  }
+}
+
+function validateNavigationRelations(): void {
+  const enabledNavigation = navigationItems.filter((item) => item.enabled);
+
+  const enabledPaths = new Set(enabledNavigation.map((item) => item.href));
+
+  const internalCtas = [profile.primaryCTA, profile.secondaryCTA, profile.tertiaryCTA].filter(
+    (cta): cta is NonNullable<typeof profile.tertiaryCTA> =>
+      cta !== undefined && cta.external !== true,
+  );
+
+  for (const cta of internalCtas) {
+    assertCondition(
+      enabledPaths.has(cta.href),
+      `Profile CTA "${cta.label}" references navigation path "${cta.href}" that is not enabled.`,
+    );
+  }
+
+  const desktopNavigation = enabledNavigation
+    .filter((item) => item.showInDesktop)
+    .sort((left, right) => left.displayOrder - right.displayOrder);
+
+  const mobileNavigation = enabledNavigation
+    .filter((item) => item.showInMobile)
+    .sort((left, right) => left.displayOrder - right.displayOrder);
+
+  assertCondition(
+    desktopNavigation.every((item) => item.href !== "/"),
+    "Desktop navigation must not contain a separate Home link.",
+  );
+
+  assertCondition(mobileNavigation[0]?.href === "/", "Mobile navigation must begin with Home.");
 }
 
 validateContent();

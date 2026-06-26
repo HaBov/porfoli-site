@@ -15,6 +15,7 @@
     "api:format": "python -m ruff format apps/api",
     "api:fix": "python -m ruff check apps/api --fix && python -m ruff format apps/api",
     "content:validate": "pnpm --dir apps/web run content:validate",
+    "content:report": "pnpm --dir apps/web run content:report",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm content:validate && pnpm build && pnpm api:lint && pnpm api:test"
   },
   "devDependencies": {
