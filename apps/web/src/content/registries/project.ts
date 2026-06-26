@@ -29,11 +29,42 @@ export type ProjectCategory = keyof typeof PROJECT_CATEGORY_LABELS;
 
 export const PROJECT_CATEGORIES = Object.keys(PROJECT_CATEGORY_LABELS) as ProjectCategory[];
 
-export const PROJECT_TIER_LABELS = {
+export const PROJECT_TIERS = [1, 2, 3, 4] as const;
+
+export type ProjectTier = (typeof PROJECT_TIERS)[number];
+
+export const PROJECT_TIER_LABELS: Record<ProjectTier, string> = {
   1: "Flagship Case Study",
   2: "Supporting Case Study",
   3: "Project Card",
   4: "Internal Backlog",
-} as const;
+};
 
-export type ProjectTier = keyof typeof PROJECT_TIER_LABELS;
+export const CONFIDENTIALITY_LEVELS = [0, 1, 2, 3] as const;
+
+export type ConfidentialityLevel = (typeof CONFIDENTIALITY_LEVELS)[number];
+
+export const CONFIDENTIALITY_LEVEL_LABELS: Record<ConfidentialityLevel, string> = {
+  0: "Public",
+  1: "Public with Redaction",
+  2: "Anonymized Internal Project",
+  3: "Restricted Summary",
+};
+
+export const METRIC_KINDS = [
+  "scale",
+  "performance",
+  "business-impact",
+  "quality",
+  "coverage",
+] as const;
+
+export type MetricKind = (typeof METRIC_KINDS)[number];
+
+export const METRIC_KIND_LABELS: Record<MetricKind, string> = {
+  scale: "Scale",
+  performance: "Performance",
+  "business-impact": "Business Impact",
+  quality: "Quality",
+  coverage: "Coverage",
+};

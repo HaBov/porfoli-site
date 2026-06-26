@@ -6,7 +6,23 @@ export { experienceEntries, getCurrentExperience, getExperienceEntries } from ".
 
 export { getLanguages, languages } from "./data/languages";
 
+export {
+  getFeaturedMetrics,
+  getMetricById,
+  getProjectMetrics,
+  projectMetrics,
+} from "./data/metrics";
+
 export { profile } from "./data/profile";
+
+export {
+  getFeaturedProjects,
+  getProjectById,
+  getProjectBySlug,
+  getProjects,
+  getVersionOneProjects,
+  projects,
+} from "./data/projects";
 
 export {
   getHeadlineTechnologies,
@@ -34,11 +50,16 @@ export { WORK_FORMATS, WORK_FORMAT_LABELS } from "./registries/experience";
 export { LANGUAGE_PROFICIENCY_LEVELS, LANGUAGE_PROFICIENCY_LABELS } from "./registries/profile";
 
 export {
+  CONFIDENTIALITY_LEVEL_LABELS,
+  CONFIDENTIALITY_LEVELS,
+  METRIC_KIND_LABELS,
+  METRIC_KINDS,
   PROJECT_CATEGORIES,
   PROJECT_CATEGORY_LABELS,
   PROJECT_STATUSES,
   PROJECT_STATUS_LABELS,
   PROJECT_TIER_LABELS,
+  PROJECT_TIERS,
 } from "./registries/project";
 
 export {
@@ -53,5 +74,9 @@ export type { ContactLink, ContactLinkType } from "./schemas/contact-link.schema
 export type { EducationRecord } from "./schemas/education.schema";
 export type { ExperienceRecord } from "./schemas/experience.schema";
 export type { LanguageRecord } from "./schemas/language.schema";
+export type { ProjectMetric } from "./schemas/metric.schema";
 export type { SiteProfile } from "./schemas/profile.schema";
+
+export type { ConfidentialityConfig, ProjectRecord } from "./schemas/project.schema";
+
 export type { Technology } from "./schemas/technology.schema";
