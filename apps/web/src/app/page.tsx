@@ -1,19 +1,26 @@
+import { ExperiencePreview } from "@/components/home/experience-preview";
+import { FeaturedProjects } from "@/components/home/featured-projects";
+import { FinalCTA } from "@/components/home/final-cta";
+import { HomeHero } from "@/components/home/home-hero";
+import { HomeMetrics } from "@/components/home/home-metrics";
+import { TechnicalFocus } from "@/components/home/technical-focus";
+import { profile } from "@/content";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata = createPageMetadata({
+  title: profile.primaryTitle,
+  description: profile.professionalDescriptor,
+});
+
 export default function HomePage() {
   return (
-    <main id="main-content" tabIndex={-1}>
-      <section aria-labelledby="hero-heading">
-        <p>SOFTWARE DEVELOPER · PYTHON · BACKEND SYSTEMS</p>
-
-        <h1 id="hero-heading">I build reliable backend systems for real business operations.</h1>
-
-        <p>
-          Backend-focused Software Developer working with Python, PostgreSQL, TypeScript, Docker,
-          and Linux. I design APIs, business applications, integrations, and automated workflows —
-          from requirements and data models to deployment and production validation.
-        </p>
-
-        <p>Based in Tajikistan · Open to relocation and international opportunities</p>
-      </section>
+    <main id="main-content">
+      <HomeHero />
+      <HomeMetrics />
+      <FeaturedProjects />
+      <TechnicalFocus />
+      <ExperiencePreview />
+      <FinalCTA />
     </main>
   );
 }
