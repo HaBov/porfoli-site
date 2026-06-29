@@ -1,0 +1,564 @@
+<CaseStudySection
+id="executive-summary"
+eyebrow="Overview"
+title="Executive Summary"
+
+>
+
+<p>
+  The Fleet Safety Media Delivery Pipeline is a serverless integration workflow that receives
+  safety-event webhooks, normalizes event data, selects available media, and delivers operational
+  notifications to Telegram.
+</p>
+
+<p>
+  The workflow replaced a more limited manual process with an automated delivery path capable of
+  processing approximately 1,500–2,000 videos per week, compared with approximately 150 videos per
+  week before the automation.
+</p>
+
+  <p>
+    I implemented webhook parsing, payload normalization, event
+    mapping, driver and vehicle extraction, message formatting,
+    camera and media selection, video and photo delivery, timeout
+    handling, fan-out, and aggregate analytics.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+id="problem"
+eyebrow="Business problem"
+title="Safety Media Was Not Reaching Teams at the Required Volume"
+
+>
+
+<p>
+  Fleet safety events could contain useful video, image, vehicle, driver, location, time, and speed
+  information, but manually reviewing and distributing those events limited how many could reach
+  operational teams.
+</p>
+
+<p>
+  The source system could produce different webhook payload shapes, and the required media was not
+  always available in the same format or camera position.
+</p>
+
+  <p>
+    A reliable workflow needed to receive the webhook, normalize
+    the data, determine what media was available, format a useful
+    notification, and deliver the result without allowing failures
+    in one event to stop the rest of the processing flow.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+id="business-context"
+eyebrow="Users and context"
+title="An Operational Safety Notification Workflow"
+
+>
+
+<p>
+  The pipeline supports fleet, dispatch, and safety-related operational teams that need timely
+  visibility into driving events and their associated media.
+</p>
+
+<p>
+  Each event may contain a different combination of driver, vehicle, time, location, speed, event
+  classification, video, image, and camera information.
+</p>
+
+  <p>
+    The public case study does not include real driver names,
+    vehicle numbers, coordinates, map links, Telegram destination
+    identifiers, event identifiers, or operational screenshots.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+id="role-contributions"
+eyebrow="My work"
+title="Role and Personal Contributions"
+
+>
+
+<p>
+  I developed the webhook-processing and media-delivery logic and handled the main integration
+  concerns between the source fleet platform, Cloudflare Workers, storage-backed analytics, and
+  Telegram.
+</p>
+
+<p>My contribution included:</p>
+
+  <ul>
+    <li>Receiving and parsing webhook requests.</li>
+    <li>Supporting multiple source payload structures.</li>
+    <li>Normalizing event types and operational fields.</li>
+    <li>
+      Extracting driver, vehicle, event time, speed, and location
+      information.
+    </li>
+    <li>Selecting preferred camera and media sources.</li>
+    <li>Implementing video-first delivery with photo fallback.</li>
+    <li>Formatting readable Telegram notifications.</li>
+    <li>Delivering media to multiple configured destinations.</li>
+    <li>Handling Telegram and media-download timeouts.</li>
+    <li>
+      Recording aggregate event and delivery analytics in
+      Cloudflare KV.
+    </li>
+    <li>Investigating malformed payloads and unavailable media.</li>
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+id="requirements-constraints"
+eyebrow="Boundaries"
+title="Requirements and Constraints"
+
+>
+
+<p>
+  The workflow depended on external webhook data and external media-delivery APIs, both of which
+  could fail or return incomplete information.
+</p>
+
+<p>Important constraints included:</p>
+
+  <ul>
+    <li>
+      Different webhook payload shapes for different event and
+      media types.
+    </li>
+    <li>
+      Optional or missing driver, vehicle, location, and media
+      fields.
+    </li>
+    <li>Video URLs that might be unavailable or expire.</li>
+    <li>Multiple available camera positions.</li>
+    <li>Telegram request size, media, and timeout restrictions.</li>
+    <li>Fan-out to more than one configured destination.</li>
+    <li>Sensitive driver, vehicle, location, and event metadata.</li>
+    <li>
+      The need to continue processing when one destination or
+      media item fails.
+    </li>
+    <li>
+      Serverless execution-time and external-network constraints.
+    </li>
+    <li>
+      The absence of confirmed webhook signature verification in
+      the supplied implementation.
+    </li>
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+id="architecture"
+eyebrow="System design"
+title="System Architecture"
+
+>
+
+<p>
+  The public architecture shows the main processing stages using synthetic events and generalized
+  destination configuration.
+</p>
+
+<ArchitectureFlow
+label="Simplified fleet media delivery workflow"
+steps={[
+{
+title: "Motive safety-event webhook",
+description:
+"The source platform sends an event payload containing available safety, vehicle, driver, time, location, and media information.",
+},
+{
+title: "Cloudflare Worker request handler",
+description:
+"The Worker validates the basic request shape and passes the payload into the normalization workflow.",
+},
+{
+title: "Event normalization",
+description:
+"Different payload structures are converted into one generalized internal event representation.",
+},
+{
+title: "Media and camera selection",
+description:
+"The workflow selects the preferred video source and falls back to available images when video cannot be delivered.",
+},
+{
+title: "Telegram notification fan-out",
+description:
+"A formatted event message and available media are sent to configured operational destinations.",
+},
+{
+title: "Cloudflare KV analytics",
+description:
+"Generalized counters and aggregate event information are stored for operational summaries.",
+},
+]}
+/> </CaseStudySection>
+
+<CaseStudySection
+id="data-model"
+eyebrow="Processing state"
+title="Normalized Safety Event Model"
+
+>
+
+<p>
+  The integration receives variable external payloads, so a normalized event model separates
+  source-specific fields from the delivery logic.
+</p>
+
+<p>A generalized normalized event contains:</p>
+
+<ul>
+  <li>A synthetic event identifier.</li>
+  <li>A normalized event category.</li>
+  <li>A synthetic driver reference.</li>
+  <li>A synthetic vehicle reference.</li>
+  <li>An event timestamp.</li>
+  <li>Generalized speed information.</li>
+  <li>A synthetic location description.</li>
+  <li>A list of available camera and media candidates.</li>
+  <li>A selected primary media item.</li>
+  <li>An optional fallback image.</li>
+  <li>A list of delivery destinations.</li>
+  <li>Per-destination delivery results.</li>
+  <li>An aggregate analytics result.</li>
+</ul>
+
+  <p>
+    The portfolio implementation will use fictional identifiers,
+    generated coordinates, example map links, and synthetic media
+    references.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+id="features"
+eyebrow="Workflow scope"
+title="Key Features"
+
+>
+
+  <ul>
+    <li>Webhook request processing.</li>
+    <li>Support for multiple payload structures.</li>
+    <li>Normalized event-type mapping.</li>
+    <li>Driver and vehicle field extraction.</li>
+    <li>Time, speed, and location formatting.</li>
+    <li>Preferred camera selection.</li>
+    <li>Video-first media delivery.</li>
+    <li>Photo fallback when video is unavailable.</li>
+    <li>Telegram message and media delivery.</li>
+    <li>Delivery fan-out to multiple destinations.</li>
+    <li>Timeout and partial-failure handling.</li>
+    <li>Daily and aggregate event counters.</li>
+    <li>Event-category and hotspot aggregation.</li>
+    <li>Cloudflare KV-backed analytics.</li>
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+id="technical-decisions"
+eyebrow="Engineering choices"
+title="Technical Decisions"
+
+>
+
+<div className="grid gap-6">
+<TechnicalDecision
+  title="Normalize payloads before delivery logic"
+  context="Safety-event webhooks could represent similar information through different nested structures and optional fields."
+  optionsConsidered={[
+    "Handle every payload shape directly inside the Telegram delivery function",
+    "Create separate complete pipelines for each event shape",
+    "Normalize supported payloads into one internal event model",
+  ]}
+  selectedApproach="A normalization layer that extracts generalized event, vehicle, driver, location, and media fields before formatting or delivery."
+  reasoning="Normalization keeps source-specific parsing separate from message formatting and media delivery, reducing repeated condition handling."
+  tradeoffs={[
+    "The normalizer must be updated when the source introduces new payload shapes.",
+    "Unknown fields can be lost unless raw payload access is preserved safely.",
+    "Optional data requires explicit fallback behavior.",
+  ]}
+/>
+<TechnicalDecision
+  title="Video-first delivery with photo fallback"
+  context="Video provided the strongest operational context, but it was not available or deliverable for every event."
+  optionsConsidered={[
+    "Discard events without video",
+    "Send only text when video is unavailable",
+    "Prefer video and fall back to an available image",
+  ]}
+  selectedApproach="Attempt delivery of the preferred video source, then use an available image when video cannot be delivered."
+  reasoning="The fallback preserves visual context for more events without requiring every payload to contain a valid video."
+  tradeoffs={[
+    "Photo and video messages can have different Telegram behaviors.",
+    "Fallback logic adds additional network requests and error paths.",
+    "A photo does not provide the same operational context as a video.",
+  ]}
+/>
+<TechnicalDecision
+  title="Per-destination delivery results"
+  context="A single event could be sent to multiple configured Telegram destinations, and one destination could fail independently."
+  optionsConsidered={[
+    "Treat the first destination failure as failure for the entire event",
+    "Ignore destination-specific outcomes",
+    "Record success or failure for every destination separately",
+  ]}
+  selectedApproach="Independent destination delivery attempts with aggregated event-level reporting."
+  reasoning="This prevents one destination failure from hiding successful deliveries to other teams and provides more useful operational diagnostics."
+  tradeoffs={[
+    "The result model becomes more complex.",
+    "Retries must avoid unnecessarily resending successful destinations.",
+    "Destination configuration must remain confidential.",
+  ]}
+/>
+</div>
+</CaseStudySection>
+
+<CaseStudySection
+id="selected-code"
+eyebrow="Technical evidence"
+title="Selected Code"
+
+>
+
+<p>
+  The original Worker source and operational screenshots are not published because they contain
+  employer-owned logic, real driver and vehicle data, location information, Telegram destination
+  identifiers, and production configuration.
+</p>
+
+<p>Independently rewritten portfolio samples will demonstrate:</p>
+
+<ul>
+  <li>A typed webhook normalizer supporting multiple payload structures.</li>
+  <li>A media-selection function with preferred-camera and fallback behavior.</li>
+  <li>A Telegram delivery adapter with timeout handling.</li>
+  <li>A fan-out service that records per-destination results.</li>
+  <li>An idempotency guard for duplicate webhook events.</li>
+  <li>A webhook-signature verification example.</li>
+  <li>Tests using synthetic events and media URLs.</li>
+</ul>
+
+  <p>
+    The rewritten samples will intentionally improve security and
+    reliability limitations identified during the portfolio
+    review.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+id="testing"
+eyebrow="Release confidence"
+title="Testing and Validation"
+
+>
+
+<p>
+  The supplied evidence includes operational Telegram screenshots showing event messages and media
+  delivery. A complete automated unit or integration test suite was not supplied.
+</p>
+
+<p>Operational validation covered scenarios such as:</p>
+
+<ul>
+  <li>A payload containing a valid video.</li>
+  <li>A payload containing only image media.</li>
+  <li>A payload with missing optional driver fields.</li>
+  <li>A payload with missing vehicle fields.</li>
+  <li>A payload with more than one available camera.</li>
+  <li>An unavailable or failed media URL.</li>
+  <li>A Telegram request timeout.</li>
+  <li>A successful delivery to one destination and a failed delivery to another destination.</li>
+  <li>An unknown or partially supported event type.</li>
+  <li>Aggregate analytics updates.</li>
+</ul>
+
+  <p>
+    The public rewritten version should add automated tests for
+    normalization, media selection, fallback behavior,
+    idempotency, signature verification, and destination-specific
+    delivery results.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+id="challenges"
+eyebrow="Trade-offs"
+title="Challenges"
+
+>
+
+<p>
+  <strong>Variable webhook payloads.</strong> Similar event data could appear under different nested
+  fields. The workflow needed defensive parsing and normalization.
+</p>
+
+<p>
+  <strong>Unavailable media.</strong> Some events did not include a usable video, or the media
+  request could fail after the webhook had already been received.
+</p>
+
+<p>
+  <strong>Camera selection.</strong> Multiple media candidates required a clear priority order
+  rather than selecting the first available item.
+</p>
+
+<p>
+  <strong>Telegram timeouts.</strong> Media delivery introduced longer-running external requests and
+  destination-specific failures.
+</p>
+
+<p>
+  <strong>Duplicate events.</strong> The supplied implementation did not provide confirmed explicit
+  idempotency protection, which creates a risk of duplicate delivery when a webhook is retried.
+</p>
+
+<p>
+  <strong>Webhook authenticity.</strong> The supplied handler did not confirm signature or
+  shared-secret verification, so the public rewrite must add authentication before processing.
+</p>
+
+<p>
+  <strong>Sensitive logs.</strong> Driver names, vehicle details, locations, coordinates, and media
+  URLs must not be recorded in unrestricted logs.
+</p>
+
+  <p>
+    <strong>Scheduled analytics.</strong> Daily aggregation logic
+    existed in the supplied material, but the corresponding
+    scheduled handler was not verified.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+id="results"
+eyebrow="Outcome"
+title="Results and Impact"
+
+>
+
+<p>
+  The automated pipeline increased weekly media-delivery throughput from approximately 150 videos to
+  approximately 1,500–2,000 videos.
+</p>
+
+<p>
+  This represents an approximate throughput increase of 10–13×, while giving operational teams a
+  repeatable path for receiving formatted safety-event information and available media.
+</p>
+
+<p>
+  The values are presented as approximate operational metrics, not as guaranteed system capacity or
+  a formal performance benchmark.
+</p>
+
+  <p>
+    Exact event totals, delivery failure rates, driver counts,
+    vehicle counts, and destination counts are not currently
+    approved for publication.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+id="lessons"
+eyebrow="Reflection"
+title="Lessons Learned"
+
+>
+
+  <ul>
+    <li>
+      Webhook input should be normalized before business and
+      delivery logic.
+    </li>
+    <li>Optional external data requires explicit fallback rules.</li>
+    <li>
+      Media delivery needs independent timeout and failure
+      handling.
+    </li>
+    <li>Fan-out operations should record results per destination.</li>
+    <li>
+      Idempotency should be designed before webhook retries occur
+      in production.
+    </li>
+    <li>Webhook authentication is a required security boundary.</li>
+    <li>
+      Logs should contain diagnostic categories rather than raw
+      driver and location data.
+    </li>
+    <li>
+      Operational screenshots are evidence of use, but they do not
+      replace automated tests or delivery analytics.
+    </li>
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+id="future-improvements"
+eyebrow="Next steps"
+title="Future Improvements"
+
+>
+
+  <ul>
+    <li>Add webhook signature or shared-secret verification.</li>
+    <li>Add persistent idempotency keys for source event IDs.</li>
+    <li>
+      Record per-destination delivery state so retries only target
+      failed destinations.
+    </li>
+    <li>
+      Add automated unit tests for all supported payload shapes.
+    </li>
+    <li>
+      Add mocked integration tests for Telegram media delivery.
+    </li>
+    <li>
+      Replace raw operational logging with structured,
+      privacy-safe event categories.
+    </li>
+    <li>
+      Add metrics for delivery success, fallback use, failures,
+      retries, and processing duration.
+    </li>
+    <li>
+      Verify and document the scheduled analytics execution path.
+    </li>
+    <li>
+      Introduce a dead-letter or reconciliation workflow for
+      events that cannot be delivered.
+    </li>
+    <li>
+      Remove or replace incomplete placeholder authentication
+      helpers.
+    </li>
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+id="confidentiality"
+eyebrow="Publication boundary"
+title="Confidentiality"
+
+>
+
+  <ConfidentialityNote>
+    <p>
+      This case study does not expose real driver names, vehicle
+      numbers, event identifiers, coordinates, location addresses,
+      map links, media URLs, Telegram destination identifiers,
+      credentials, webhook secrets, production logs, or original
+      operational screenshots. Public examples use synthetic
+      events, generated media references, fictional destinations,
+      and independently rewritten code.
+    </p>
+  </ConfidentialityNote>
+</CaseStudySection>

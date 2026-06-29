@@ -2,6 +2,7 @@ import "server-only";
 
 import type { ComponentType } from "react";
 
+import FleetSafetyMediaDeliveryPipeline from "./case-studies/fleet-safety-media-delivery-pipeline.mdx";
 import CallRecordingArchivePipeline from "./case-studies/call-recording-archive-pipeline.mdx";
 import CorporateAccessLifecycleAutomation from "./case-studies/corporate-access-lifecycle-automation.mdx";
 import InternalHrOperationsPlatform from "./case-studies/internal-hr-operations-platform.mdx";
@@ -30,6 +31,8 @@ const caseStudyComponents: Record<CaseStudySlug, ComponentType> = {
   "call-recording-archive-pipeline": CallRecordingArchivePipeline,
 
   "corporate-access-lifecycle-automation": CorporateAccessLifecycleAutomation,
+
+  "fleet-safety-media-delivery-pipeline": FleetSafetyMediaDeliveryPipeline,
 };
 
 export const caseStudyEntries: CaseStudyEntry[] = CASE_STUDY_SLUGS.map((slug) => ({
