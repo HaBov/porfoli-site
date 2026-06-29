@@ -172,6 +172,9 @@ function validatePortfolioScope(): void {
     "Version 1 must contain exactly four featured projects.",
   );
 
+  console.log(`Skill groups: ${skillGroups.length}`);
+  console.log(`Navigation items: ${navigationItems.length}`);
+
   assertCondition(
     projects.filter((project) => project.tier === 1).length === 4,
     "Version 1 must contain exactly four Tier 1 projects.",
@@ -187,6 +190,8 @@ function validateContent(): void {
   experienceListSchema.parse(experienceEntries);
   projectMetricListSchema.parse(projectMetrics);
   projectListSchema.parse(projects);
+  skillGroupListSchema.parse(skillGroups);
+  navigationListSchema.parse(navigationItems);
 
   assertUnique(
     contactLinks.map((link) => link.id),
@@ -287,6 +292,8 @@ function validateContent(): void {
   validateExperienceTechnologyRelations();
   validateProjectRelations();
   validatePortfolioScope();
+  validateSkillRelations();
+  validateNavigationRelations();
 
   console.log("Content validation passed.");
   console.log(`Profile: ${profile.fullName}`);

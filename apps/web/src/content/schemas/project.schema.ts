@@ -1,11 +1,7 @@
 import { z } from "zod";
 
 import { PUBLICATION_STATUSES } from "../registries/content";
-import {
-  CONFIDENTIALITY_LEVELS,
-  PROJECT_CATEGORIES,
-  PROJECT_STATUSES,
-} from "../registries/project";
+import { PROJECT_CATEGORIES, PROJECT_STATUSES } from "../registries/project";
 import { contentIdSchema, externalUrlSchema, slugSchema, yearMonthSchema } from "./shared.schema";
 
 const projectTierSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]);
