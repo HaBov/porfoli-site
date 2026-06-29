@@ -98,3 +98,7 @@ export type { Technology } from "./schemas/technology.schema";
 
 export type { NavigationItem } from "./schemas/navigation.schema";
 export type { SkillGroup } from "./schemas/skill-group.schema";
+
+export { CASE_STUDY_SLUGS, hasCaseStudy } from "./registries/case-study";
+
+export type { CaseStudySlug } from "./registries/case-study";

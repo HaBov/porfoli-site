@@ -18,6 +18,7 @@ import { navigationItems } from "./data/navigation";
 import { skillGroups } from "./data/skills";
 import { navigationListSchema } from "./schemas/navigation.schema";
 import { skillGroupListSchema } from "./schemas/skill-group.schema";
+import { CASE_STUDY_SLUGS } from "./registries/case-study";
 
 function assertCondition(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -294,6 +295,7 @@ function validateContent(): void {
   validatePortfolioScope();
   validateSkillRelations();
   validateNavigationRelations();
+  validateCaseStudyRelations();
 
   console.log("Content validation passed.");
   console.log(`Profile: ${profile.fullName}`);
@@ -305,6 +307,7 @@ function validateContent(): void {
   console.log(`Project metrics: ${projectMetrics.length}`);
   console.log(`Projects: ${projects.length}`);
   console.log(`Featured projects: ${projects.filter((project) => project.featured).length}`);
+  console.log(`Case studies: ${CASE_STUDY_SLUGS.length}`);
 }
 
 function validateSkillRelations(): void {
@@ -358,6 +361,29 @@ function validateNavigationRelations(): void {
   );
 
   assertCondition(mobileNavigation[0]?.href === "/", "Mobile navigation must begin with Home.");
+}
+
+function validateCaseStudyRelations(): void {
+  for (const slug of CASE_STUDY_SLUGS) {
+    const project = projects.find((candidate) => candidate.slug === slug);
+
+    assertCondition(project !== undefined, `Case study references unknown project slug "${slug}".`);
+
+    assertCondition(
+      project.versionOne,
+      `Case study project "${project.id}" must be included in Version 1.`,
+    );
+
+    assertCondition(
+      project.tier === 1,
+      `Case study project "${project.id}" must be Tier 1 during the flagship case-study phase.`,
+    );
+
+    assertCondition(
+      project.confidentiality.architectureAllowed,
+      `Case study project "${project.id}" does not allow public architecture.`,
+    );
+  }
 }
 
 validateContent();

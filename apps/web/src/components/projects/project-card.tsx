@@ -1,4 +1,5 @@
-import { ExternalLink, LockKeyhole, ServerCog } from "lucide-react";
+import { ExternalLink, LockKeyhole, ServerCog, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import {
   getProjectMetrics,
@@ -7,7 +8,9 @@ import {
   PROJECT_STATUS_LABELS,
   PROJECT_TIER_LABELS,
   type ProjectRecord,
+  hasCaseStudy,
 } from "@/content";
+import { link } from "fs";
 
 type ProjectCardProps = {
   project: ProjectRecord;
@@ -148,19 +151,31 @@ export function ProjectCard({ project }: ProjectCardProps) {
               ))}
             </ul>
           </div>
-
-          {project.liveUrl ? (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="border-line text-primary hover:bg-elevated focus-visible:ring-accent inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none"
-            >
-              Visit live website
-              <ExternalLink aria-hidden="true" className="size-4" />
-            </a>
-          ) : null}
         </div>
+      </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row">
+        {hasCaseStudy(project.slug) ? (
+          <Link
+            href={`/projects/${project.slug}`}
+            className="bg-accent text-background focus-visible:ring-accent inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold focus-visible:ring-2 focus-visible:outline-none"
+          >
+            Read case study
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        ) : null}
+
+        {project.liveUrl ? (
+          <a
+            href={project.liveUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="border-line text-primary hover:bg-elevated focus-visible:ring-accent inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none"
+          >
+            Visit live website
+            <ExternalLink aria-hidden="true" className="size-4" />
+          </a>
+        ) : null}
       </div>
 
       {project.confidentiality.level >= 2 ? (

@@ -1,0 +1,590 @@
+<CaseStudySection
+  id="executive-summary"
+  eyebrow="Overview"
+  title="Executive Summary"
+>
+  <p>
+    The Internal HR Operations Platform is a full-stack business
+    application built to centralize employee-lifecycle workflows
+    that were previously distributed across separate operational
+    processes.
+  </p>
+
+<p>
+  The system covers recruitment, onboarding, employee records, leave, attendance, documents, access
+  operations, audit, reporting, and offboarding. Its current backend contains more than 200 REST API
+  operations across 12 functional modules.
+</p>
+
+  <p>
+    I developed the backend and frontend, translated operational
+    requirements into application workflows, designed the
+    relational data model, implemented authorization and
+    migrations, prepared release smoke tests, and deployed the
+    system for internal company use.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="problem"
+  eyebrow="Business problem"
+  title="Fragmented Employee-Lifecycle Operations"
+>
+  <p>
+    HR and operational activities involved multiple connected
+    processes, but those processes did not share one consistent
+    system of record.
+  </p>
+
+<p>
+  The main problem was not simply missing CRUD screens. The platform needed to represent changing
+  employee states, permission boundaries, documents, approvals, history, and handoffs between
+  operational users.
+</p>
+
+  <p>
+    Without a centralized application, information could become
+    inconsistent, workflow status was harder to verify, and
+    reporting depended on manually combining data from different
+    sources.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="business-context"
+  eyebrow="Users and context"
+  title="An Internal Operational Application"
+>
+  <p>
+    The platform was designed for internal HR and operational
+    users. Exact user counts and internal organizational
+    structures are not included in the public case study.
+  </p>
+
+<p>
+  The application supports workflows that continue over time rather than one-time data entry. A
+  recruitment record may become an employee record, an employee may enter onboarding, request leave,
+  receive documents or access, and later move through an offboarding process.
+</p>
+
+  <p>
+    This made consistency between modules and lifecycle states a
+    central design concern.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="role-contributions"
+  eyebrow="My work"
+  title="Role and Personal Contributions"
+>
+  <p>
+    I worked as the sole human developer responsible for the
+    implementation, with operational stakeholders providing
+    requirements and workflow feedback. AI tools were used as an
+    implementation aid, but architecture decisions, integration,
+    verification, debugging, and deployment remained my
+    responsibility.
+  </p>
+
+<p>My contribution included:</p>
+
+  <ul>
+    <li>
+      Translating operational requirements into entities, states,
+      APIs, and interfaces.
+    </li>
+
+    <li>
+      Structuring the FastAPI backend as functional modules.
+    </li>
+
+    <li>
+      Implementing relational models with SQLAlchemy.
+    </li>
+
+    <li>
+      Creating request and response schemas with Pydantic.
+    </li>
+
+    <li>
+      Implementing authentication and permission-based
+      authorization.
+    </li>
+
+    <li>
+      Building the Next.js and TypeScript frontend.
+    </li>
+
+    <li>
+      Managing database evolution through Alembic.
+    </li>
+
+    <li>
+      Preparing smoke-test scripts for critical workflows.
+    </li>
+
+    <li>
+      Packaging and deploying the application with Docker Compose,
+      Nginx, PostgreSQL, and Redis.
+    </li>
+
+    <li>
+      Investigating integration and deployment failures.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="requirements-constraints"
+  eyebrow="Boundaries"
+  title="Requirements and Constraints"
+>
+  <p>
+    The system needed to support multiple related HR workflows
+    while remaining manageable for a small development context.
+  </p>
+
+<p>Important constraints included:</p>
+
+  <ul>
+    <li>Sensitive employee and document data.</li>
+
+    <li>
+      Permission differences between operational roles.
+    </li>
+
+    <li>
+      Lifecycle transitions that should not be skipped.
+    </li>
+
+    <li>
+      Schema changes while the project was evolving.
+    </li>
+
+    <li>Deployment on a Linux VPS.</li>
+
+    <li>
+      Separate frontend, backend, proxy, and database services.
+    </li>
+
+    <li>
+      The need to validate releases without claiming complete
+      automated test coverage.
+    </li>
+
+    <li>
+      Confidentiality restrictions preventing publication of the
+      original repository and production screenshots.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="architecture"
+  eyebrow="System design"
+  title="System Architecture"
+>
+  <p>
+    The public architecture is intentionally simplified. It shows
+    the main deployment boundaries without exposing internal
+    domains, infrastructure identifiers, or proprietary rules.
+  </p>
+
+  <ArchitectureFlow
+    label="Simplified request and data flow"
+    steps={[
+      {
+        title: "Browser and Next.js interface",
+        description:
+          "Internal users interact with server-rendered and client-side application interfaces built with Next.js and TypeScript.",
+      },
+      {
+        title: "Nginx reverse proxy",
+        description:
+          "Nginx provides the application entry point and routes traffic to the appropriate frontend or backend service.",
+      },
+      {
+        title: "FastAPI modular backend",
+        description:
+          "FastAPI modules handle authentication, permissions, workflow rules, validation, and API responses.",
+      },
+      {
+        title: "SQLAlchemy data layer",
+        description:
+          "SQLAlchemy models and transactional operations represent employee, recruitment, workflow, document, audit, and organization data.",
+      },
+      {
+        title: "PostgreSQL persistence",
+        description:
+          "PostgreSQL stores relational application state, while Alembic controls schema changes.",
+      },
+      {
+        title: "Containerized deployment",
+        description:
+          "Frontend, backend, Nginx, PostgreSQL, and Redis run as five Docker Compose services on Linux infrastructure.",
+      },
+    ]}
+  />
+</CaseStudySection>
+
+<CaseStudySection
+  id="data-model"
+  eyebrow="Persistence"
+  title="Relational Data Model"
+>
+  <p>
+    The backend contains approximately 39 SQLAlchemy model
+    classes. The complete production schema is not public because
+    it reflects internal organization and workflow rules.
+  </p>
+
+<p>Publicly relevant modeling patterns include:</p>
+
+  <ul>
+    <li>
+      Typed relationships between organizations, users,
+      employees, and workflow records.
+    </li>
+
+    <li>
+      Status values representing lifecycle progression.
+    </li>
+
+    <li>
+      Database constraints supporting data consistency.
+    </li>
+
+    <li>Indexes for common lookup paths.</li>
+
+    <li>Timestamp and audit fields.</li>
+
+    <li>History records for important changes.</li>
+
+    <li>
+      Controlled schema evolution through 24 Alembic revisions.
+    </li>
+
+  </ul>
+
+  <p>
+    The portfolio code samples use smaller fictional entities
+    rather than reproduce the employer-owned schema.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="features"
+  eyebrow="Application scope"
+  title="Key Features"
+>
+  <p>The current platform includes:</p>
+
+  <ul>
+    <li>
+      Authentication and permission-based access control.
+    </li>
+
+    <li>Organization and user administration.</li>
+
+    <li>Recruitment and candidate workflows.</li>
+
+    <li>Employee records and lifecycle states.</li>
+
+    <li>Onboarding processes.</li>
+
+    <li>Leave and attendance workflows.</li>
+
+    <li>Document handling.</li>
+
+    <li>Access-related operations.</li>
+
+    <li>Audit history.</li>
+
+    <li>Reporting.</li>
+
+    <li>Offboarding workflows.</li>
+
+    <li>Database migrations and deployment tooling.</li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="technical-decisions"
+  eyebrow="Engineering choices"
+  title="Technical Decisions"
+>
+  <div className="grid gap-6">
+    <TechnicalDecision
+      title="Modular monolith instead of distributed services"
+      context="The platform contained many functional areas, but it was developed and operated within a small team context."
+      optionsConsidered={[
+        "A single unstructured application module",
+        "A modular monolith with explicit functional boundaries",
+        "Multiple independently deployed services",
+      ]}
+      selectedApproach="A FastAPI modular monolith with functional route, schema, service, repository, and model boundaries."
+      reasoning="This kept deployment and cross-module changes manageable while preventing the backend from becoming one undifferentiated codebase."
+      tradeoffs={[
+        "Modules share one deployment lifecycle.",
+        "Database boundaries are logical rather than independently owned.",
+        "Future extraction would require explicit interface work.",
+      ]}
+    />
+
+    <TechnicalDecision
+      title="Permission checks outside route business logic"
+      context="Multiple internal roles needed different access to workflows and records."
+      optionsConsidered={[
+        "Inline role checks inside each endpoint",
+        "Reusable permission-based dependencies",
+      ]}
+      selectedApproach="Reusable FastAPI authorization dependencies combined with permission records."
+      reasoning="Centralized dependencies keep authorization behavior visible and reduce repeated checks inside endpoint handlers."
+      tradeoffs={[
+        "Permission naming must remain consistent across modules.",
+        "Changes require careful review because one permission may affect multiple routes.",
+      ]}
+    />
+
+    <TechnicalDecision
+      title="Versioned schema evolution with Alembic"
+      context="The relational model changed repeatedly as operational requirements became clearer."
+      optionsConsidered={[
+        "Manual production database changes",
+        "Recreating the database after model changes",
+        "Version-controlled forward and reverse migrations",
+      ]}
+      selectedApproach="Alembic migration revisions stored with the application source."
+      reasoning="Versioned migrations make database changes reviewable and repeatable across environments."
+      tradeoffs={[
+        "Migration ordering and downgrade behavior require discipline.",
+        "Large data transformations need separate operational planning.",
+      ]}
+    />
+
+  </div>
+</CaseStudySection>
+
+<CaseStudySection
+  id="selected-code"
+  eyebrow="Technical evidence"
+  title="Selected Code"
+>
+  <p>
+    The original backend and frontend repositories are not
+    published because the system is an internal corporate
+    application.
+  </p>
+
+<p>
+  Separate portfolio samples will independently demonstrate the underlying engineering patterns:
+</p>
+
+  <ul>
+    <li>A permission-based FastAPI dependency.</li>
+
+    <li>
+      An employee lifecycle service with transaction boundaries.
+    </li>
+
+    <li>A typed SQLAlchemy relational model.</li>
+
+    <li>A reversible Alembic workflow migration.</li>
+
+    <li>An API workflow smoke test.</li>
+
+  </ul>
+
+  <p>
+    These samples use fictional entities and do not preserve
+    company-specific endpoint names, permission matrices, database
+    fields, or business rules.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="testing"
+  eyebrow="Release confidence"
+  title="Testing and Validation"
+>
+  <p>
+    The supplied project evidence confirms 17 smoke-test scripts
+    used to validate critical workflows and release behavior.
+  </p>
+
+<p>
+  Validation included operational checks across authentication, permissions, workflow transitions,
+  API responses, migrations, and deployment behavior.
+</p>
+
+  <p>
+    A complete automated Pytest coverage figure is not currently
+    verified, so this case study does not claim full unit or
+    integration test coverage. Improving the automated test suite
+    remains part of the future technical roadmap.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="challenges"
+  eyebrow="Trade-offs"
+  title="Challenges"
+>
+  <p>
+    <strong>Scope growth.</strong> The platform expanded from
+    individual HR needs into multiple connected lifecycle modules.
+    Maintaining shared patterns became more important as the
+    number of routes and entities increased.
+  </p>
+
+<p>
+  <strong>Authorization consistency.</strong> Permission rules needed to remain consistent across
+  related modules without embedding role assumptions directly inside business logic.
+</p>
+
+<p>
+  <strong>Lifecycle transitions.</strong> Employee, recruitment, onboarding, leave, and offboarding
+  records could not be treated as independent CRUD resources. Invalid transitions needed to be
+  prevented.
+</p>
+
+<p>
+  <strong>Schema evolution.</strong> New requirements affected existing relations and constraints,
+  requiring controlled migrations rather than manual database edits.
+</p>
+
+  <p>
+    <strong>Frontend and backend integration.</strong> Changes to
+    API contracts needed to remain synchronized with forms,
+    tables, filters, and application states.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="results"
+  eyebrow="Outcome"
+  title="Results and Impact"
+>
+  <p>
+    The platform was deployed for internal company use and
+    provides a shared application foundation for multiple HR and
+    employee-lifecycle workflows.
+  </p>
+
+<p>Verified technical results include:</p>
+
+  <ul>
+    <li>More than 200 REST API operations.</li>
+
+    <li>12 functional backend modules.</li>
+
+    <li>24 Alembic migration revisions.</li>
+
+    <li>17 release smoke-test scripts.</li>
+
+    <li>
+      A five-container Docker Compose production deployment.
+    </li>
+
+  </ul>
+
+  <p>
+    Exact active-user counts and internal operational data are not
+    currently included in the public portfolio.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="lessons"
+  eyebrow="Reflection"
+  title="Lessons Learned"
+>
+  <p>
+    A business application becomes difficult to maintain when its
+    workflow states and authorization rules are treated as
+    secondary details.
+  </p>
+
+<p>The most important lessons from this project were:</p>
+
+  <ul>
+    <li>
+      Define module boundaries before the route count grows.
+    </li>
+
+    <li>Keep permissions explicit and reusable.</li>
+
+    <li>Treat database migrations as application code.</li>
+
+    <li>
+      Validate complete workflows, not only individual endpoints.
+    </li>
+
+    <li>
+      Document operational constraints while requirements are
+      still changing.
+    </li>
+
+    <li>
+      Separate canonical project facts from the narrative used to
+      explain them.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="future-improvements"
+  eyebrow="Next steps"
+  title="Future Improvements"
+>
+  <p>Planned technical improvements include:</p>
+
+  <ul>
+    <li>
+      Increasing automated unit and integration test coverage.
+    </li>
+
+    <li>
+      Formalizing backup and restore verification.
+    </li>
+
+    <li>
+      Improving deployment observability and uptime monitoring.
+    </li>
+
+    <li>
+      Documenting incident-recovery procedures.
+    </li>
+
+    <li>
+      Adding synthetic public screenshots and architecture assets.
+    </li>
+
+    <li>
+      Reviewing Redis usage and removing infrastructure that is
+      not required by active application behavior.
+    </li>
+
+    <li>
+      Continuing to reduce coupling between large workflow
+      modules.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection id="confidentiality" eyebrow="Publication boundary" title="Confidentiality">
+  <ConfidentialityNote>
+    <p>
+      This case study presents only approved high-level facts, simplified architecture, and
+      generalized engineering decisions. It does not include production source code, employee
+      records, internal hostnames, exact permission matrices, organization structures, credentials,
+      private documents, or production screenshots.
+    </p>
+  </ConfidentialityNote>
+</CaseStudySection>

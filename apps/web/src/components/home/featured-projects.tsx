@@ -6,6 +6,7 @@ import {
   getProjectMetrics,
   getTechnologyById,
   PROJECT_STATUS_LABELS,
+  hasCaseStudy,
 } from "@/content";
 
 function getProjectTechnologyNames(technologyIds: readonly string[]): string[] {
@@ -110,10 +111,15 @@ export function FeaturedProjects() {
 
                 <div className="mt-auto pt-8">
                   <Link
-                    href={`/projects#${project.slug}`}
+                    href={
+                      hasCaseStudy(project.slug)
+                        ? `/projects/${project.slug}`
+                        : `/projects#${project.slug}`
+                    }
                     className="text-accent focus-visible:ring-accent inline-flex items-center gap-2 text-sm font-semibold group-hover:underline focus-visible:ring-2 focus-visible:outline-none"
                   >
-                    Review project
+                    {hasCaseStudy(project.slug) ? "Read case study" : "Review project"}
+
                     <ArrowRight aria-hidden="true" className="size-4" />
                   </Link>
                 </div>
