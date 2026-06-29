@@ -3,6 +3,7 @@ import "server-only";
 import type { ComponentType } from "react";
 
 import InternalHrOperationsPlatform from "./case-studies/internal-hr-operations-platform.mdx";
+import CallRecordingArchivePipeline from "./case-studies/call-recording-archive-pipeline.mdx";
 import { CASE_STUDY_SLUGS, type CaseStudySlug } from "./registries/case-study";
 import { getProjectBySlug, type ProjectRecord } from "./index";
 
@@ -24,6 +25,8 @@ function requireProject(slug: CaseStudySlug): ProjectRecord {
 
 const caseStudyComponents: Record<CaseStudySlug, ComponentType> = {
   "internal-hr-operations-platform": InternalHrOperationsPlatform,
+
+  "call-recording-archive-pipeline": CallRecordingArchivePipeline,
 };
 
 export const caseStudyEntries: CaseStudyEntry[] = CASE_STUDY_SLUGS.map((slug) => ({

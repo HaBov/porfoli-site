@@ -1,4 +1,7 @@
-export const CASE_STUDY_SLUGS = ["internal-hr-operations-platform"] as const;
+export const CASE_STUDY_SLUGS = [
+  "internal-hr-operations-platform",
+  "call-recording-archive-pipeline",
+] as const;
 
 export type CaseStudySlug = (typeof CASE_STUDY_SLUGS)[number];
 

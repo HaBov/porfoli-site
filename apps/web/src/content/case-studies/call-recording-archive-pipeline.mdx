@@ -1,0 +1,632 @@
+<CaseStudySection
+  id="executive-summary"
+  eyebrow="Overview"
+  title="Executive Summary"
+>
+  <p>
+    The Call Recording Archive Pipeline is an operational
+    integration workflow that transfers high-volume call
+    recordings from a communications platform to long-term cloud
+    storage.
+  </p>
+
+<p>
+  The workflow retrieves recording metadata through paginated API requests, applies eligibility
+  rules, prevents duplicate uploads, downloads recording files, stores them in an organized
+  destination structure, and produces operational reports for review.
+</p>
+
+  <p>
+    I implemented the API integration, pagination, token refresh,
+    filtering, batching, retry behavior, rate-limit handling,
+    duplicate detection, storage organization, and reporting
+    logic.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="problem"
+  eyebrow="Business problem"
+  title="Retention Was Shorter Than the Operational Requirement"
+>
+  <p>
+    The source communications platform retained recordings for a
+    limited period, while operational and compliance-related
+    workflows required access to historical files for longer.
+  </p>
+
+<p>
+  Manual exporting was not practical at the required volume. The process involved multiple accounts,
+  paginated API responses, expiring access tokens, download operations, storage organization, and
+  the possibility of interrupted or partially completed runs.
+</p>
+
+  <p>
+    A reliable workflow needed to identify eligible recordings,
+    transfer them safely, avoid creating duplicates, and leave
+    enough reporting information to understand what happened
+    during each run.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="business-context"
+  eyebrow="Users and context"
+  title="An Operational Archive Workflow"
+>
+  <p>
+    The archive supports internal operational,
+    safety-related, and compliance-related users who may need
+    access to historical call recordings after the source
+    platform retention period has ended.
+  </p>
+
+<p>
+  The workflow processes data from multiple configured accounts. Exact account names, telephone
+  numbers, storage folder identifiers, and organizational mappings are excluded from the public case
+  study.
+</p>
+
+  <p>
+    The execution schedule and production host are not presented
+    as verified public facts. The supplied evidence confirms
+    repeated operational runs and generated reports.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="role-contributions"
+  eyebrow="My work"
+  title="Role and Personal Contributions"
+>
+  <p>
+    I developed the integration workflow and handled the main
+    technical concerns involved in moving a large number of files
+    between two external services.
+  </p>
+
+<p>My contribution included:</p>
+
+  <ul>
+    <li>
+      Integrating with RingCentral authentication and recording
+      APIs.
+    </li>
+
+    <li>
+      Refreshing expired OAuth access tokens during long-running
+      processing.
+    </li>
+
+    <li>
+      Iterating through paginated API responses.
+    </li>
+
+    <li>
+      Applying recording eligibility and date-range filters.
+    </li>
+
+    <li>
+      Processing configured accounts in controlled batches.
+    </li>
+
+    <li>
+      Handling API rate limits, cooldown periods, and retries.
+    </li>
+
+    <li>
+      Checking the destination before uploading a recording.
+    </li>
+
+    <li>
+      Downloading and uploading recording files.
+    </li>
+
+    <li>
+      Organizing files and metadata in long-term cloud storage.
+    </li>
+
+    <li>
+      Producing JSON and spreadsheet-compatible operational
+      reports.
+    </li>
+
+    <li>
+      Investigating partial failures through logs and run
+      summaries.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="requirements-constraints"
+  eyebrow="Boundaries"
+  title="Requirements and Constraints"
+>
+  <p>
+    The workflow interacted with two external APIs and needed to
+    remain recoverable when individual files or requests failed.
+  </p>
+
+<p>Important constraints included:</p>
+
+  <ul>
+    <li>
+      Source API pagination and request-rate limitations.
+    </li>
+
+    <li>
+      OAuth access tokens that could expire during processing.
+    </li>
+
+    <li>
+      Large processing cycles that could not be handled as one
+      unbounded operation.
+    </li>
+
+    <li>
+      Duplicate files caused by reruns or previously completed
+      transfers.
+    </li>
+
+    <li>
+      Partial failures where one item should not terminate the
+      entire processing cycle.
+    </li>
+
+    <li>
+      Filenames and metadata containing sensitive operational
+      information.
+    </li>
+
+    <li>
+      The need for reports that distinguish uploaded, existing,
+      skipped, and failed items.
+    </li>
+
+    <li>
+      Confidential credentials and OAuth material that must never
+      appear in public source code.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="architecture"
+  eyebrow="System design"
+  title="System Architecture"
+>
+  <p>
+    The public architecture shows the processing stages without
+    exposing real account names, storage identifiers, credentials,
+    internal paths, or production configuration.
+  </p>
+
+  <ArchitectureFlow
+    label="Simplified archive workflow"
+    steps={[
+      {
+        title: "Configured account input",
+        description:
+          "The job loads a controlled set of fictionalized account configurations and processing boundaries.",
+      },
+      {
+        title: "RingCentral authentication",
+        description:
+          "The integration obtains an access token and refreshes it when authentication expires during processing.",
+      },
+      {
+        title: "Paginated recording retrieval",
+        description:
+          "Recording metadata is fetched page by page rather than loaded through one unbounded request.",
+      },
+      {
+        title: "Eligibility and duplicate checks",
+        description:
+          "The processor applies date and recording rules, then checks whether the destination already contains the item.",
+      },
+      {
+        title: "Download and Google Drive upload",
+        description:
+          "Eligible recordings are downloaded and transferred to an organized long-term storage structure.",
+      },
+      {
+        title: "Run report",
+        description:
+          "The workflow records uploaded, existing, skipped, and failed items for operational review.",
+      },
+    ]}
+  />
+</CaseStudySection>
+
+<CaseStudySection
+  id="data-model"
+  eyebrow="Processing state"
+  title="Data Flow and Processing Records"
+>
+  <p>
+    This project is primarily a data-processing integration
+    rather than a relational business application. Its most
+    important model is the state of each archive item during a
+    processing run.
+  </p>
+
+<p>A generalized archive-item record contains:</p>
+
+  <ul>
+    <li>A synthetic source account reference.</li>
+
+    <li>A synthetic recording identifier.</li>
+
+    <li>The source recording timestamp.</li>
+
+    <li>The expected destination path.</li>
+
+    <li>
+      An eligibility result and optional skip reason.
+    </li>
+
+    <li>
+      A duplicate-check result.
+    </li>
+
+    <li>
+      Download and upload status.
+    </li>
+
+    <li>
+      A retry count and generalized error category.
+    </li>
+
+    <li>
+      A final processing result for the operational report.
+    </li>
+
+  </ul>
+
+  <p>
+    The public portfolio sample will use fictional identifiers,
+    example account names, and synthetic storage paths.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="features"
+  eyebrow="Workflow scope"
+  title="Key Features"
+>
+  <ul>
+    <li>OAuth access-token refresh.</li>
+
+    <li>Paginated recording retrieval.</li>
+
+    <li>Date-range and eligibility filtering.</li>
+
+    <li>Controlled batch processing.</li>
+
+    <li>Bounded concurrent file handling.</li>
+
+    <li>Rate-limit-aware cooldown behavior.</li>
+
+    <li>Retry handling for temporary API failures.</li>
+
+    <li>Destination duplicate pre-checks.</li>
+
+    <li>Recording download and cloud upload.</li>
+
+    <li>Organized destination folder structure.</li>
+
+    <li>Safe filename handling.</li>
+
+    <li>JSON and spreadsheet-compatible reports.</li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="technical-decisions"
+  eyebrow="Engineering choices"
+  title="Technical Decisions"
+>
+  <div className="grid gap-6">
+    <TechnicalDecision
+      title="Page-by-page iteration instead of loading all records"
+      context="The source API returned recording metadata through paginated responses, and processing cycles could contain a large number of items."
+      optionsConsidered={[
+        "Load all pages into memory before processing",
+        "Process one page at a time",
+        "Request one recording at a time without pagination abstraction",
+      ]}
+      selectedApproach="A reusable paginated iterator that yields records page by page."
+      reasoning="Incremental iteration limits memory growth, separates pagination from item processing, and allows the workflow to react to rate limits between requests."
+      tradeoffs={[
+        "Pagination state and continuation tokens require explicit handling.",
+        "Reporting must aggregate results across multiple pages.",
+        "Interrupted runs need a clear restart or reconciliation strategy.",
+      ]}
+    />
+
+    <TechnicalDecision
+      title="Duplicate pre-check before file transfer"
+      context="The workflow could be rerun, and some recordings might already exist in long-term storage."
+      optionsConsidered={[
+        "Always upload and overwrite the destination",
+        "Create a new duplicate file during every run",
+        "Check the destination before downloading and uploading",
+      ]}
+      selectedApproach="Check for an existing destination item before transferring the source file."
+      reasoning="The pre-check reduces unnecessary network work and makes repeated operational runs safer."
+      tradeoffs={[
+        "A remote existence check adds an API request.",
+        "Filename-only matching can be insufficient without a stronger identity strategy.",
+        "Concurrent runs still require additional protection against race conditions.",
+      ]}
+    />
+
+    <TechnicalDecision
+      title="Bounded processing instead of unlimited concurrency"
+      context="Downloading and uploading files concurrently improved throughput, but external services imposed request and resource limits."
+      optionsConsidered={[
+        "Strictly sequential file processing",
+        "Unlimited parallel requests",
+        "A bounded worker pool with cooldown and retry behavior",
+      ]}
+      selectedApproach="A limited amount of concurrent processing combined with retry and cooldown controls."
+      reasoning="Bounded concurrency improves throughput without intentionally overwhelming either external service or the execution environment."
+      tradeoffs={[
+        "The optimal worker count depends on API behavior and available resources.",
+        "Concurrent logs and reports require thread-safe aggregation.",
+        "Rate limits may still require reducing concurrency dynamically.",
+      ]}
+    />
+
+  </div>
+</CaseStudySection>
+
+<CaseStudySection
+  id="selected-code"
+  eyebrow="Technical evidence"
+  title="Selected Code"
+>
+  <p>
+    The original integration source is not published because it
+    contained employer-owned logic, production configuration,
+    account information, and credential material.
+  </p>
+
+<p>
+  Independently rewritten portfolio samples will demonstrate two core patterns from this project:
+</p>
+
+  <ul>
+    <li>
+      A paginated external API iterator with typed responses,
+      token refresh, rate-limit handling, and retry behavior.
+    </li>
+
+    <li>
+      An idempotent archive-item processor that checks the
+      destination, transfers a file, records the result, and
+      handles cleanup after failures.
+    </li>
+
+  </ul>
+
+  <p>
+    The samples will use fictional services, synthetic IDs,
+    example.com addresses, and new tests rather than adapted
+    production source files.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="testing"
+  eyebrow="Release confidence"
+  title="Testing and Validation"
+>
+  <p>
+    The supplied evidence confirms repeated operational runs,
+    generated logs, and archive reports. It does not establish a
+    complete automated unit or integration test suite.
+  </p>
+
+<p>Operational validation included:</p>
+
+  <ul>
+    <li>Reviewing paginated retrieval results.</li>
+
+    <li>
+      Comparing eligible, uploaded, already-existing, skipped,
+      and failed item counts.
+    </li>
+
+    <li>
+      Verifying that selected destination files existed.
+    </li>
+
+    <li>
+      Investigating authentication and rate-limit failures.
+    </li>
+
+    <li>
+      Re-running incomplete processing without intentionally
+      duplicating completed items.
+    </li>
+
+    <li>
+      Reviewing JSON and spreadsheet-compatible reports after a
+      run.
+    </li>
+
+  </ul>
+
+  <p>
+    The public rewritten samples will add automated scenarios for
+    successful pagination, expired tokens, rate limits, malformed
+    responses, duplicate items, and failed uploads.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="challenges"
+  eyebrow="Trade-offs"
+  title="Challenges"
+>
+  <p>
+    <strong>Authentication during long runs.</strong> An access
+    token could expire after processing had already started. The
+    integration needed to refresh authentication and retry the
+    interrupted operation safely.
+  </p>
+
+<p>
+  <strong>API rate limits.</strong> Processing volume made request pacing important. Temporary
+  limits needed cooldown and retry behavior rather than immediate permanent failure.
+</p>
+
+<p>
+  <strong>Partial failure.</strong> A failed file should be recorded without discarding the
+  successful work already completed during the same cycle.
+</p>
+
+<p>
+  <strong>Duplicate prevention.</strong> Repeated runs needed to recognize previously archived files
+  and avoid unnecessary transfers.
+</p>
+
+<p>
+  <strong>Filename safety.</strong> Source metadata could contain characters or information
+  unsuitable for a destination filename.
+</p>
+
+  <p>
+    <strong>Sensitive metadata.</strong> Logs and reports could
+    contain telephone numbers, call identifiers, account
+    identifiers, and storage references. Public examples require
+    complete replacement rather than visual redaction alone.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="results"
+  eyebrow="Outcome"
+  title="Results and Impact"
+>
+  <p>
+    The workflow created an operational path for moving eligible
+    call recordings from short-term source retention into
+    long-term cloud storage.
+  </p>
+
+<p>
+  The approved project metrics displayed in the page header summarize the approximate processing
+  range and the extended retention outcome. These values remain approximate rather than exact
+  capacity guarantees.
+</p>
+
+  <p>
+    Operational reports provided visibility into which recordings
+    were uploaded, already existed, were skipped, or failed during
+    processing.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="lessons"
+  eyebrow="Reflection"
+  title="Lessons Learned"
+>
+  <ul>
+    <li>
+      External API iteration should be isolated from business
+      processing logic.
+    </li>
+
+    <li>
+      Retry behavior must distinguish temporary failures from
+      permanent validation problems.
+    </li>
+
+    <li>
+      Idempotency is necessary for operational workflows that may
+      be rerun.
+    </li>
+
+    <li>
+      Bounded concurrency is safer than treating parallelism as an
+      unlimited performance improvement.
+    </li>
+
+    <li>
+      A run report is part of the product, not only a debugging
+      artifact.
+    </li>
+
+    <li>
+      Credentials and sensitive identifiers require a review
+      process before code or logs leave the production
+      environment.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="future-improvements"
+  eyebrow="Next steps"
+  title="Future Improvements"
+>
+  <ul>
+    <li>
+      Introduce a persistent job ledger with explicit item states.
+    </li>
+
+    <li>
+      Use a stronger idempotency key than destination filename
+      matching alone.
+    </li>
+
+    <li>
+      Add structured metrics for throughput, retries, failures,
+      and processing duration.
+    </li>
+
+    <li>
+      Add automated unit tests for pagination, token refresh,
+      filtering, and report aggregation.
+    </li>
+
+    <li>
+      Add integration tests using mocked external services.
+    </li>
+
+    <li>
+      Centralize secret loading and verify that credentials cannot
+      enter logs or generated reports.
+    </li>
+
+    <li>
+      Define explicit restart and reconciliation behavior for
+      interrupted cycles.
+    </li>
+
+    <li>
+      Separate API clients, processing services, storage adapters,
+      and reporting modules more clearly.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection id="confidentiality" eyebrow="Publication boundary" title="Confidentiality">
+  <ConfidentialityNote>
+    <p>
+      This case study does not expose production credentials, OAuth tokens, telephone numbers,
+      account identifiers, recording identifiers, folder identifiers, internal paths, operational
+      logs, or original reports. Architecture is generalized, report examples are synthetic, and
+      code samples are independently rewritten.
+    </p>
+  </ConfidentialityNote>
+</CaseStudySection>
