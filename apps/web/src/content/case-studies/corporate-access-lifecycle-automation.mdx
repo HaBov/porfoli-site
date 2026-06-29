@@ -1,0 +1,614 @@
+<CaseStudySection
+  id="executive-summary"
+  eyebrow="Overview"
+  title="Executive Summary"
+>
+  <p>
+    Corporate Access Lifecycle Automation is an internal workflow
+    for managing employee access across a large number of
+    corporate communication groups.
+  </p>
+
+<p>
+  The system connects employee lifecycle events with group membership operations. It helps identify
+  which access should be granted, retained, reviewed, or removed when an employee joins, changes
+  responsibilities, becomes inactive, or leaves the organization.
+</p>
+
+  <p>
+    I designed and implemented the automation logic, Telegram API
+    integration, batch processing, membership checks, rate-limit
+    handling, operation reporting, and failure investigation.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="problem"
+  eyebrow="Business problem"
+  title="Access Was Distributed Across Too Many Groups"
+>
+  <p>
+    Corporate communication was distributed across a large
+    collection of groups used by different teams, departments,
+    operations, and responsibilities.
+  </p>
+
+<p>
+  Managing access manually created several risks. New employees could miss required groups,
+  transferred employees could retain access that was no longer relevant, and former employees could
+  remain in groups after their operational relationship ended.
+</p>
+
+  <p>
+    The challenge was not only adding or removing one user. The
+    workflow needed to compare expected access with actual
+    membership across approximately 1,500 groups while respecting
+    external API limits and partial failures.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="business-context"
+  eyebrow="Users and context"
+  title="An Internal Access-Control Workflow"
+>
+  <p>
+    The automation supports internal operational and
+    administrative users responsible for maintaining communication
+    access.
+  </p>
+
+<p>
+  Access requirements can change throughout the employee lifecycle. A person may need an initial set
+  of groups during onboarding, a different set after a role or department change, and removal from
+  relevant groups during offboarding.
+</p>
+
+  <p>
+    Exact employee identities, group names, department mappings,
+    administrative accounts, and internal policies are not
+    included in the public case study.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="role-contributions"
+  eyebrow="My work"
+  title="Role and Personal Contributions"
+>
+  <p>
+    I developed the automation workflow and translated operational
+    access requirements into repeatable membership operations.
+  </p>
+
+<p>My contribution included:</p>
+
+  <ul>
+    <li>
+      Analyzing the existing group-access process.
+    </li>
+
+    <li>
+      Representing employee lifecycle states and expected access.
+    </li>
+
+    <li>
+      Integrating with the Telegram Bot API.
+    </li>
+
+    <li>
+      Retrieving and comparing group membership information.
+    </li>
+
+    <li>
+      Processing group operations in controlled batches.
+    </li>
+
+    <li>
+      Handling API rate limits and temporary failures.
+    </li>
+
+    <li>
+      Separating planned operations from applied operations.
+    </li>
+
+    <li>
+      Recording successful, skipped, and failed actions.
+    </li>
+
+    <li>
+      Supporting onboarding, access review, and offboarding
+      scenarios.
+    </li>
+
+    <li>
+      Investigating mismatches between expected and actual access.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="requirements-constraints"
+  eyebrow="Boundaries"
+  title="Requirements and Constraints"
+>
+  <p>
+    Access automation affects real users and communication spaces,
+    so incorrect operations could disrupt work or expose internal
+    information.
+  </p>
+
+<p>Important constraints included:</p>
+
+  <ul>
+    <li>
+      Approximately 1,500 corporate groups with different access
+      purposes.
+    </li>
+
+    <li>
+      External API request and rate-limit restrictions.
+    </li>
+
+    <li>
+      Users represented by identifiers that may change or be
+      missing.
+    </li>
+
+    <li>
+      Groups where the automation account may not have sufficient
+      administrative permissions.
+    </li>
+
+    <li>
+      Partial failures that should not invalidate an entire batch.
+    </li>
+
+    <li>
+      Lifecycle changes that may require both additions and
+      removals.
+    </li>
+
+    <li>
+      The need to review high-impact operations before applying
+      them.
+    </li>
+
+    <li>
+      Sensitive employee identities and private group metadata.
+    </li>
+
+    <li>
+      The requirement to preserve an operational record of
+      completed actions.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="architecture"
+  eyebrow="System design"
+  title="System Architecture"
+>
+  <p>
+    The public architecture describes the workflow using fictional
+    employee records and generalized group categories.
+  </p>
+
+  <ArchitectureFlow
+    label="Simplified access lifecycle workflow"
+    steps={[
+      {
+        title: "Employee lifecycle input",
+        description:
+          "The workflow receives a fictional employee state such as onboarding, role change, access review, or offboarding.",
+      },
+      {
+        title: "Expected access calculation",
+        description:
+          "Internal rules determine the generalized group categories that should be associated with the employee state.",
+      },
+      {
+        title: "Current membership retrieval",
+        description:
+          "The integration retrieves available membership information from Telegram within the permissions of the automation account.",
+      },
+      {
+        title: "Access reconciliation",
+        description:
+          "Expected membership is compared with current membership to produce planned additions, removals, and review items.",
+      },
+      {
+        title: "Controlled operation execution",
+        description:
+          "Approved operations are applied in bounded batches with cooldown and retry handling.",
+      },
+      {
+        title: "Audit-style result report",
+        description:
+          "Successful, skipped, restricted, and failed operations are recorded for operational review.",
+      },
+    ]}
+  />
+</CaseStudySection>
+
+<CaseStudySection
+  id="data-model"
+  eyebrow="Processing state"
+  title="Access Operation Model"
+>
+  <p>
+    The public representation uses a simplified access-operation
+    model rather than the real employee and group structures.
+  </p>
+
+<p>A generalized operation contains:</p>
+
+  <ul>
+    <li>A synthetic employee identifier.</li>
+
+    <li>A lifecycle event type.</li>
+
+    <li>A synthetic group identifier.</li>
+
+    <li>An expected membership state.</li>
+
+    <li>An observed membership state.</li>
+
+    <li>A planned action such as add, remove, retain, or review.</li>
+
+    <li>An approval or execution state.</li>
+
+    <li>An attempt count.</li>
+
+    <li>A generalized failure category.</li>
+
+    <li>A completion timestamp.</li>
+
+  </ul>
+
+  <p>
+    This structure separates the decision about what should happen
+    from the external API call that attempts to apply it.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="features"
+  eyebrow="Workflow scope"
+  title="Key Features"
+>
+  <ul>
+    <li>Employee lifecycle-based access processing.</li>
+
+    <li>Expected-versus-current membership comparison.</li>
+
+    <li>Controlled group additions and removals.</li>
+
+    <li>Batch processing across large group inventories.</li>
+
+    <li>Rate-limit-aware execution.</li>
+
+    <li>Retry handling for temporary failures.</li>
+
+    <li>Permission and administrative-access checks.</li>
+
+    <li>Skipped-operation reasons.</li>
+
+    <li>Dry-run or review-oriented operation planning.</li>
+
+    <li>Operational result reporting.</li>
+
+    <li>Support for onboarding and offboarding workflows.</li>
+
+    <li>Mismatch investigation between expected and actual access.</li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="technical-decisions"
+  eyebrow="Engineering choices"
+  title="Technical Decisions"
+>
+  <div className="grid gap-6">
+    <TechnicalDecision
+      title="Reconciliation instead of isolated add and remove commands"
+      context="Employee access could change over time, and isolated commands did not provide a reliable view of whether actual membership matched the intended state."
+      optionsConsidered={[
+        "Run individual add or remove commands manually",
+        "Apply predefined group lists without checking current state",
+        "Compare expected access with observed membership before planning operations",
+      ]}
+      selectedApproach="A reconciliation workflow that calculates the difference between expected and actual access."
+      reasoning="Reconciliation makes missing access, unnecessary access, and already-correct access visible before external operations are applied."
+      tradeoffs={[
+        "Current membership data may be incomplete when API permissions are limited.",
+        "Expected-access rules must remain synchronized with operational policy.",
+        "Large comparisons require efficient batching and reporting.",
+      ]}
+    />
+
+    <TechnicalDecision
+      title="Separate operation planning from operation execution"
+      context="An incorrect access removal could affect active operational communication."
+      optionsConsidered={[
+        "Apply API operations immediately after calculating access",
+        "Produce an operation plan before applying changes",
+      ]}
+      selectedApproach="Create explicit planned operations and execute only approved or eligible actions."
+      reasoning="Separating planning from execution creates a review boundary and makes high-impact changes easier to inspect."
+      tradeoffs={[
+        "The workflow contains additional states.",
+        "Plans can become stale when membership changes before execution.",
+        "Review adds time to urgent access changes.",
+      ]}
+    />
+
+    <TechnicalDecision
+      title="Bounded batches with rate-limit handling"
+      context="The workflow needed to process a large group inventory through an external API with request limits."
+      optionsConsidered={[
+        "Send all operations concurrently",
+        "Process every operation strictly one at a time",
+        "Use bounded batches with cooldown and retry behavior",
+      ]}
+      selectedApproach="Controlled batches with limited concurrency, retry rules, and cooldown periods."
+      reasoning="This approach balances processing time with external API stability and makes failures easier to isolate."
+      tradeoffs={[
+        "Batch size requires operational tuning.",
+        "Temporary failures can extend total processing time.",
+        "Concurrent result aggregation requires consistent state handling.",
+      ]}
+    />
+
+  </div>
+</CaseStudySection>
+
+<CaseStudySection
+  id="selected-code"
+  eyebrow="Technical evidence"
+  title="Selected Code"
+>
+  <p>
+    The original automation source and production configuration
+    are not public because they contain employer-owned access
+    rules, group mappings, administrative identifiers, and
+    operational data.
+  </p>
+
+<p>Independently rewritten portfolio samples will demonstrate:</p>
+
+  <ul>
+    <li>
+      An access reconciliation service that compares expected and
+      observed memberships.
+    </li>
+
+    <li>
+      A typed operation model for add, remove, retain, and review
+      actions.
+    </li>
+
+    <li>
+      A rate-limit-aware Telegram operation executor.
+    </li>
+
+    <li>
+      A batch result aggregator with success, skip, restriction,
+      and failure states.
+    </li>
+
+    <li>
+      Tests using fictional users and groups.
+    </li>
+
+  </ul>
+
+  <p>
+    The public samples will not contain copied production group
+    names, employee identifiers, access rules, credentials, or
+    administrative account details.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="testing"
+  eyebrow="Release confidence"
+  title="Testing and Validation"
+>
+  <p>
+    The project was validated through controlled operational runs,
+    membership comparisons, logs, and result review.
+  </p>
+
+<p>Validation scenarios included:</p>
+
+  <ul>
+    <li>A user already present in an expected group.</li>
+
+    <li>A user missing from an expected group.</li>
+
+    <li>A user present in a group that should be reviewed.</li>
+
+    <li>An unavailable or invalid user identifier.</li>
+
+    <li>A group where administrative permissions are insufficient.</li>
+
+    <li>A temporary API or rate-limit failure.</li>
+
+    <li>A partially completed batch.</li>
+
+    <li>An operation that can be safely retried.</li>
+
+  </ul>
+
+  <p>
+    A complete automated test-coverage figure is not currently
+    verified, so the case study does not claim full unit or
+    integration coverage.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="challenges"
+  eyebrow="Trade-offs"
+  title="Challenges"
+>
+  <p>
+    <strong>Large access surface.</strong> Approximately 1,500
+    groups created a large comparison and operation space. The
+    workflow needed batching and clear summaries rather than
+    unstructured per-group output.
+  </p>
+
+<p>
+  <strong>External permissions.</strong> The automation could only perform actions allowed by its
+  administrative access in each group.
+</p>
+
+<p>
+  <strong>Identity resolution.</strong> Employee records and Telegram identities could not always be
+  matched through one stable field.
+</p>
+
+<p>
+  <strong>Rate limits.</strong> High-volume membership operations needed controlled execution and
+  cooldown behavior.
+</p>
+
+<p>
+  <strong>Partial failure.</strong> One inaccessible group or invalid user should not discard the
+  successfully completed operations in the same batch.
+</p>
+
+  <p>
+    <strong>High-impact removals.</strong> Removing the wrong user
+    from operational groups could interrupt work, so planning,
+    review, and reporting were important safeguards.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="results"
+  eyebrow="Outcome"
+  title="Results and Impact"
+>
+  <p>
+    The automation established a repeatable process for reviewing
+    and applying employee access changes across approximately
+    1,500 corporate groups.
+  </p>
+
+<p>
+  It reduced dependence on manually checking groups one by one and created a clearer distinction
+  between expected access, observed membership, planned actions, and completed actions.
+</p>
+
+  <p>
+    Exact employee counts, operation totals, and internal
+    organizational mappings are not included because they are not
+    approved for public publication.
+  </p>
+</CaseStudySection>
+
+<CaseStudySection
+  id="lessons"
+  eyebrow="Reflection"
+  title="Lessons Learned"
+>
+  <ul>
+    <li>
+      Access management is a state-reconciliation problem, not
+      only a collection of API commands.
+    </li>
+
+    <li>
+      Planning and execution should be separated for high-impact
+      operations.
+    </li>
+
+    <li>
+      External administrative permissions must be treated as part
+      of the application state.
+    </li>
+
+    <li>
+      Partial failure needs an explicit result model.
+    </li>
+
+    <li>
+      Rate-limit handling should be built into the operation
+      executor rather than added after failures appear.
+    </li>
+
+    <li>
+      Operational reports should distinguish no-op, skipped,
+      restricted, successful, and failed actions.
+    </li>
+
+    <li>
+      Public access-control examples require complete fictional
+      identities and group structures.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection
+  id="future-improvements"
+  eyebrow="Next steps"
+  title="Future Improvements"
+>
+  <ul>
+    <li>
+      Add a persistent operation ledger and reconciliation history.
+    </li>
+
+    <li>
+      Introduce explicit approval workflows for high-impact
+      removals.
+    </li>
+
+    <li>
+      Improve identity matching through verified mapping records.
+    </li>
+
+    <li>
+      Add automated unit tests for reconciliation decisions.
+    </li>
+
+    <li>
+      Add mocked integration tests for API restrictions and rate
+      limits.
+    </li>
+
+    <li>
+      Add structured monitoring for operation throughput,
+      failures, and retry volume.
+    </li>
+
+    <li>
+      Add restart-safe processing for interrupted batches.
+    </li>
+
+    <li>
+      Version access-policy rules so historical decisions can be
+      explained.
+    </li>
+
+  </ul>
+</CaseStudySection>
+
+<CaseStudySection id="confidentiality" eyebrow="Publication boundary" title="Confidentiality">
+  <ConfidentialityNote>
+    <p>
+      This case study does not expose employee identities, real Telegram usernames, telephone
+      numbers, group names, group identifiers, administrative accounts, access-policy mappings,
+      credentials, operational logs, or production configuration. Public examples use synthetic
+      users, fictional groups, generalized lifecycle rules, and independently rewritten code.
+    </p>
+  </ConfidentialityNote>
+</CaseStudySection>
