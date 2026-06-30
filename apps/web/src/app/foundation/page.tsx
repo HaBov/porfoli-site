@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AccessibilityPreview } from "@/components/foundation/accessibility-preview";
 import { Eyebrow, Heading, LeadText } from "@/components/typography/typography";
-import { CodeBlock } from "@/components/code/code-block";
 
 export const metadata: Metadata = {
   title: "Foundation Preview",
@@ -266,42 +265,6 @@ export default function FoundationPage() {
         </PageContainer>
       </Section>
       <AccessibilityPreview />
-
-      <section className="mx-auto w-full max-w-5xl px-5 py-16 sm:px-8 lg:px-10">
-        <h2 className="text-foreground text-3xl font-semibold">
-          Code block verification
-        </h2>
-
-        <p className="text-secondary mt-4 leading-8">
-          Temporary rendering check for syntax
-          highlighting, line numbers, highlighted
-          lines, horizontal scrolling, and copy
-          behavior.
-        </p>
-
-        <CodeBlock
-          filename="app/api/dependencies/permissions.py"
-          language="python"
-          highlightLines={[8, 9, 10, 11]}
-          caption="Temporary visual test. This block will be removed after the code sample pages are connected."
-          code={`from typing import Annotated
-
-      from fastapi import Depends, HTTPException, status
-
-
-      async def require_permission(
-          actor: Annotated[User, Depends(get_current_user)],
-      ) -> User:
-          if "employees.create" not in actor.permissions:
-              raise HTTPException(
-                  status_code=status.HTTP_403_FORBIDDEN,
-                  detail="Permission denied",
-              )
-
-          return actor`}
-        />
-      </section>
     </main>
-
   );
 }
