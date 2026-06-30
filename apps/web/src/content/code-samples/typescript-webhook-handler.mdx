@@ -1,0 +1,361 @@
+import {
+  typescriptWebhookHandlerCode,
+  typescriptWebhookMigrationCode,
+  typescriptWebhookTestCode,
+} from "../code-snippets/typescript-webhook-handler";
+
+<CodeSampleSection
+  id="context"
+  eyebrow="Webhook boundary"
+  title="Context"
+>
+  <p>
+    A Telegram bot receives externally controlled JSON
+    through a public webhook. The application must
+    authenticate the sender, validate the update shape,
+    prevent duplicate processing, and dispatch supported
+    events without keeping the request open unnecessarily.
+  </p>
+
+  <p>
+    This example uses Hono, Zod, Cloudflare Workers, and
+    D1 to create a small but explicit webhook boundary.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="problem"
+  eyebrow="External input"
+  title="Problem"
+>
+  <p>
+    Webhook payloads cannot be trusted simply because
+    they appear to come from an expected integration.
+  </p>
+
+  <ul>
+    <li>
+      Requests may contain an invalid or missing secret.
+    </li>
+
+    <li>
+      JSON may be malformed or use an unsupported update
+      type.
+    </li>
+
+    <li>
+      Providers may retry the same event more than once.
+    </li>
+
+    <li>
+      Slow processing may cause additional webhook
+      retries.
+    </li>
+
+    <li>
+      Logging complete payloads can expose personal
+      information.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="code"
+  eyebrow="Implementation"
+  title="Code"
+>
+  <CodeBlock
+    filename="src/routes/telegram-webhook.ts"
+    language="typescript"
+    code={typescriptWebhookHandlerCode}
+    highlightLines={[
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+    ]}
+    caption="The route authenticates, parses, validates, persists, deduplicates, and dispatches the update through explicit boundaries."
+  />
+
+  <CodeBlock
+    filename="migrations/0001_webhook_updates.sql"
+    language="sql"
+    code={typescriptWebhookMigrationCode}
+    caption="The external update ID is the primary key, making duplicate delivery safe at the database boundary."
+  />
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="how-it-works"
+  eyebrow="Request lifecycle"
+  title="How It Works"
+>
+  <ol>
+    <li>
+      The route compares the webhook secret from the
+      request header with the Worker secret binding.
+    </li>
+
+    <li>
+      The body is parsed as unknown JSON.
+    </li>
+
+    <li>
+      Zod validates the common update fields and at least
+      one supported event type.
+    </li>
+
+    <li>
+      D1 attempts to insert the provider update ID.
+    </li>
+
+    <li>
+      A duplicate update receives a successful
+      acknowledgement without dispatch.
+    </li>
+
+    <li>
+      A new update is dispatched through
+      <code>waitUntil</code>.
+    </li>
+
+    <li>
+      The route immediately returns
+      <code>202 Accepted</code>.
+    </li>
+  </ol>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="design-principles"
+  eyebrow="Engineering choices"
+  title="Design Principles"
+>
+  <ul>
+    <li>
+      <strong>Unknown at the boundary:</strong> external
+      JSON is not typed until validation succeeds.
+    </li>
+
+    <li>
+      <strong>Idempotent persistence:</strong> database
+      uniqueness protects against repeated delivery.
+    </li>
+
+    <li>
+      <strong>Small public response:</strong> the webhook
+      exposes stable result codes, not internal errors.
+    </li>
+
+    <li>
+      <strong>Dependency injection:</strong> persistence
+      and dispatch behavior can be replaced in tests.
+    </li>
+
+    <li>
+      <strong>Minimal stored data:</strong> only technical
+      event metadata is persisted by default.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="error-handling"
+  eyebrow="Safe responses"
+  title="Error Handling"
+>
+  <p>
+    Invalid authentication returns 403 before JSON
+    processing. Malformed JSON and unsupported payloads
+    return separate 400 codes.
+  </p>
+
+  <p>
+    Duplicate events are not treated as failures because
+    webhook redelivery is expected behavior.
+  </p>
+
+  <p>
+    Dispatch errors are recorded with the provider update
+    ID and a sanitized error message. The full incoming
+    payload and secret are not logged.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="testing"
+  eyebrow="Validation"
+  title="Testing"
+>
+  <CodeBlock
+    filename="src/routes/telegram-webhook.test.ts"
+    language="typescript"
+    code={typescriptWebhookTestCode}
+    highlightLines={[
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+    ]}
+    caption="Dependency injection allows request behavior to be tested without a real Telegram endpoint or D1 database."
+  />
+
+  <p>
+    A complete test suite should also cover malformed
+    JSON, unsupported update types, a successful insert,
+    D1 failure, and dispatch failure.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="trade-offs"
+  eyebrow="Limits"
+  title="Trade-offs"
+>
+  <p>
+    Returning before dispatch completes keeps webhook
+    latency low, but the provider has already received a
+    successful acknowledgement if background processing
+    later fails.
+  </p>
+
+  <p>
+    Persisting the event before dispatch makes recovery
+    possible. A scheduled reconciliation process can
+    retry records that remain accepted but unprocessed.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="production-considerations"
+  eyebrow="Operational readiness"
+  title="Production Considerations"
+>
+  <ul>
+    <li>
+      Store the webhook secret as an encrypted Worker
+      secret, not in source control.
+    </li>
+
+    <li>
+      Add a retention policy for processed webhook
+      records.
+    </li>
+
+    <li>
+      Reconcile accepted records that never reach a final
+      status.
+    </li>
+
+    <li>
+      Add rate limiting for requests that fail secret
+      validation.
+    </li>
+
+    <li>
+      Keep Telegram user content out of general
+      application logs.
+    </li>
+
+    <li>
+      Monitor invalid payload rate and dispatch failure
+      rate.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="confidentiality"
+  eyebrow="Publication boundary"
+  title="Confidentiality"
+>
+  <ConfidentialityNote>
+    <p>
+      This sample was written independently using
+      synthetic users, generic callback actions, and a
+      minimal database schema.
+    </p>
+
+    <p>
+      It does not contain a real bot token, webhook
+      secret, chat identifier, employee profile, internal
+      group structure, or copied company bot source code.
+    </p>
+  </ConfidentialityNote>
+</CodeSampleSection>

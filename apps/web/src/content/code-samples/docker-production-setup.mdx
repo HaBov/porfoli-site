@@ -1,0 +1,397 @@
+import {
+  productionComposeCode,
+  productionDockerfileCode,
+  productionNginxCode,
+  productionSmokeTestCode,
+} from "../code-snippets/docker-production-setup";
+
+<CodeSampleSection
+  id="context"
+  eyebrow="Infrastructure"
+  title="Context"
+>
+  <p>
+    A backend application typically depends on more than
+    its API process. A production deployment may also
+    require PostgreSQL, Redis, a reverse proxy, persistent
+    volumes, health checks, and controlled network
+    exposure.
+  </p>
+
+  <p>
+    This example demonstrates a small production-oriented
+    Docker stack for a FastAPI service.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="problem"
+  eyebrow="Deployment boundary"
+  title="Problem"
+>
+  <p>
+    A development Compose file often publishes every
+    service port, runs containers as root, writes anywhere
+    in the filesystem, and starts services without
+    checking readiness.
+  </p>
+
+  <ul>
+    <li>
+      Databases should not be directly exposed.
+    </li>
+
+    <li>
+      The application should not run as root.
+    </li>
+
+    <li>
+      Dependency startup order should use health status,
+      not only container creation.
+    </li>
+
+    <li>
+      Runtime filesystems should be restricted where
+      practical.
+    </li>
+
+    <li>
+      Configuration and secrets should remain outside the
+      image.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="code"
+  eyebrow="Implementation"
+  title="Code"
+>
+  <CodeBlock
+    filename="Dockerfile"
+    language="dockerfile"
+    code={productionDockerfileCode}
+    highlightLines={[
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+    ]}
+    caption="The multi-stage image installs dependencies separately and runs the application as a non-root user."
+  />
+
+  <CodeBlock
+    filename="compose.production.yaml"
+    language="yaml"
+    code={productionComposeCode}
+    highlightLines={[
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+    ]}
+    caption="Only Nginx publishes a host port; PostgreSQL and Redis remain on an internal network."
+  />
+
+  <CodeBlock
+    filename="deploy/nginx.conf"
+    language="nginx"
+    code={productionNginxCode}
+    caption="Nginx forwards trusted proxy headers and provides a separate proxy health endpoint."
+  />
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="how-it-works"
+  eyebrow="Startup flow"
+  title="How It Works"
+>
+  <ol>
+    <li>
+      The builder stage creates a virtual environment and
+      installs pinned dependencies.
+    </li>
+
+    <li>
+      The runtime image copies only the installed
+      environment and application files.
+    </li>
+
+    <li>
+      PostgreSQL and Redis start on the internal network.
+    </li>
+
+    <li>
+      The API starts only after both dependencies report
+      healthy.
+    </li>
+
+    <li>
+      Nginx starts only after the API readiness check
+      succeeds.
+    </li>
+
+    <li>
+      External traffic reaches Nginx, while internal
+      service ports remain unpublished.
+    </li>
+  </ol>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="design-principles"
+  eyebrow="Engineering choices"
+  title="Design Principles"
+>
+  <ul>
+    <li>
+      <strong>Least exposure:</strong> only the reverse
+      proxy publishes a host port.
+    </li>
+
+    <li>
+      <strong>Non-root runtime:</strong> the application
+      process uses a dedicated system user.
+    </li>
+
+    <li>
+      <strong>Immutable runtime:</strong> application
+      containers use a read-only filesystem with limited
+      temporary storage.
+    </li>
+
+    <li>
+      <strong>Health-aware startup:</strong> dependencies
+      are checked for readiness before traffic is routed.
+    </li>
+
+    <li>
+      <strong>Persistent state:</strong> database and
+      Redis data use named volumes.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="error-handling"
+  eyebrow="Failure behavior"
+  title="Error Handling"
+>
+  <p>
+    A failed readiness check prevents Nginx from routing
+    traffic to an application that cannot reach its
+    dependencies.
+  </p>
+
+  <p>
+    Restart policies recover ordinary process failures,
+    but they do not replace alerting or investigation of
+    repeated crashes.
+  </p>
+
+  <p>
+    Deployment automation should preserve container logs
+    and inspect health status before replacing a previous
+    healthy release.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="testing"
+  eyebrow="Validation"
+  title="Testing"
+>
+  <CodeBlock
+    filename="scripts/smoke-production.sh"
+    language="bash"
+    code={productionSmokeTestCode}
+    highlightLines={[
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+    ]}
+    caption="The smoke script validates Compose syntax, starts the stack, checks readiness, and prints diagnostics on failure."
+  />
+
+  <p>
+    CI should also build the image without cache, scan it
+    for known vulnerabilities, verify the non-root user,
+    and confirm that PostgreSQL and Redis ports are not
+    published.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="trade-offs"
+  eyebrow="Limits"
+  title="Trade-offs"
+>
+  <p>
+    Docker Compose is appropriate for a controlled
+    single-server deployment, but it does not provide
+    multi-node scheduling or automatic high availability.
+  </p>
+
+  <p>
+    A read-only filesystem improves containment but
+    requires every writable application path to be
+    identified explicitly.
+  </p>
+
+  <p>
+    Health-based dependency ordering improves startup but
+    does not guarantee that a dependency remains healthy
+    after the application has started.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="production-considerations"
+  eyebrow="Operational readiness"
+  title="Production Considerations"
+>
+  <ul>
+    <li>
+      Keep <code>.env.production</code> outside Git and
+      restrict its filesystem permissions.
+    </li>
+
+    <li>
+      Terminate HTTPS through Nginx or a trusted upstream
+      load balancer.
+    </li>
+
+    <li>
+      Back up PostgreSQL independently from the container
+      lifecycle.
+    </li>
+
+    <li>
+      Set CPU and memory limits based on observed usage.
+    </li>
+
+    <li>
+      Rotate logs and export metrics to external
+      monitoring.
+    </li>
+
+    <li>
+      Pin base images and rebuild regularly for security
+      updates.
+    </li>
+
+    <li>
+      Test database migrations before the application
+      receives traffic.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="confidentiality"
+  eyebrow="Publication boundary"
+  title="Confidentiality"
+>
+  <ConfidentialityNote>
+    <p>
+      The service names, network layout, environment
+      filenames, health paths, and resource assumptions
+      are generic portfolio examples.
+    </p>
+
+    <p>
+      The configuration does not contain production
+      domains, server addresses, credentials, database
+      passwords, private image names, or copied deployment
+      files.
+    </p>
+  </ConfidentialityNote>
+</CodeSampleSection>

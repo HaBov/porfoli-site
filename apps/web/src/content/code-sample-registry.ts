@@ -3,11 +3,13 @@ import "server-only";
 import type { ComponentType } from "react";
 
 import CeleryBackgroundTask from "./code-samples/celery-background-task.mdx";
+import DockerProductionSetup from "./code-samples/docker-production-setup.mdx";
 import ExternalApiPagination from "./code-samples/external-api-pagination.mdx";
 import FastApiServiceLayer from "./code-samples/fastapi-service-layer.mdx";
 import PytestApiWorkflow from "./code-samples/pytest-api-workflow.mdx";
 import RbacPermissionCheck from "./code-samples/rbac-permission-check.mdx";
 import SqlalchemyDataModel from "./code-samples/sqlalchemy-data-model.mdx";
+import TypescriptWebhookHandler from "./code-samples/typescript-webhook-handler.mdx";
 import { getCodeSampleBySlug } from "./data/code-samples";
 import type { CodeSampleRecord } from "./schemas/code-sample.schema";
 
@@ -18,6 +20,8 @@ const IMPLEMENTED_CODE_SAMPLE_SLUGS = [
   "celery-background-task",
   "pytest-api-workflow",
   "external-api-pagination",
+  "typescript-webhook-handler",
+  "docker-production-setup",
 ] as const;
 
 type ImplementedCodeSampleSlug =
@@ -53,6 +57,9 @@ const codeSampleComponents: Record<
   "celery-background-task": CeleryBackgroundTask,
   "pytest-api-workflow": PytestApiWorkflow,
   "external-api-pagination": ExternalApiPagination,
+  "typescript-webhook-handler":
+    TypescriptWebhookHandler,
+  "docker-production-setup": DockerProductionSetup,
 };
 
 export const codeSampleEntries: CodeSampleEntry[] =
