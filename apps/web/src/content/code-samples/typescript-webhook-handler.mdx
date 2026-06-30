@@ -9,18 +9,16 @@ import {
   eyebrow="Webhook boundary"
   title="Context"
 >
-  <p>
     A Telegram bot receives externally controlled JSON
     through a public webhook. The application must
     authenticate the sender, validate the update shape,
     prevent duplicate processing, and dispatch supported
     events without keeping the request open unnecessarily.
-  </p>
 
-  <p>
+
     This example uses Hono, Zod, Cloudflare Workers, and
     D1 to create a small but explicit webhook boundary.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -28,10 +26,9 @@ import {
   eyebrow="External input"
   title="Problem"
 >
-  <p>
     Webhook payloads cannot be trusted simply because
     they appear to come from an expected integration.
-  </p>
+
 
   <ul>
     <li>
@@ -210,22 +207,19 @@ import {
   eyebrow="Safe responses"
   title="Error Handling"
 >
-  <p>
     Invalid authentication returns 403 before JSON
     processing. Malformed JSON and unsupported payloads
     return separate 400 codes.
-  </p>
 
-  <p>
+
     Duplicate events are not treated as failures because
     webhook redelivery is expected behavior.
-  </p>
 
-  <p>
+
     Dispatch errors are recorded with the provider update
     ID and a sanitized error message. The full incoming
     payload and secret are not logged.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -276,11 +270,10 @@ import {
     caption="Dependency injection allows request behavior to be tested without a real Telegram endpoint or D1 database."
   />
 
-  <p>
     A complete test suite should also cover malformed
     JSON, unsupported update types, a successful insert,
     D1 failure, and dispatch failure.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -288,18 +281,16 @@ import {
   eyebrow="Limits"
   title="Trade-offs"
 >
-  <p>
     Returning before dispatch completes keeps webhook
     latency low, but the provider has already received a
     successful acknowledgement if background processing
     later fails.
-  </p>
 
-  <p>
+
     Persisting the event before dispatch makes recovery
     possible. A scheduled reconciliation process can
     retry records that remain accepted but unprocessed.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -346,16 +337,15 @@ import {
   title="Confidentiality"
 >
   <ConfidentialityNote>
-    <p>
       This sample was written independently using
       synthetic users, generic callback actions, and a
       minimal database schema.
-    </p>
 
-    <p>
+
       It does not contain a real bot token, webhook
       secret, chat identifier, employee profile, internal
       group structure, or copied company bot source code.
-    </p>
+
   </ConfidentialityNote>
 </CodeSampleSection>
+

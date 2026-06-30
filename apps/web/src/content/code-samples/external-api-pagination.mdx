@@ -8,17 +8,15 @@ import {
   eyebrow="External integration"
   title="Context"
 >
-  <p>
     Export workflows often read a large collection from
     an external API before downloading or archiving
     individual records.
-  </p>
 
-  <p>
+
     The provider may return only one page at a time and
     require an opaque continuation token for the next
     request.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -26,12 +24,11 @@ import {
   eyebrow="Integration risk"
   title="Problem"
 >
-  <p>
     Pagination logic can silently lose records or loop
     forever when a provider returns an unexpected token.
     Large exports must also respect rate limits and
     temporary server failures.
-  </p>
+
 
   <ul>
     <li>
@@ -191,23 +188,20 @@ import {
   eyebrow="Failure model"
   title="Error Handling"
 >
-  <p>
     A 429 response uses the provider's
     <code>Retry-After</code> header when available.
     Numeric seconds and HTTP-date formats are both
     supported.
-  </p>
 
-  <p>
+
     Server errors receive bounded exponential delays.
     Other client errors fail immediately because retrying
     an invalid request would not correct it.
-  </p>
 
-  <p>
+
     Authentication tokens and response bodies are not
     included in raised errors.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -254,11 +248,10 @@ import {
     caption="MockTransport verifies the exact continuation-token sequence without calling a real external service."
   />
 
-  <p>
     Additional tests should cover a repeated token,
     invalid JSON, 429 retry exhaustion, temporary 500
     responses, and an immediate 400 response.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -266,23 +259,20 @@ import {
   eyebrow="Limits"
   title="Trade-offs"
 >
-  <p>
     An async iterator is memory efficient but does not
     automatically provide resumability after the process
     stops.
-  </p>
 
-  <p>
+
     For very large exports, the application should
     persist the last successful token or date checkpoint
     outside the iterator.
-  </p>
 
-  <p>
+
     Tokens may expire, so a durable export workflow also
     needs a strategy for restarting from a stable
     business cursor.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -329,16 +319,15 @@ import {
   title="Confidentiality"
 >
   <ConfidentialityNote>
-    <p>
       This sample uses a fictional recording API,
       synthetic response fields, a reserved example
       domain, and generic continuation tokens.
-    </p>
 
-    <p>
+
       It does not expose a production endpoint, account
       identifier, access token, real recording metadata,
       retention rule, or copied integration code.
-    </p>
+
   </ConfidentialityNote>
 </CodeSampleSection>
+

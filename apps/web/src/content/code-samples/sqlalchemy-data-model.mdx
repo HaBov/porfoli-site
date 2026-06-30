@@ -8,16 +8,14 @@ import {
   eyebrow="Relational modeling"
   title="Context"
 >
-  <p>
     Employee lifecycle data is relational: employees
     belong to departments, may reference a manager,
     change status, and require searchable audit fields.
-  </p>
 
-  <p>
+
     The model must express these rules without publishing
     an entire internal schema.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -25,12 +23,11 @@ import {
   eyebrow="Data integrity"
   title="Problem"
 >
-  <p>
     A model with only nullable strings shifts integrity
     rules into application code. That can allow duplicate
     identities, invalid states, missing ownership, or
     expensive queries as the dataset grows.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -136,17 +133,15 @@ import {
   eyebrow="Integrity failures"
   title="Error Handling"
 >
-  <p>
     Unique and foreign-key violations should be caught at
     the transaction boundary and mapped to stable domain
     errors.
-  </p>
 
-  <p>
+
     The API should not return raw database messages
     because they can expose table names and implementation
     details.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -167,17 +162,15 @@ import {
   eyebrow="Limits"
   title="Trade-offs"
 >
-  <p>
     Database enums provide strong constraints but require
     migrations when values change.
-  </p>
 
-  <p>
+
     A lookup table may be preferable when administrators
     must configure states dynamically. The choice should
     follow the stability of the domain rather than a
     universal rule.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -216,11 +209,11 @@ import {
   title="Confidentiality"
 >
   <ConfidentialityNote>
-    <p>
       The entities and constraints are synthetic. The
       sample excludes internal employee attributes,
       document relationships, organization structure, and
       the complete permission-aware schema.
-    </p>
+
   </ConfidentialityNote>
 </CodeSampleSection>
+

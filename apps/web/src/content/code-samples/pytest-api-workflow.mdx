@@ -8,12 +8,11 @@ import {
   eyebrow="API validation"
   title="Context"
 >
-  <p>
     A business workflow test should prove more than a
     response status. It should validate the public API
     contract, the database state created by the request,
     and any side effect that is part of the operation.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -21,17 +20,15 @@ import {
   eyebrow="Coverage gap"
   title="Problem"
 >
-  <p>
     Tests that assert only <code>201 Created</code> can
     pass while the wrong lifecycle state is stored, an
     audit event is missing, or an unauthorized role
     reaches the service.
-  </p>
 
-  <p>
+
     A useful workflow test checks the complete path at
     the level where regressions matter.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -148,16 +145,14 @@ import {
   eyebrow="Failure visibility"
   title="Error Handling"
 >
-  <p>
     Negative tests should assert the stable application
     error code rather than a full human message.
-  </p>
 
-  <p>
+
     This allows wording to improve without weakening the
     contract. Unexpected stack traces must never appear in
     the response body during tests or production.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -198,17 +193,15 @@ import {
   eyebrow="Limits"
   title="Trade-offs"
 >
-  <p>
     Full workflow tests are slower than unit tests and
     require reliable fixture isolation.
-  </p>
 
-  <p>
+
     They should cover critical paths, while smaller
     service and repository tests provide faster feedback
     for edge cases. A large suite composed only of
     end-to-end tests becomes expensive to maintain.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -248,11 +241,11 @@ import {
   title="Confidentiality"
 >
   <ConfidentialityNote>
-    <p>
       All identities, identifiers, routes, and workflow
       fields are synthetic. The test demonstrates a
       validation strategy without exposing an internal
       test suite or production schema.
-    </p>
+
   </ConfidentialityNote>
 </CodeSampleSection>
+

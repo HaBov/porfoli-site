@@ -8,19 +8,17 @@ import {
   eyebrow="Background processing"
   title="Context"
 >
-  <p>
     Downloading and archiving external media can take
     longer than a normal API request. The operation may
     depend on a temporary external URL, object storage,
     network availability, and a database record that
     tracks progress.
-  </p>
 
-  <p>
+
     Moving this work to Celery keeps the HTTP request
     short while allowing retries, monitoring, and
     recoverable execution.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -28,12 +26,11 @@ import {
   eyebrow="Delivery risk"
   title="Problem"
 >
-  <p>
     A background task cannot assume that it executes only
     once. Workers may restart, brokers may redeliver a
     message, external APIs may fail temporarily, and the
     same item may be queued more than once.
-  </p>
+
 
   <ul>
     <li>
@@ -194,23 +191,20 @@ import {
   eyebrow="Failure model"
   title="Error Handling"
 >
-  <p>
     Retryable failures represent conditions such as
     connection resets, temporary storage unavailability,
     or external rate limiting.
-  </p>
 
-  <p>
+
     Permanent failures represent invalid content,
     unsupported media, or an external resource that no
     longer exists.
-  </p>
 
-  <p>
+
     Unexpected exceptions are marked as failed rather
     than silently acknowledged. This preserves evidence
     for operational review.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -244,12 +238,11 @@ import {
     caption="The idempotency test proves that a completed item is returned without calling the external transfer client."
   />
 
-  <p>
     Additional tests should simulate retryable failures,
     retry exhaustion, permanent failure, duplicate task
     delivery, and worker interruption after transfer but
     before completion.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -257,24 +250,21 @@ import {
   eyebrow="Limits"
   title="Trade-offs"
 >
-  <p>
     Persisting status transitions adds database writes,
     but it makes retries and operational support
     observable.
-  </p>
 
-  <p>
+
     Holding a database lock during the external transfer
     would reduce concurrency, so the sample commits the
     processing state before network work begins.
-  </p>
 
-  <p>
+
     That creates a small recovery window. A periodic
     reconciliation job should identify items that remain
     in <code>processing</code> beyond an expected
     duration.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -319,12 +309,12 @@ import {
   title="Confidentiality"
 >
   <ConfidentialityNote>
-    <p>
       This sample uses a synthetic archive item and a
       generic storage client. It does not reproduce
       production media URLs, bucket names, retention
       rules, customer identifiers, task names, or
       company-specific failure handling.
-    </p>
+
   </ConfidentialityNote>
 </CodeSampleSection>
+

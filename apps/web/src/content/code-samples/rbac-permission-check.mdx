@@ -9,20 +9,18 @@ import {
   eyebrow="Authorization"
   title="Context"
 >
-  <p>
     A modular API may contain dozens of routes that need
     the same authorization behavior. Putting permission
     checks directly inside every route creates
     inconsistent status codes and makes it easy to forget
     a check during later development.
-  </p>
 
-  <p>
+
     This example demonstrates a dependency factory that
     converts a permission code into a reusable FastAPI
     dependency and returns an actor whose authorization
     has already been verified.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -173,19 +171,17 @@ import {
   eyebrow="Denial model"
   title="Error Handling"
 >
-  <p>
     Authentication failures and authorization failures
     remain distinct. Missing or invalid credentials
     should produce 401, while a valid actor without the
     required capability receives 403.
-  </p>
 
-  <p>
+
     The response exposes a generic permission code for
     debugging and testing, but it does not reveal the
     internal role matrix, assignment structure, or
     database implementation.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -208,17 +204,15 @@ import {
     caption="The denial test verifies both the status code and the stable error contract."
   />
 
-  <p>
     A complete test suite should also cover a successful
     request, missing authentication, tenant isolation,
     and object-level restrictions.
-  </p>
 
-  <p>
+
     The database should be checked after the denial to
     confirm that no employee record or audit mutation was
     created.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -226,20 +220,18 @@ import {
   eyebrow="Limits"
   title="Trade-offs"
 >
-  <p>
     Resolving permissions for every request can add
     database work. A production system may cache an
     actor's effective permission set for a limited
     period, but cache invalidation must follow role and
     assignment changes.
-  </p>
 
-  <p>
+
     Permission checks at the route boundary also do not
     replace object-level authorization. A user may have
     permission to update employees generally while still
     being restricted to a specific department or tenant.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -286,18 +278,17 @@ import {
   title="Confidentiality"
 >
   <ConfidentialityNote>
-    <p>
       This sample was independently written for the
       portfolio. The permission names, actor model,
       tenant representation, and route structure are
       intentionally generic.
-    </p>
 
-    <p>
+
       It does not reproduce proprietary source code,
       internal role assignments, production identifiers,
       or the exact permission matrix of any company
       system.
-    </p>
+
   </ConfidentialityNote>
 </CodeSampleSection>
+

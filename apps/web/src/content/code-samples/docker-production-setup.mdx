@@ -10,18 +10,16 @@ import {
   eyebrow="Infrastructure"
   title="Context"
 >
-  <p>
     A backend application typically depends on more than
     its API process. A production deployment may also
     require PostgreSQL, Redis, a reverse proxy, persistent
     volumes, health checks, and controlled network
     exposure.
-  </p>
 
-  <p>
+
     This example demonstrates a small production-oriented
     Docker stack for a FastAPI service.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -29,12 +27,11 @@ import {
   eyebrow="Deployment boundary"
   title="Problem"
 >
-  <p>
     A development Compose file often publishes every
     service port, runs containers as root, writes anywhere
     in the filesystem, and starts services without
     checking readiness.
-  </p>
+
 
   <ul>
     <li>
@@ -244,23 +241,20 @@ import {
   eyebrow="Failure behavior"
   title="Error Handling"
 >
-  <p>
     A failed readiness check prevents Nginx from routing
     traffic to an application that cannot reach its
     dependencies.
-  </p>
 
-  <p>
+
     Restart policies recover ordinary process failures,
     but they do not replace alerting or investigation of
     repeated crashes.
-  </p>
 
-  <p>
+
     Deployment automation should preserve container logs
     and inspect health status before replacing a previous
     healthy release.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -301,12 +295,11 @@ import {
     caption="The smoke script validates Compose syntax, starts the stack, checks readiness, and prints diagnostics on failure."
   />
 
-  <p>
     CI should also build the image without cache, scan it
     for known vulnerabilities, verify the non-root user,
     and confirm that PostgreSQL and Redis ports are not
     published.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -314,23 +307,20 @@ import {
   eyebrow="Limits"
   title="Trade-offs"
 >
-  <p>
     Docker Compose is appropriate for a controlled
     single-server deployment, but it does not provide
     multi-node scheduling or automatic high availability.
-  </p>
 
-  <p>
+
     A read-only filesystem improves containment but
     requires every writable application path to be
     identified explicitly.
-  </p>
 
-  <p>
+
     Health-based dependency ordering improves startup but
     does not guarantee that a dependency remains healthy
     after the application has started.
-  </p>
+
 </CodeSampleSection>
 
 <CodeSampleSection
@@ -381,17 +371,16 @@ import {
   title="Confidentiality"
 >
   <ConfidentialityNote>
-    <p>
       The service names, network layout, environment
       filenames, health paths, and resource assumptions
       are generic portfolio examples.
-    </p>
 
-    <p>
+
       The configuration does not contain production
       domains, server addresses, credentials, database
       passwords, private image names, or copied deployment
       files.
-    </p>
+
   </ConfidentialityNote>
 </CodeSampleSection>
+
