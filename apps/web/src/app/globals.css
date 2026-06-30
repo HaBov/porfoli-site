@@ -264,3 +264,58 @@ samp {
     outline-offset: 3px;
   }
 }
+
+/* Code samples */
+
+.code-block-content pre {
+  margin: 0;
+  min-width: max-content;
+  padding: 1.25rem 0;
+  background: transparent !important;
+  font-size: 0.8125rem;
+  line-height: 1.75;
+  tab-size: 2;
+}
+
+.code-block-content code {
+  display: block;
+  counter-reset: code-line;
+  background: transparent !important;
+}
+
+.code-block-content .line {
+  display: inline-block;
+  min-width: 100%;
+  padding-inline: 1.25rem;
+}
+
+.code-block-content.with-line-numbers .line {
+  counter-increment: code-line;
+  padding-left: 0.75rem;
+}
+
+.code-block-content.with-line-numbers .line::before {
+  display: inline-block;
+  width: 2.75rem;
+  margin-right: 1rem;
+  color: var(--text-muted);
+  content: counter(code-line);
+  text-align: right;
+  user-select: none;
+}
+
+.code-block-content .line.highlighted {
+  background: var(--accent-muted);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.code-block-content .shiki,
+.code-block-content .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: transparent !important;
+}
+
+:root[data-theme="light"] .code-block-content .shiki,
+:root[data-theme="light"] .code-block-content .shiki span {
+  color: var(--shiki-light) !important;
+}

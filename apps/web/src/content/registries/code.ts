@@ -14,7 +14,9 @@ export const CODE_LANGUAGE_LABELS = {
 
 export type CodeLanguage = keyof typeof CODE_LANGUAGE_LABELS;
 
-export const CODE_LANGUAGES = Object.keys(CODE_LANGUAGE_LABELS) as CodeLanguage[];
+export const CODE_LANGUAGES = Object.keys(
+  CODE_LANGUAGE_LABELS,
+) as CodeLanguage[];
 
 export const CODE_SAMPLE_CATEGORY_LABELS = {
   "api-design": "API Design",
@@ -28,7 +30,12 @@ export const CODE_SAMPLE_CATEGORY_LABELS = {
   migration: "Database Migration",
 } as const;
 
-export type CodeSampleCategory = keyof typeof CODE_SAMPLE_CATEGORY_LABELS;
+export type CodeSampleCategory =
+  keyof typeof CODE_SAMPLE_CATEGORY_LABELS;
+
+export const CODE_SAMPLE_CATEGORIES = Object.keys(
+  CODE_SAMPLE_CATEGORY_LABELS,
+) as CodeSampleCategory[];
 
 export const CODE_SAMPLE_COMPLEXITY_LABELS = {
   fundamental: "Fundamental",
@@ -36,4 +43,9 @@ export const CODE_SAMPLE_COMPLEXITY_LABELS = {
   "production-pattern": "Production Pattern",
 } as const;
 
-export type CodeSampleComplexity = keyof typeof CODE_SAMPLE_COMPLEXITY_LABELS;
+export type CodeSampleComplexity =
+  keyof typeof CODE_SAMPLE_COMPLEXITY_LABELS;
+
+export const CODE_SAMPLE_COMPLEXITIES = Object.keys(
+  CODE_SAMPLE_COMPLEXITY_LABELS,
+) as CodeSampleComplexity[];
