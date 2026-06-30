@@ -1,0 +1,330 @@
+import {
+  celeryArchiveTaskCode,
+  celeryArchiveTaskTestCode,
+} from "../code-snippets/celery-background-task";
+
+<CodeSampleSection
+  id="context"
+  eyebrow="Background processing"
+  title="Context"
+>
+  <p>
+    Downloading and archiving external media can take
+    longer than a normal API request. The operation may
+    depend on a temporary external URL, object storage,
+    network availability, and a database record that
+    tracks progress.
+  </p>
+
+  <p>
+    Moving this work to Celery keeps the HTTP request
+    short while allowing retries, monitoring, and
+    recoverable execution.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="problem"
+  eyebrow="Delivery risk"
+  title="Problem"
+>
+  <p>
+    A background task cannot assume that it executes only
+    once. Workers may restart, brokers may redeliver a
+    message, external APIs may fail temporarily, and the
+    same item may be queued more than once.
+  </p>
+
+  <ul>
+    <li>
+      Repeated execution must not create duplicate
+      archives.
+    </li>
+
+    <li>
+      Temporary failures require bounded retries.
+    </li>
+
+    <li>
+      Permanent failures should not loop indefinitely.
+    </li>
+
+    <li>
+      Operators need a visible status and failure reason.
+    </li>
+
+    <li>
+      Logs must identify the task without exposing source
+      URLs or credentials.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="code"
+  eyebrow="Implementation"
+  title="Code"
+>
+  <CodeBlock
+    filename="app/tasks/archive_items.py"
+    language="python"
+    code={celeryArchiveTaskCode}
+    highlightLines={[
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+    ]}
+    caption="The task uses persisted state for idempotency and distinguishes retryable failures from terminal failures."
+  />
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="how-it-works"
+  eyebrow="Worker lifecycle"
+  title="How It Works"
+>
+  <ol>
+    <li>
+      The task converts the string identifier to a UUID.
+    </li>
+
+    <li>
+      It locks the archive record before changing its
+      state.
+    </li>
+
+    <li>
+      A completed item returns immediately without
+      transferring the file again.
+    </li>
+
+    <li>
+      A pending item moves to
+      <code>processing</code> and records the task ID and
+      attempt number.
+    </li>
+
+    <li>
+      Retryable failures move the item to
+      <code>retry_pending</code> and schedule bounded
+      backoff.
+    </li>
+
+    <li>
+      Permanent or exhausted failures move the item to
+      <code>failed</code>.
+    </li>
+
+    <li>
+      Successful transfer metadata is committed before
+      the task returns.
+    </li>
+  </ol>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="design-principles"
+  eyebrow="Engineering choices"
+  title="Design Principles"
+>
+  <ul>
+    <li>
+      <strong>Idempotency first:</strong> completed work
+      is detected before an external transfer begins.
+    </li>
+
+    <li>
+      <strong>Persisted state:</strong> task status does
+      not exist only inside the Celery worker.
+    </li>
+
+    <li>
+      <strong>Bounded retries:</strong> temporary failures
+      cannot retry forever.
+    </li>
+
+    <li>
+      <strong>Explicit failure classes:</strong>
+      retryable and permanent errors follow different
+      paths.
+    </li>
+
+    <li>
+      <strong>Structured context:</strong> logs carry
+      technical identifiers but not sensitive URLs.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="error-handling"
+  eyebrow="Failure model"
+  title="Error Handling"
+>
+  <p>
+    Retryable failures represent conditions such as
+    connection resets, temporary storage unavailability,
+    or external rate limiting.
+  </p>
+
+  <p>
+    Permanent failures represent invalid content,
+    unsupported media, or an external resource that no
+    longer exists.
+  </p>
+
+  <p>
+    Unexpected exceptions are marked as failed rather
+    than silently acknowledged. This preserves evidence
+    for operational review.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="testing"
+  eyebrow="Validation"
+  title="Testing"
+>
+  <CodeBlock
+    filename="tests/tasks/test_archive_items.py"
+    language="python"
+    code={celeryArchiveTaskTestCode}
+    highlightLines={[
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+    ]}
+    caption="The idempotency test proves that a completed item is returned without calling the external transfer client."
+  />
+
+  <p>
+    Additional tests should simulate retryable failures,
+    retry exhaustion, permanent failure, duplicate task
+    delivery, and worker interruption after transfer but
+    before completion.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="trade-offs"
+  eyebrow="Limits"
+  title="Trade-offs"
+>
+  <p>
+    Persisting status transitions adds database writes,
+    but it makes retries and operational support
+    observable.
+  </p>
+
+  <p>
+    Holding a database lock during the external transfer
+    would reduce concurrency, so the sample commits the
+    processing state before network work begins.
+  </p>
+
+  <p>
+    That creates a small recovery window. A periodic
+    reconciliation job should identify items that remain
+    in <code>processing</code> beyond an expected
+    duration.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="production-considerations"
+  eyebrow="Operational readiness"
+  title="Production Considerations"
+>
+  <ul>
+    <li>
+      Use a dead-letter or failure review workflow for
+      terminal tasks.
+    </li>
+
+    <li>
+      Add a timeout to every external transfer request.
+    </li>
+
+    <li>
+      Track queue depth, task runtime, retry count, and
+      failure rate.
+    </li>
+
+    <li>
+      Reconcile stale processing records on a schedule.
+    </li>
+
+    <li>
+      Avoid logging temporary source URLs, tokens, or
+      object-storage credentials.
+    </li>
+
+    <li>
+      Verify file size and content type before marking the
+      item complete.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="confidentiality"
+  eyebrow="Publication boundary"
+  title="Confidentiality"
+>
+  <ConfidentialityNote>
+    <p>
+      This sample uses a synthetic archive item and a
+      generic storage client. It does not reproduce
+      production media URLs, bucket names, retention
+      rules, customer identifiers, task names, or
+      company-specific failure handling.
+    </p>
+  </ConfidentialityNote>
+</CodeSampleSection>

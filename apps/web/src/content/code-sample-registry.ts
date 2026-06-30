@@ -2,6 +2,8 @@ import "server-only";
 
 import type { ComponentType } from "react";
 
+import CeleryBackgroundTask from "./code-samples/celery-background-task.mdx";
+import ExternalApiPagination from "./code-samples/external-api-pagination.mdx";
 import FastApiServiceLayer from "./code-samples/fastapi-service-layer.mdx";
 import PytestApiWorkflow from "./code-samples/pytest-api-workflow.mdx";
 import RbacPermissionCheck from "./code-samples/rbac-permission-check.mdx";
@@ -13,7 +15,9 @@ const IMPLEMENTED_CODE_SAMPLE_SLUGS = [
   "fastapi-service-layer",
   "rbac-permission-check",
   "sqlalchemy-data-model",
+  "celery-background-task",
   "pytest-api-workflow",
+  "external-api-pagination",
 ] as const;
 
 type ImplementedCodeSampleSlug =
@@ -46,7 +50,9 @@ const codeSampleComponents: Record<
   "fastapi-service-layer": FastApiServiceLayer,
   "rbac-permission-check": RbacPermissionCheck,
   "sqlalchemy-data-model": SqlalchemyDataModel,
+  "celery-background-task": CeleryBackgroundTask,
   "pytest-api-workflow": PytestApiWorkflow,
+  "external-api-pagination": ExternalApiPagination,
 };
 
 export const codeSampleEntries: CodeSampleEntry[] =

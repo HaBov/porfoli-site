@@ -1,0 +1,344 @@
+import {
+  externalApiPaginationCode,
+  externalApiPaginationTestCode,
+} from "../code-snippets/external-api-pagination";
+
+<CodeSampleSection
+  id="context"
+  eyebrow="External integration"
+  title="Context"
+>
+  <p>
+    Export workflows often read a large collection from
+    an external API before downloading or archiving
+    individual records.
+  </p>
+
+  <p>
+    The provider may return only one page at a time and
+    require an opaque continuation token for the next
+    request.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="problem"
+  eyebrow="Integration risk"
+  title="Problem"
+>
+  <p>
+    Pagination logic can silently lose records or loop
+    forever when a provider returns an unexpected token.
+    Large exports must also respect rate limits and
+    temporary server failures.
+  </p>
+
+  <ul>
+    <li>
+      Consumers should not need to manage page tokens.
+    </li>
+
+    <li>
+      API responses require validation before use.
+    </li>
+
+    <li>
+      Rate limits should produce bounded delays.
+    </li>
+
+    <li>
+      Repeated continuation tokens must stop the export.
+    </li>
+
+    <li>
+      Client and server errors need different handling.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="code"
+  eyebrow="Implementation"
+  title="Code"
+>
+  <CodeBlock
+    filename="app/integrations/recordings.py"
+    language="python"
+    code={externalApiPaginationCode}
+    highlightLines={[
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+    ]}
+    caption="The iterator hides continuation tokens from consumers while preserving retry and loop-protection behavior."
+  />
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="how-it-works"
+  eyebrow="Request flow"
+  title="How It Works"
+>
+  <ol>
+    <li>
+      The consumer requests a date range and iterates over
+      records.
+    </li>
+
+    <li>
+      The client builds parameters for the current page.
+    </li>
+
+    <li>
+      The response is validated through a typed Pydantic
+      model.
+    </li>
+
+    <li>
+      Records are yielded individually without storing
+      the entire export in memory.
+    </li>
+
+    <li>
+      The continuation token is used for the next page.
+    </li>
+
+    <li>
+      A repeated token raises an explicit integration
+      error.
+    </li>
+
+    <li>
+      A missing token ends iteration normally.
+    </li>
+  </ol>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="design-principles"
+  eyebrow="Engineering choices"
+  title="Design Principles"
+>
+  <ul>
+    <li>
+      <strong>Streaming interface:</strong> callers
+      process one record at a time.
+    </li>
+
+    <li>
+      <strong>Typed boundary:</strong> unknown JSON is
+      validated before entering application logic.
+    </li>
+
+    <li>
+      <strong>Opaque tokens:</strong> continuation values
+      are passed through without interpretation.
+    </li>
+
+    <li>
+      <strong>Loop protection:</strong> repeated tokens
+      fail visibly.
+    </li>
+
+    <li>
+      <strong>Bounded resilience:</strong> retry behavior
+      has a clear maximum.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="error-handling"
+  eyebrow="Failure model"
+  title="Error Handling"
+>
+  <p>
+    A 429 response uses the provider's
+    <code>Retry-After</code> header when available.
+    Numeric seconds and HTTP-date formats are both
+    supported.
+  </p>
+
+  <p>
+    Server errors receive bounded exponential delays.
+    Other client errors fail immediately because retrying
+    an invalid request would not correct it.
+  </p>
+
+  <p>
+    Authentication tokens and response bodies are not
+    included in raised errors.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="testing"
+  eyebrow="Validation"
+  title="Testing"
+>
+  <CodeBlock
+    filename="tests/integrations/test_recording_pagination.py"
+    language="python"
+    code={externalApiPaginationTestCode}
+    highlightLines={[
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+    ]}
+    caption="MockTransport verifies the exact continuation-token sequence without calling a real external service."
+  />
+
+  <p>
+    Additional tests should cover a repeated token,
+    invalid JSON, 429 retry exhaustion, temporary 500
+    responses, and an immediate 400 response.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="trade-offs"
+  eyebrow="Limits"
+  title="Trade-offs"
+>
+  <p>
+    An async iterator is memory efficient but does not
+    automatically provide resumability after the process
+    stops.
+  </p>
+
+  <p>
+    For very large exports, the application should
+    persist the last successful token or date checkpoint
+    outside the iterator.
+  </p>
+
+  <p>
+    Tokens may expire, so a durable export workflow also
+    needs a strategy for restarting from a stable
+    business cursor.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="production-considerations"
+  eyebrow="Operational readiness"
+  title="Production Considerations"
+>
+  <ul>
+    <li>
+      Store access tokens only in a secret manager or
+      protected environment variable.
+    </li>
+
+    <li>
+      Log page counts and record counts without logging
+      raw continuation tokens.
+    </li>
+
+    <li>
+      Persist export checkpoints for long-running jobs.
+    </li>
+
+    <li>
+      Apply global rate limiting when multiple workers
+      share one provider account.
+    </li>
+
+    <li>
+      Monitor schema validation failures as potential API
+      contract changes.
+    </li>
+
+    <li>
+      Use reserved domains such as
+      <code>example.com</code> in tests and public
+      documentation.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="confidentiality"
+  eyebrow="Publication boundary"
+  title="Confidentiality"
+>
+  <ConfidentialityNote>
+    <p>
+      This sample uses a fictional recording API,
+      synthetic response fields, a reserved example
+      domain, and generic continuation tokens.
+    </p>
+
+    <p>
+      It does not expose a production endpoint, account
+      identifier, access token, real recording metadata,
+      retention rule, or copied integration code.
+    </p>
+  </ConfidentialityNote>
+</CodeSampleSection>
