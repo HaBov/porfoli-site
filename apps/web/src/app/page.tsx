@@ -6,6 +6,7 @@ import { HomeMetrics } from "@/components/home/home-metrics";
 import { TechnicalFocus } from "@/components/home/technical-focus";
 import { profile } from "@/content";
 import { createPageMetadata } from "@/lib/metadata";
+import { CodeSamplesPreview } from "@/components/home/code-samples-preview";
 
 export const metadata = createPageMetadata({
   title: profile.primaryTitle,
@@ -19,6 +20,7 @@ export default function HomePage() {
       <HomeMetrics />
       <FeaturedProjects />
       <TechnicalFocus />
+      <CodeSamplesPreview />
       <ExperiencePreview />
       <FinalCTA />
     </main>

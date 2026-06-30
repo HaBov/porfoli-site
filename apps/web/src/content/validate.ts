@@ -16,9 +16,12 @@ import { projectListSchema } from "./schemas/project.schema";
 import { technologyListSchema } from "./schemas/technology.schema";
 import { navigationItems } from "./data/navigation";
 import { skillGroups } from "./data/skills";
+import { codeSamples } from "./data/code-samples";
 import { navigationListSchema } from "./schemas/navigation.schema";
 import { skillGroupListSchema } from "./schemas/skill-group.schema";
+import { codeSampleListSchema } from "./schemas/code-sample.schema";
 import { CASE_STUDY_SLUGS } from "./registries/case-study";
+import { CODE_SAMPLE_SLUGS } from "./registries/code-sample";
 
 function assertCondition(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -160,6 +163,99 @@ function validateProjectRelations(): void {
   }
 }
 
+function validateCodeSampleRelations(): void {
+  const projectMap = new Map(
+    projects.map((project) => [
+      project.id,
+      project,
+    ]),
+  );
+
+  const technologyIds = new Set(
+    technologies.map(
+      (technology) => technology.id,
+    ),
+  );
+
+  const registeredSlugs = new Set<string>(
+    CODE_SAMPLE_SLUGS,
+  );
+
+  assertCondition(
+    codeSamples.length ===
+      CODE_SAMPLE_SLUGS.length,
+    "Version 1 must contain exactly eight code samples.",
+  );
+
+  for (const slug of CODE_SAMPLE_SLUGS) {
+    assertCondition(
+      codeSamples.some(
+        (sample) => sample.slug === slug,
+      ),
+      `Code sample registry references missing slug "${slug}".`,
+    );
+  }
+
+  for (const sample of codeSamples) {
+    assertCondition(
+      registeredSlugs.has(sample.slug),
+      `Code sample "${sample.id}" uses unregistered slug "${sample.slug}".`,
+    );
+
+    assertCondition(
+      sample.publicationStatus === "published",
+      `Code sample "${sample.id}" must be published during Phase 5D.`,
+    );
+
+    assertCondition(
+      new Set(sample.relatedProjectIds).size ===
+        sample.relatedProjectIds.length,
+      `Code sample "${sample.id}" contains duplicate project relations.`,
+    );
+
+    assertCondition(
+      new Set(sample.relatedTechnologyIds).size ===
+        sample.relatedTechnologyIds.length,
+      `Code sample "${sample.id}" contains duplicate technology relations.`,
+    );
+
+    for (const projectId of sample.relatedProjectIds) {
+      const project = projectMap.get(projectId);
+
+      assertCondition(
+        project !== undefined,
+        `Code sample "${sample.id}" references unknown project "${projectId}".`,
+      );
+
+      assertCondition(
+        project.confidentiality
+          .rewrittenCodeAllowed,
+        `Project "${project.id}" does not allow rewritten public code samples.`,
+      );
+    }
+
+    for (const technologyId of sample.relatedTechnologyIds) {
+      assertCondition(
+        technologyIds.has(technologyId),
+        `Code sample "${sample.id}" references unknown technology "${technologyId}".`,
+      );
+    }
+  }
+
+  for (const project of projects.filter(
+    (candidate) => candidate.featured,
+  )) {
+    assertCondition(
+      codeSamples.some((sample) =>
+        sample.relatedProjectIds.includes(
+          project.id,
+        ),
+      ),
+      `Featured project "${project.id}" requires at least one related code sample.`,
+    );
+  }
+}
+
 function validatePortfolioScope(): void {
   const projectIds = new Set(projects.map((project) => project.id));
 
@@ -191,6 +287,7 @@ function validateContent(): void {
   experienceListSchema.parse(experienceEntries);
   projectMetricListSchema.parse(projectMetrics);
   projectListSchema.parse(projects);
+  codeSampleListSchema.parse(codeSamples);
   skillGroupListSchema.parse(skillGroups);
   navigationListSchema.parse(navigationItems);
 
@@ -260,6 +357,21 @@ function validateContent(): void {
   );
 
   assertUnique(
+  codeSamples.map((sample) => sample.id),
+  "code sample ID",
+);
+
+assertUnique(
+  codeSamples.map((sample) => sample.slug),
+  "code sample slug",
+);
+
+assertUnique(
+  codeSamples.map((sample) => sample.priority),
+  "code sample priority",
+);
+
+  assertUnique(
     skillGroups.map((skillGroup) => skillGroup.id),
     "skill group ID",
   );
@@ -292,6 +404,7 @@ function validateContent(): void {
   validateProfileRelations();
   validateExperienceTechnologyRelations();
   validateProjectRelations();
+  validateCodeSampleRelations();
   validatePortfolioScope();
   validateSkillRelations();
   validateNavigationRelations();
@@ -305,6 +418,7 @@ function validateContent(): void {
   console.log(`Technologies: ${technologies.length}`);
   console.log(`Experience entries: ${experienceEntries.length}`);
   console.log(`Project metrics: ${projectMetrics.length}`);
+  console.log(`Projects: ${projects.length}`);
   console.log(`Projects: ${projects.length}`);
   console.log(`Featured projects: ${projects.filter((project) => project.featured).length}`);
   console.log(`Case studies: ${CASE_STUDY_SLUGS.length}`);

@@ -17,13 +17,16 @@ type CodeSampleCardProps = {
   sample: CodeSampleRecord;
   relatedProjectTitle: string;
   variant?: "featured" | "standard" | "compact";
+  headingLevel?: "h2" | "h3";
 };
 
 export function CodeSampleCard({
   sample,
   relatedProjectTitle,
   variant = "standard",
-}: CodeSampleCardProps) {
+  headingLevel = "h2",
+}: CodeSampleCardProps) {const
+  Heading = headingLevel;
   return (
     <article
       className={cn(
@@ -45,7 +48,7 @@ export function CodeSampleCard({
         </span>
       </div>
 
-      <h2
+      <Heading
         className={cn(
           "text-primary mt-5 font-semibold tracking-[-0.03em]",
           variant === "featured"
@@ -64,7 +67,7 @@ export function CodeSampleCard({
 
           {sample.title}
         </Link>
-      </h2>
+      </Heading>
 
       <p className="text-secondary mt-4 text-sm leading-7 sm:text-base">
         {sample.summary}
