@@ -1,0 +1,258 @@
+import {
+  pytestPermissionCaseCode,
+  pytestWorkflowCode,
+} from "../code-snippets/pytest-api-workflow";
+
+<CodeSampleSection
+  id="context"
+  eyebrow="API validation"
+  title="Context"
+>
+  <p>
+    A business workflow test should prove more than a
+    response status. It should validate the public API
+    contract, the database state created by the request,
+    and any side effect that is part of the operation.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="problem"
+  eyebrow="Coverage gap"
+  title="Problem"
+>
+  <p>
+    Tests that assert only <code>201 Created</code> can
+    pass while the wrong lifecycle state is stored, an
+    audit event is missing, or an unauthorized role
+    reaches the service.
+  </p>
+
+  <p>
+    A useful workflow test checks the complete path at
+    the level where regressions matter.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="code"
+  eyebrow="Implementation"
+  title="Code"
+>
+  <CodeBlock
+    filename="tests/api/test_employees.py"
+    language="python"
+    code={pytestWorkflowCode}
+    highlightLines={[
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+    ]}
+    caption="The workflow test verifies HTTP output, persisted state, and the related audit event."
+  />
+
+  <CodeBlock
+    filename="tests/api/test_employee_permissions.py"
+    language="python"
+    code={pytestPermissionCaseCode}
+    caption="The negative case proves that a viewer cannot reach the mutation."
+  />
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="how-it-works"
+  eyebrow="Test flow"
+  title="How It Works"
+>
+  <ol>
+    <li>
+      Fixtures create a real department and authenticated
+      role context.
+    </li>
+
+    <li>
+      The async client sends the same JSON a frontend
+      would send.
+    </li>
+
+    <li>
+      The response schema and generated identifier are
+      validated.
+    </li>
+
+    <li>
+      The test queries the database through a separate
+      assertion path.
+    </li>
+
+    <li>
+      The audit endpoint confirms that the side effect is
+      publicly observable.
+    </li>
+
+    <li>
+      A separate role fixture verifies the authorization
+      boundary.
+    </li>
+  </ol>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="design-principles"
+  eyebrow="Engineering choices"
+  title="Design Principles"
+>
+  <ul>
+    <li>
+      <strong>Behavior over implementation:</strong>
+      assertions focus on outcomes, not private method
+      calls.
+    </li>
+
+    <li>
+      <strong>Real boundaries:</strong> the test exercises
+      routing, validation, authorization, service logic,
+      and persistence.
+    </li>
+
+    <li>
+      <strong>Deterministic data:</strong> reserved
+      example domains and fixed dates avoid external
+      dependencies.
+    </li>
+
+    <li>
+      <strong>Independent verification:</strong> database
+      assertions do not reuse the response object.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="error-handling"
+  eyebrow="Failure visibility"
+  title="Error Handling"
+>
+  <p>
+    Negative tests should assert the stable application
+    error code rather than a full human message.
+  </p>
+
+  <p>
+    This allows wording to improve without weakening the
+    contract. Unexpected stack traces must never appear in
+    the response body during tests or production.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="testing"
+  eyebrow="Scenario matrix"
+  title="Testing"
+>
+  <ul>
+    <li>
+      Manager creates a valid employee and an audit event.
+    </li>
+
+    <li>
+      Viewer receives 403 and no employee is inserted.
+    </li>
+
+    <li>
+      Invalid email receives 422 before service
+      execution.
+    </li>
+
+    <li>
+      Duplicate email returns a conflict error.
+    </li>
+
+    <li>
+      Inactive department rejects the workflow.
+    </li>
+
+    <li>
+      A failed transaction leaves no partial audit record.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="trade-offs"
+  eyebrow="Limits"
+  title="Trade-offs"
+>
+  <p>
+    Full workflow tests are slower than unit tests and
+    require reliable fixture isolation.
+  </p>
+
+  <p>
+    They should cover critical paths, while smaller
+    service and repository tests provide faster feedback
+    for edge cases. A large suite composed only of
+    end-to-end tests becomes expensive to maintain.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="production-considerations"
+  eyebrow="Operational readiness"
+  title="Production Considerations"
+>
+  <ul>
+    <li>
+      Run tests against a disposable database, never a
+      copied production dataset.
+    </li>
+
+    <li>
+      Reset transactions or schemas between tests.
+    </li>
+
+    <li>
+      Keep authentication fixtures explicit by role and
+      permission.
+    </li>
+
+    <li>
+      Add smoke tests for deployment-critical endpoints.
+    </li>
+
+    <li>
+      Track flaky tests as defects rather than rerunning
+      until green.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="confidentiality"
+  eyebrow="Publication boundary"
+  title="Confidentiality"
+>
+  <ConfidentialityNote>
+    <p>
+      All identities, identifiers, routes, and workflow
+      fields are synthetic. The test demonstrates a
+      validation strategy without exposing an internal
+      test suite or production schema.
+    </p>
+  </ConfidentialityNote>
+</CodeSampleSection>

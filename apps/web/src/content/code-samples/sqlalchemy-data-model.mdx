@@ -1,0 +1,226 @@
+import {
+  employeeConstraintTestCode,
+  employeeModelCode,
+} from "../code-snippets/sqlalchemy-data-model";
+
+<CodeSampleSection
+  id="context"
+  eyebrow="Relational modeling"
+  title="Context"
+>
+  <p>
+    Employee lifecycle data is relational: employees
+    belong to departments, may reference a manager,
+    change status, and require searchable audit fields.
+  </p>
+
+  <p>
+    The model must express these rules without publishing
+    an entire internal schema.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="problem"
+  eyebrow="Data integrity"
+  title="Problem"
+>
+  <p>
+    A model with only nullable strings shifts integrity
+    rules into application code. That can allow duplicate
+    identities, invalid states, missing ownership, or
+    expensive queries as the dataset grows.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="code"
+  eyebrow="Implementation"
+  title="Code"
+>
+  <CodeBlock
+    filename="app/models/employee.py"
+    language="python"
+    code={employeeModelCode}
+    highlightLines={[
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+    ]}
+    caption="The model combines typed SQLAlchemy mappings with database-level constraints and indexes."
+  />
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="how-it-works"
+  eyebrow="Model behavior"
+  title="How It Works"
+>
+  <ol>
+    <li>
+      A UUID provides a stable application identifier.
+    </li>
+
+    <li>
+      The email column is unique and indexed for identity
+      lookup.
+    </li>
+
+    <li>
+      A database enum limits lifecycle status values.
+    </li>
+
+    <li>
+      Department deletion is restricted while employees
+      still reference it.
+    </li>
+
+    <li>
+      Manager deletion clears the optional self-reference
+      instead of deleting reports.
+    </li>
+
+    <li>
+      A composite index supports common department and
+      status filters.
+    </li>
+  </ol>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="design-principles"
+  eyebrow="Engineering choices"
+  title="Design Principles"
+>
+  <ul>
+    <li>
+      <strong>Database enforcement:</strong> critical
+      rules do not depend only on API validation.
+    </li>
+
+    <li>
+      <strong>Typed mappings:</strong> Python and
+      database types remain aligned.
+    </li>
+
+    <li>
+      <strong>Explicit deletion behavior:</strong>
+      foreign keys describe ownership consequences.
+    </li>
+
+    <li>
+      <strong>Query-aware indexes:</strong> indexes
+      reflect expected access patterns.
+    </li>
+
+    <li>
+      <strong>Controlled public scope:</strong> the
+      sample shows a pattern, not a production schema.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="error-handling"
+  eyebrow="Integrity failures"
+  title="Error Handling"
+>
+  <p>
+    Unique and foreign-key violations should be caught at
+    the transaction boundary and mapped to stable domain
+    errors.
+  </p>
+
+  <p>
+    The API should not return raw database messages
+    because they can expose table names and implementation
+    details.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="testing"
+  eyebrow="Validation"
+  title="Testing"
+>
+  <CodeBlock
+    filename="tests/models/test_employee_constraints.py"
+    language="python"
+    code={employeeConstraintTestCode}
+    caption="The database remains the final authority for uniqueness even if an earlier service pre-check races."
+  />
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="trade-offs"
+  eyebrow="Limits"
+  title="Trade-offs"
+>
+  <p>
+    Database enums provide strong constraints but require
+    migrations when values change.
+  </p>
+
+  <p>
+    A lookup table may be preferable when administrators
+    must configure states dynamically. The choice should
+    follow the stability of the domain rather than a
+    universal rule.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="production-considerations"
+  eyebrow="Operational readiness"
+  title="Production Considerations"
+>
+  <ul>
+    <li>
+      Review index usage with actual query plans.
+    </li>
+
+    <li>
+      Normalize email casing before persistence.
+    </li>
+
+    <li>
+      Use migrations for enum and constraint changes.
+    </li>
+
+    <li>
+      Protect self-referential updates from management
+      cycles.
+    </li>
+
+    <li>
+      Keep sensitive fields out of default response
+      schemas.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="confidentiality"
+  eyebrow="Publication boundary"
+  title="Confidentiality"
+>
+  <ConfidentialityNote>
+    <p>
+      The entities and constraints are synthetic. The
+      sample excludes internal employee attributes,
+      document relationships, organization structure, and
+      the complete permission-aware schema.
+    </p>
+  </ConfidentialityNote>
+</CodeSampleSection>

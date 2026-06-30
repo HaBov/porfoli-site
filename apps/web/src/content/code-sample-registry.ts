@@ -2,12 +2,18 @@ import "server-only";
 
 import type { ComponentType } from "react";
 
+import FastApiServiceLayer from "./code-samples/fastapi-service-layer.mdx";
+import PytestApiWorkflow from "./code-samples/pytest-api-workflow.mdx";
 import RbacPermissionCheck from "./code-samples/rbac-permission-check.mdx";
+import SqlalchemyDataModel from "./code-samples/sqlalchemy-data-model.mdx";
 import { getCodeSampleBySlug } from "./data/code-samples";
 import type { CodeSampleRecord } from "./schemas/code-sample.schema";
 
 const IMPLEMENTED_CODE_SAMPLE_SLUGS = [
+  "fastapi-service-layer",
   "rbac-permission-check",
+  "sqlalchemy-data-model",
+  "pytest-api-workflow",
 ] as const;
 
 type ImplementedCodeSampleSlug =
@@ -37,7 +43,10 @@ const codeSampleComponents: Record<
   ImplementedCodeSampleSlug,
   ComponentType
 > = {
+  "fastapi-service-layer": FastApiServiceLayer,
   "rbac-permission-check": RbacPermissionCheck,
+  "sqlalchemy-data-model": SqlalchemyDataModel,
+  "pytest-api-workflow": PytestApiWorkflow,
 };
 
 export const codeSampleEntries: CodeSampleEntry[] =
