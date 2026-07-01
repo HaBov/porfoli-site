@@ -376,9 +376,9 @@ const projectsInput = [
     shortSummary:
       "A serverless expense-tracking and reporting application built around Telegram workflows.",
 
-    publicationStatus: "review",
-    projectStatus: "deployed",
-    tier: 2,
+    publicationStatus: "draft",
+    projectStatus: "active-development",
+    tier: 4,
 
     primaryCategory: "serverless-application",
     secondaryCategories: ["business-application"],
@@ -387,10 +387,10 @@ const projectsInput = [
     teamContext:
       "Developed as a corporate internal application; the original repository and internal operational data are not public.",
 
-    timeframeLabel: "2026",
+    timeframeLabel: "Active development · 2026",
 
     featured: false,
-    versionOne: true,
+    versionOne: false,
     priority: 5,
 
     technologyIds: [
@@ -419,7 +419,7 @@ const projectsInput = [
     ],
 
     resultSummary:
-      "The application provides a lightweight structured workflow for recording and reporting expenses through Telegram.",
+      "The project remains in active development and is intentionally excluded from the public portfolio until its core workflows, validation, testing, and deployment are complete.",
 
     confidentiality: {
       level: 2,

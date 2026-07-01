@@ -85,6 +85,7 @@ function validateExperienceTechnologyRelations(): void {
 function validateProjectRelations(): void {
   const projectIds = new Set(projects.map((project) => project.id));
 
+
   const technologyIds = new Set(technologies.map((technology) => technology.id));
 
   const experienceIds = new Set(experienceEntries.map((experience) => experience.id));
@@ -92,6 +93,29 @@ function validateProjectRelations(): void {
   const metricIds = new Set(projectMetrics.map((metric) => metric.id));
 
   for (const project of projects) {
+    if (project.publicationStatus === "draft") {
+  assertCondition(
+    project.versionOne === false,
+    `Draft project "${project.id}" cannot be included in Version 1.`,
+  );
+
+  assertCondition(
+    project.featured === false,
+    `Draft project "${project.id}" cannot be featured.`,
+  );
+}
+
+if (project.tier === 4) {
+  assertCondition(
+    project.versionOne === false,
+    `Backlog project "${project.id}" cannot be included in Version 1.`,
+  );
+
+  assertCondition(
+    project.featured === false,
+    `Backlog project "${project.id}" cannot be featured.`,
+  );
+}
     for (const technologyId of project.technologyIds) {
       assertCondition(
         technologyIds.has(technologyId),
@@ -225,6 +249,16 @@ function validateCodeSampleRelations(): void {
       assertCondition(
         project !== undefined,
         `Code sample "${sample.id}" references unknown project "${projectId}".`,
+      );
+
+      assertCondition(
+        project.publicationStatus !== "draft",
+        `Code sample "${sample.id}" cannot reference draft project "${project.id}".`,
+      );
+      
+      assertCondition(
+        project.versionOne === true,
+        `Code sample "${sample.id}" must reference a Version 1 project. Project "${project.id}" is excluded.`,
       );
 
       assertCondition(

@@ -202,7 +202,7 @@ const codeSamplesInput = [
       "telegram-bot-api",
     ],
     relatedProjectIds: [
-      "project-finance-telegram-bot",
+      "project-access-lifecycle-automation",
       "project-fleet-safety-media",
     ],
     featured: true,

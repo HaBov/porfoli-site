@@ -1,0 +1,298 @@
+
+import {
+  employeeRouteCode,
+  employeeSchemasCode,
+  employeeServiceCode,
+  employeeServiceTestCode,
+} from "../code-snippets/fastapi-service-layer";
+
+<CodeSampleSection
+  id="context"
+  eyebrow="Application boundary"
+  title="Context"
+>
+  <p>
+    Business applications often begin with route handlers
+    that validate a payload, query the database, apply
+    workflow rules, commit a transaction, and build the
+    response in one function.
+  </p>
+
+  <p>
+    That approach is quick initially but becomes
+    difficult to reuse and test as the number of API
+    modules grows.
+  </p>
+
+  <p>
+    This sample uses a small employee-onboarding resource
+    to demonstrate the same separation used in larger
+    FastAPI systems: the route owns HTTP concerns, the
+    service owns business rules and the transaction, and
+    repositories own persistence queries.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="problem"
+  eyebrow="Failure mode"
+  title="Problem"
+>
+  <p>
+    A route-only implementation creates several risks:
+  </p>
+
+  <ul>
+    <li>
+      Business rules become duplicated across HTTP
+      endpoints and background tasks.
+    </li>
+
+    <li>
+      Transaction ownership is unclear when multiple
+      repositories are involved.
+    </li>
+
+    <li>
+      Database-specific details leak into request
+      handlers.
+    </li>
+
+    <li>
+      Tests require full API setup even when only one
+      rule needs validation.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="code"
+  eyebrow="Implementation"
+  title="Code"
+>
+  <CodeBlock
+    filename="app/schemas/employees.py"
+    language="python"
+    code={employeeSchemasCode}
+    caption="Pydantic request and response contracts keep validation separate from ORM entities."
+  />
+
+  <CodeBlock
+    filename="app/api/routes/employees.py"
+    language="python"
+    code={employeeRouteCode}
+    highlightLines={[
+      13,
+      14,
+      15,
+      16,
+      17,
+    ]}
+    caption="The route translates HTTP input into a service call and returns a validated response."
+  />
+
+  <CodeBlock
+    filename="app/services/employees.py"
+    language="python"
+    code={employeeServiceCode}
+    highlightLines={[
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      45,
+      46,
+      47,
+      48,
+      49,
+    ]}
+    caption="The service coordinates business validation, repositories, and the transaction boundary."
+  />
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="how-it-works"
+  eyebrow="Execution flow"
+  title="How It Works"
+>
+  <ol>
+    <li>
+      FastAPI validates the incoming JSON against
+      <code>EmployeeCreate</code>.
+    </li>
+
+    <li>
+      The route receives an authenticated actor and an
+      async database session.
+    </li>
+
+    <li>
+      The service checks email uniqueness and verifies
+      that the department is active.
+    </li>
+
+    <li>
+      A new ORM entity is constructed with an explicit
+      initial lifecycle state.
+    </li>
+
+    <li>
+      The service commits, rolls back on failure,
+      refreshes the entity, and returns it.
+    </li>
+
+    <li>
+      The route serializes the ORM object through
+      <code>EmployeeRead</code>.
+    </li>
+  </ol>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="design-principles"
+  eyebrow="Engineering choices"
+  title="Design Principles"
+>
+  <ul>
+    <li>
+      <strong>Thin routes:</strong> HTTP status and
+      dependency wiring remain near the API boundary.
+    </li>
+
+    <li>
+      <strong>Explicit ownership:</strong> the service
+      owns the business transaction.
+    </li>
+
+    <li>
+      <strong>Typed contracts:</strong> request and
+      response schemas do not expose ORM internals.
+    </li>
+
+    <li>
+      <strong>Repository isolation:</strong> query
+      details can change without rewriting the route.
+    </li>
+
+    <li>
+      <strong>Testable rules:</strong> the service can
+      be tested without constructing an HTTP request.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="error-handling"
+  eyebrow="Failure behavior"
+  title="Error Handling"
+>
+  <p>
+    Expected domain failures use explicit application
+    errors such as <code>employee_email_exists</code> and
+    <code>department_not_found</code>.
+  </p>
+
+  <p>
+    Unexpected persistence errors trigger a rollback and
+    are re-raised for centralized logging and HTTP error
+    mapping.
+  </p>
+
+  <p>
+    Catching a broad exception is limited to the
+    transaction boundary. The sample does not suppress
+    the original error or return a misleading success
+    response.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="testing"
+  eyebrow="Validation"
+  title="Testing"
+>
+  <CodeBlock
+    filename="tests/services/test_employees.py"
+    language="python"
+    code={employeeServiceTestCode}
+    caption="A focused service test verifies that a duplicate email is rejected before a commit."
+  />
+
+  <p>
+    Additional tests should cover an inactive department,
+    successful persistence, rollback after a database
+    failure, and normalized email storage.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="trade-offs"
+  eyebrow="Limits"
+  title="Trade-offs"
+>
+  <p>
+    A service and repository layer adds files and naming
+    decisions. For a very small CRUD-only API, that
+    structure can be unnecessary.
+  </p>
+
+  <p>
+    It becomes useful when the same workflow crosses
+    multiple tables, has permission rules, creates audit
+    events, or is called outside HTTP routes.
+  </p>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="production-considerations"
+  eyebrow="Operational readiness"
+  title="Production Considerations"
+>
+  <ul>
+    <li>
+      Map domain errors to one consistent API error
+      envelope.
+    </li>
+
+    <li>
+      Add a database uniqueness constraint in addition to
+      the pre-check.
+    </li>
+
+    <li>
+      Emit an audit event in the same transaction or
+      through an outbox pattern.
+    </li>
+
+    <li>
+      Use request IDs and structured logs without
+      recording employee payloads.
+    </li>
+
+    <li>
+      Keep transaction retries bounded and limited to
+      known transient failures.
+    </li>
+  </ul>
+</CodeSampleSection>
+
+<CodeSampleSection
+  id="confidentiality"
+  eyebrow="Publication boundary"
+  title="Confidentiality"
+>
+  <ConfidentialityNote>
+    <p>
+      This sample was independently written for the
+      portfolio. The employee entity, permission
+      boundary, error codes, repository methods, and
+      workflow rules are generic and do not reproduce an
+      internal source file or company-specific process.
+    </p>
+  </ConfidentialityNote>
+</CodeSampleSection>

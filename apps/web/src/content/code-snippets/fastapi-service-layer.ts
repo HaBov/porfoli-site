@@ -31,16 +31,32 @@ from app.api.dependencies.database import get_session
 from app.schemas.employees import EmployeeCreate, EmployeeRead
 from app.services.employees import EmployeeService
 
-router = APIRouter(prefix="/employees", tags=["employees"])
+router = APIRouter(
+    prefix="/employees",
+    tags=["employees"],
+)
 
 
-@router.post("", response_model=EmployeeRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=EmployeeRead,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_employee(
     payload: EmployeeCreate,
     actor: CurrentActor,
-    session: Annotated[AsyncSession, Depends(get_session)],
+    session: Annotated[
+        AsyncSession,
+        Depends(get_session),
+    ],
 ) -> EmployeeRead:
-    employee = await EmployeeService(session).create(payload=payload, actor=actor)
+    employee = await EmployeeService(
+        session,
+    ).create(
+        payload=payload,
+        actor=actor,
+    )
+
     return EmployeeRead.model_validate(employee)`;
 
 export const employeeServiceCode = String.raw`from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,7 +70,10 @@ from app.schemas.employees import EmployeeCreate
 
 
 class EmployeeService:
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(
+        self,
+        session: AsyncSession,
+    ) -> None:
         self._session = session
         self._employees = EmployeeRepository(session)
         self._departments = DepartmentRepository(session)
@@ -65,15 +84,24 @@ class EmployeeService:
         payload: EmployeeCreate,
         actor: CurrentActor,
     ) -> Employee:
-        if await self._employees.email_exists(payload.email):
-            raise ConflictError(code="employee_email_exists")
+        email = payload.email.lower()
 
-        department = await self._departments.get(payload.department_id)
+        if await self._employees.email_exists(email):
+            raise ConflictError(
+                code="employee_email_exists",
+            )
+
+        department = await self._departments.get(
+            payload.department_id,
+        )
+
         if department is None or not department.active:
-            raise NotFoundError(code="department_not_found")
+            raise NotFoundError(
+                code="department_not_found",
+            )
 
         employee = Employee(
-            email=payload.email.lower(),
+            email=email,
             full_name=payload.full_name.strip(),
             department_id=department.id,
             start_date=payload.start_date,
@@ -90,6 +118,7 @@ class EmployeeService:
             raise
 
         await self._session.refresh(employee)
+
         return employee`;
 
 export const employeeServiceTestCode = String.raw`import pytest
@@ -114,6 +143,12 @@ async def test_create_employee_rejects_duplicate_email(
     )
 
     with pytest.raises(ConflictError) as error:
-        await EmployeeService(session).create(payload=payload, actor=actor)
+        await EmployeeService(session).create(
+            payload=payload,
+            actor=actor,
+        )
 
-    assert error.value.code == "employee_email_exists"`;
+    assert (
+        error.value.code
+        == "employee_email_exists"
+    )`;
