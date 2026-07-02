@@ -15,6 +15,8 @@ export {
 
 export { profile } from "./data/profile";
 
+export { activeResume } from "./data/resume";
+
 export { NAVIGATION_GROUP_LABELS, NAVIGATION_GROUPS } from "./registries/navigation";
 
 export { SKILL_GROUP_TYPE_LABELS, SKILL_GROUP_TYPES } from "./registries/skill";
@@ -49,6 +51,8 @@ export type {
   CodeSampleCategory,
   CodeSampleComplexity,
 } from "./registries/code";
+
+export type { ResumeDocument } from "./schemas/resume.schema";
 
 export {
   codeSamples,

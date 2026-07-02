@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { basename, join, } from "node:path";
 import { contactLinks, getContactLink } from "./data/contact-links";
 import { educationEntries } from "./data/education";
 import { experienceEntries } from "./data/experience";
@@ -6,6 +8,7 @@ import { projectMetrics } from "./data/metrics";
 import { profile } from "./data/profile";
 import { projects } from "./data/projects";
 import { technologies } from "./data/technologies";
+import { activeResume } from "./data/resume";
 import { contactLinkListSchema } from "./schemas/contact-link.schema";
 import { educationListSchema } from "./schemas/education.schema";
 import { experienceListSchema } from "./schemas/experience.schema";
@@ -14,6 +17,7 @@ import { projectMetricListSchema } from "./schemas/metric.schema";
 import { siteProfileSchema } from "./schemas/profile.schema";
 import { projectListSchema } from "./schemas/project.schema";
 import { technologyListSchema } from "./schemas/technology.schema";
+import { resumeDocumentSchema } from "./schemas/resume.schema";
 import { navigationItems } from "./data/navigation";
 import { skillGroups } from "./data/skills";
 import { codeSamples } from "./data/code-samples";
@@ -255,7 +259,7 @@ function validateCodeSampleRelations(): void {
         project.publicationStatus !== "draft",
         `Code sample "${sample.id}" cannot reference draft project "${project.id}".`,
       );
-      
+
       assertCondition(
         project.versionOne === true,
         `Code sample "${sample.id}" must reference a Version 1 project. Project "${project.id}" is excluded.`,
@@ -312,8 +316,62 @@ function validatePortfolioScope(): void {
   );
 }
 
+function resolvePublicFile(
+  publicPath: string,
+): string | undefined {
+  const relativePath = publicPath.replace(
+    /^\/+/,
+    "",
+  );
+
+  const candidates = [
+    join(
+      process.cwd(),
+      "public",
+      relativePath,
+    ),
+    join(
+      process.cwd(),
+      "apps",
+      "web",
+      "public",
+      relativePath,
+    ),
+  ];
+
+  return candidates.find((candidate) =>
+    existsSync(candidate),
+  );
+}
+
+function validateResume(): void {
+  assertCondition(
+    activeResume.active,
+    "The configured resume must be active.",
+  );
+
+  assertCondition(
+    activeResume.format === "pdf",
+    "The public resume must use PDF format.",
+  );
+
+  assertCondition(
+    basename(activeResume.publicPath) ===
+      activeResume.filename,
+    "Resume filename does not match its public path.",
+  );
+
+  assertCondition(
+    resolvePublicFile(
+      activeResume.publicPath,
+    ) !== undefined,
+    `Resume PDF is missing at "${activeResume.publicPath}".`,
+  );
+}
+
 function validateContent(): void {
   siteProfileSchema.parse(profile);
+  resumeDocumentSchema.parse(activeResume);
   contactLinkListSchema.parse(contactLinks);
   languageListSchema.parse(languages);
   educationListSchema.parse(educationEntries);
@@ -436,6 +494,7 @@ assertUnique(
   );
 
   validateProfileRelations();
+  validateResume();
   validateExperienceTechnologyRelations();
   validateProjectRelations();
   validateCodeSampleRelations();
@@ -456,6 +515,9 @@ assertUnique(
   console.log(`Projects: ${projects.length}`);
   console.log(`Featured projects: ${projects.filter((project) => project.featured).length}`);
   console.log(`Case studies: ${CASE_STUDY_SLUGS.length}`);
+  console.log(
+  `Resume: ${activeResume.filename}`,
+);
 }
 
 function validateSkillRelations(): void {
