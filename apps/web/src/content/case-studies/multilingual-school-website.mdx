@@ -1,0 +1,336 @@
+<CaseStudySection
+  id="executive-summary"
+  eyebrow="Overview"
+  title="Executive Summary"
+>
+  The Multilingual School Website is a production Django application used to publish school information, admissions documents, educational materials, committee information, and other public content in multiple languages.
+
+  I maintained and extended the existing application by updating Django models, creating and applying database migrations, improving administrative workflows, updating translated fields, managing public documents, and supporting the Linux production deployment.
+
+  The work focused on safely evolving a live website without interrupting the public service or exposing private administration and infrastructure details.
+</CaseStudySection>
+
+<CaseStudySection
+  id="problem"
+  eyebrow="Business problem"
+  title="Maintaining Structured Multilingual Content"
+>
+  The website needed to support public information that changes over time and must remain manageable by administrators without editing source files.
+
+  Several content areas required new fields, longer values, translated labels, document uploads, and improved administration. These changes had to be introduced while preserving existing production data and keeping the public website available.
+
+  The main challenge was therefore not creating a new static website. It was safely evolving an existing database-driven Django application.
+</CaseStudySection>
+
+<CaseStudySection
+  id="business-context"
+  eyebrow="Users and context"
+  title="A Public Production Website"
+>
+  The public website serves students, parents, applicants, and other visitors looking for school information and admissions materials.
+
+  Administrative users manage content through Django administration rather than changing templates or deployment files directly.
+
+  Public pages may be shown in the portfolio, but administration screens, credentials, unpublished content, database records, and private server configuration remain excluded.
+</CaseStudySection>
+
+<CaseStudySection
+  id="role-contributions"
+  eyebrow="My work"
+  title="Role and Personal Contributions"
+>
+  I joined an existing Django project and was responsible for implementing and deploying targeted production changes.
+
+  My contributions included:
+
+  - Updating Django models for new content requirements.
+  - Creating and applying database migrations.
+  - Improving Django administration configuration.
+  - Maintaining multilingual model fields and compiled translations.
+  - Adding and updating admissions documents.
+  - Extending methodical-material and committee content structures.
+  - Updating static and media handling where required.
+  - Verifying changes against the production database.
+  - Supporting Gunicorn and Nginx deployment on Linux.
+  - Checking the public website after releases.
+
+  I did not originally design every part of the application. My responsibility was to understand the existing system, extend it safely, and keep the production site operational.
+</CaseStudySection>
+
+<CaseStudySection
+  id="requirements-constraints"
+  eyebrow="Boundaries"
+  title="Requirements and Constraints"
+>
+  Important requirements and constraints included:
+
+  - Preserve existing production content during schema changes.
+  - Support multiple languages consistently.
+  - Keep public content manageable through Django administration.
+  - Accept longer document and external-resource links.
+  - Maintain compatibility with existing templates.
+  - Apply migrations in the correct production order.
+  - Keep uploaded documents and media accessible.
+  - Avoid exposing private administration or server details.
+  - Minimize interruption to the live website.
+</CaseStudySection>
+
+<CaseStudySection
+  id="architecture"
+  eyebrow="System design"
+  title="Django Production Architecture"
+>
+  The public architecture uses a traditional server-rendered Django deployment.
+
+  <ArchitectureFlow
+    label="Simplified website request flow"
+    steps={[
+      {
+        title: "Public browser",
+        description:
+          "Students, parents, applicants, and other visitors request multilingual public pages and documents.",
+      },
+      {
+        title: "Nginx",
+        description:
+          "Nginx receives public traffic, serves appropriate static and media resources, and proxies application requests.",
+      },
+      {
+        title: "Gunicorn",
+        description:
+          "Gunicorn runs the Django application processes behind the reverse proxy.",
+      },
+      {
+        title: "Django application",
+        description:
+          "Django resolves routes, selects translated content, renders templates, and provides administrative content workflows.",
+      },
+      {
+        title: "PostgreSQL",
+        description:
+          "PostgreSQL stores structured page content, multilingual fields, document metadata, and administrative records.",
+      },
+      {
+        title: "Static and media storage",
+        description:
+          "CSS, JavaScript, images, and uploaded public documents are served through controlled production paths.",
+      },
+    ]}
+  />
+</CaseStudySection>
+
+<CaseStudySection
+  id="data-model"
+  eyebrow="Persistence"
+  title="Content and Translation Model"
+>
+  The application stores public website content in Django models instead of hardcoding every section into templates.
+
+  The multilingual layer uses translated model fields so that the same logical record can provide language-specific values.
+
+  Relevant modeling patterns include:
+
+  - One database record representing one public content item.
+  - Separate translated values for supported languages.
+  - Administrative ordering and visibility fields.
+  - File and document references stored with content records.
+  - Text fields for values that may exceed ordinary URL-field limits.
+  - Migration-controlled schema evolution.
+  - PostgreSQL as the authoritative production data source.
+
+  Migrations `0003`, `0004`, and `0005` were applied as part of the production changes represented in this case study.
+</CaseStudySection>
+
+<CaseStudySection
+  id="features"
+  eyebrow="Website scope"
+  title="Key Features"
+>
+  The website includes:
+
+  - Multilingual public content.
+  - Database-managed page sections.
+  - Django administrative workflows.
+  - Admissions information and downloadable documents.
+  - Methodical materials and related counters.
+  - Parent committee information.
+  - Public images and uploaded media.
+  - Translated model fields.
+  - Production static-file handling.
+  - Linux deployment through Nginx and Gunicorn.
+</CaseStudySection>
+
+<CaseStudySection
+  id="technical-decisions"
+  eyebrow="Engineering choices"
+  title="Technical Decisions"
+>
+  <div className="grid gap-6">
+    <TechnicalDecision
+      title="Keep content database-managed"
+      context="School information changes more frequently than the application structure."
+      selectedApproach="Represent editable sections as Django models managed through the administration interface."
+      reasoning="Administrators can update public content without modifying templates or deploying application code."
+      tradeoffs={[
+        "Model changes require migrations.",
+        "Admin configuration must remain understandable for non-developer users.",
+        "Templates must handle incomplete or optional content safely.",
+      ]}
+      optionsConsidered={[
+        "Hardcoded template content",
+        "External headless CMS",
+        "Django models and administration",
+      ]}
+    />
+
+    <TechnicalDecision
+      title="Use explicit schema migrations"
+      context="Existing production records had to remain valid while fields and content structures changed."
+      selectedApproach="Create focused Django migrations and apply them sequentially against the authoritative production database."
+      reasoning="Explicit migrations make structural changes reviewable, repeatable, and consistent between environments."
+      tradeoffs={[
+        "Migration order must be controlled.",
+        "Rollback may require both schema and data planning.",
+        "Production backups remain necessary before structural changes.",
+      ]}
+    />
+
+    <TechnicalDecision
+      title="Preserve the existing deployment model"
+      context="The website was already running through Django, Gunicorn, Nginx, PostgreSQL, and Linux."
+      selectedApproach="Extend the existing production architecture rather than replacing it during feature work."
+      reasoning="The requested changes were content and administration improvements, not a full platform rewrite."
+      tradeoffs={[
+        "Existing architectural constraints remain.",
+        "Deployment changes must remain compatible with the current server.",
+        "Large redesign work should be separated from content maintenance.",
+      ]}
+    />
+  </div>
+</CaseStudySection>
+
+<CaseStudySection
+  id="selected-code"
+  eyebrow="Implementation evidence"
+  title="Selected Implementation Patterns"
+>
+  The original repository is not published through this portfolio. The most relevant implementation patterns are described without reproducing client-owned files.
+
+  Representative patterns include:
+
+  - Django models with translated content fields.
+  - Model changes accompanied by generated migrations.
+  - Django admin fieldsets and list configuration.
+  - File and document fields for public admissions materials.
+  - Text fields for long external links.
+  - Translation message compilation before deployment.
+  - Gunicorn application execution behind Nginx.
+  - Production verification after migration and restart.
+
+  A separate rewritten Django code sample can be added later if it provides additional hiring value. It is not required to understand this case study.
+</CaseStudySection>
+
+<CaseStudySection
+  id="testing"
+  eyebrow="Verification"
+  title="Testing and Release Validation"
+>
+  The project did not use a large automated test suite for every content change, so this case study does not claim complete automated coverage.
+
+  Release validation included:
+
+  - Running Django system checks.
+  - Reviewing generated migrations.
+  - Applying migrations against the intended database.
+  - Confirming translated fields in administration.
+  - Compiling translation messages.
+  - Checking public pages in supported languages.
+  - Verifying uploaded documents.
+  - Confirming static and media resources.
+  - Restarting application services when required.
+  - Checking the production domain after deployment.
+
+  Database backups and migration review are particularly important because the production database is the authoritative content source.
+</CaseStudySection>
+
+<CaseStudySection
+  id="challenges"
+  eyebrow="Implementation challenges"
+  title="Challenges"
+>
+  One challenge was changing model fields without losing existing production content. A schema change that is simple in development can affect real records, administration forms, templates, and translations in production.
+
+  Another challenge was supporting values such as long external links. Fields originally designed for shorter URLs had to be changed carefully while preserving existing values and template compatibility.
+
+  Multilingual content also requires synchronization between model definitions, translation configuration, message files, compiled translations, administration, and public rendering.
+
+  The safest approach was to make focused changes, generate explicit migrations, verify the production database, and inspect the affected pages after every deployment.
+</CaseStudySection>
+
+<CaseStudySection
+  id="results"
+  eyebrow="Outcome"
+  title="Results"
+>
+  The production website remained available while receiving new content structures, administration improvements, translated fields, documents, and deployment updates.
+
+  Completed work included:
+
+  - Parent committee content-field changes.
+  - Longer location and RSVP values.
+  - Methodical-material counter improvements.
+  - Admissions PDF updates.
+  - Administration configuration changes.
+  - Translation compilation.
+  - Production database migrations.
+  - Public deployment verification.
+
+  No traffic or performance metrics are presented because verified analytics were not available for this case study.
+</CaseStudySection>
+
+<CaseStudySection
+  id="lessons"
+  eyebrow="Reflection"
+  title="Lessons Learned"
+>
+  Maintaining an existing production system requires different judgment from starting a new project.
+
+  The most important lessons were:
+
+  - Understand current data before changing models.
+  - Treat migrations as production code.
+  - Separate public content from private administration.
+  - Verify translations at both model and interface levels.
+  - Prefer focused changes over unnecessary rewrites.
+  - Confirm deployment results on the real public route.
+  - Avoid claiming metrics that have not been measured.
+</CaseStudySection>
+
+<CaseStudySection
+  id="future-improvements"
+  eyebrow="Next steps"
+  title="Future Improvements"
+>
+  Reasonable future improvements include:
+
+  - Add automated tests for important public views.
+  - Add migration tests for critical content structures.
+  - Improve image optimization and delivery.
+  - Add structured deployment health checks.
+  - Document content-editor workflows.
+  - Add accessibility checks for public templates.
+  - Review page performance through production measurements.
+  - Introduce a staging environment for larger changes.
+</CaseStudySection>
+
+<CaseStudySection
+  id="confidentiality"
+  eyebrow="Publication boundary"
+  title="Confidentiality"
+>
+  <ConfidentialityNote>
+    The public website and public domain may be referenced because they are already externally accessible.
+
+    This case study does not expose administration screenshots, database contents, credentials, private server addresses, environment variables, unpublished documents, production settings, or client-owned source files.
+  </ConfidentialityNote>
+</CaseStudySection>
