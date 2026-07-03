@@ -1,9 +1,12 @@
 from fastapi import APIRouter
 
 from app.core.config import get_settings
+from app.domain.roles import DemoRole
 from app.schemas.system import (
     ApiMetadataResponse,
     ApiResourceLinks,
+    PermissionAction,
+    PermissionsResponse,
 )
 
 router = APIRouter(
@@ -16,6 +19,7 @@ router = APIRouter(
     "",
     response_model=ApiMetadataResponse,
     response_model_by_alias=True,
+    operation_id="get_demo_metadata",
     summary="Describe the demonstration API",
 )
 def get_demo_metadata() -> ApiMetadataResponse:
@@ -32,4 +36,54 @@ def get_demo_metadata() -> ApiMetadataResponse:
             audit_events=("/api/demo/v1/audit-events"),
             jobs="/api/demo/v1/jobs",
         ),
+    )
+
+
+@router.get(
+    "/permissions",
+    response_model=PermissionsResponse,
+    response_model_by_alias=True,
+    operation_id="get_demo_permissions",
+    summary="Describe demo role permissions",
+)
+def get_demo_permissions() -> PermissionsResponse:
+    return PermissionsResponse(
+        header="X-Demo-Role",
+        disclaimer=(
+            "X-Demo-Role demonstrates "
+            "authorization behavior only. "
+            "It is not a production "
+            "authentication mechanism."
+        ),
+        roles=[
+            DemoRole.VIEWER,
+            DemoRole.MANAGER,
+            DemoRole.ADMIN,
+        ],
+        actions=[
+            PermissionAction(
+                action="List departments",
+                viewer=True,
+                manager=True,
+                admin=True,
+            ),
+            PermissionAction(
+                action="View department",
+                viewer=True,
+                manager=True,
+                admin=True,
+            ),
+            PermissionAction(
+                action="Create department",
+                viewer=False,
+                manager=False,
+                admin=True,
+            ),
+            PermissionAction(
+                action="Update department",
+                viewer=False,
+                manager=False,
+                admin=True,
+            ),
+        ],
     )

@@ -1,15 +1,7 @@
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
-
-
-class ApiModel(BaseModel):
-    model_config = ConfigDict(
-        alias_generator=to_camel,
-        populate_by_name=True,
-        serialize_by_alias=True,
-    )
+from app.domain.roles import DemoRole
+from app.schemas.base import ApiModel
 
 
 class HealthResponse(ApiModel):
@@ -18,6 +10,7 @@ class HealthResponse(ApiModel):
         "ready",
         "unavailable",
     ]
+
     service: str
     version: str
     checks: dict[str, str]
@@ -36,3 +29,17 @@ class ApiMetadataResponse(ApiModel):
     data_policy: str
     documentation: str
     resources: ApiResourceLinks
+
+
+class PermissionAction(ApiModel):
+    action: str
+    viewer: bool
+    manager: bool
+    admin: bool
+
+
+class PermissionsResponse(ApiModel):
+    header: str
+    disclaimer: str
+    roles: list[DemoRole]
+    actions: list[PermissionAction]

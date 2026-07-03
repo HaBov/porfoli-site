@@ -61,6 +61,10 @@ def create_application() -> FastAPI:
                 "name": "Demo Metadata",
                 "description": ("Public information about the synthetic demonstration API."),
             },
+            {
+                "name": "Departments",
+                "description": ("Synthetic department management endpoints."),
+            },
         ],
     )
 

@@ -4,12 +4,13 @@ from enum import StrEnum
 from typing import Any
 
 from fastapi import FastAPI, Request
-from fastapi.exceptions import (
-    RequestValidationError,
-)
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from starlette.exceptions import (
-    HTTPException as StarletteHTTPException,
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from app.domain.exceptions import (
+    DepartmentNotFound,
+    DuplicateDepartmentCode,
 )
 
 logger = logging.getLogger("portfolio.api.errors")
@@ -46,9 +47,7 @@ class AppError(Exception):
         self.fields = dict(fields or {})
 
 
-def get_request_id(
-    request: Request,
-) -> str:
+def get_request_id(request: Request) -> str:
     return getattr(
         request.state,
         "request_id",
@@ -138,6 +137,33 @@ def status_error_code(
 def register_exception_handlers(
     app: FastAPI,
 ) -> None:
+    @app.exception_handler(DepartmentNotFound)
+    async def handle_department_not_found(
+        request: Request,
+        _error: DepartmentNotFound,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=404,
+            code=ErrorCode.NOT_FOUND,
+            message="Department was not found.",
+        )
+
+    @app.exception_handler(DuplicateDepartmentCode)
+    async def handle_duplicate_department_code(
+        request: Request,
+        error: DuplicateDepartmentCode,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=409,
+            code=ErrorCode.CONFLICT,
+            message=("A department with this code already exists."),
+            fields={
+                "code": (f"Code {error.code} is already in use."),
+            },
+        )
+
     @app.exception_handler(AppError)
     async def handle_app_error(
         request: Request,
@@ -170,7 +196,7 @@ def register_exception_handlers(
             request=request,
             status_code=422,
             code=ErrorCode.VALIDATION_ERROR,
-            message=("The submitted data is invalid."),
+            message="The submitted data is invalid.",
             fields=fields,
         )
 
