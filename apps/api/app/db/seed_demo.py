@@ -1,4 +1,5 @@
 import asyncio
+from datetime import date
 from uuid import NAMESPACE_URL, UUID, uuid5
 
 from app.db.session import (
@@ -65,7 +66,14 @@ async def seed_demo_data() -> None:
                 last_name="Morgan",
                 email="alex.morgan@example.com",
                 department_id=engineering_id,
+                job_title="Backend Developer",
                 status=EmployeeStatus.ACTIVE,
+                start_date=date(
+                    2025,
+                    7,
+                    1,
+                ),
+                manager_id=None,
             ),
             Employee(
                 id=jordan_id,
@@ -73,7 +81,14 @@ async def seed_demo_data() -> None:
                 last_name="Lee",
                 email="jordan.lee@example.org",
                 department_id=operations_id,
-                status=EmployeeStatus.ONBOARDING,
+                job_title=("Operations Coordinator"),
+                status=(EmployeeStatus.ONBOARDING),
+                start_date=date(
+                    2026,
+                    7,
+                    15,
+                ),
+                manager_id=None,
             ),
             Employee(
                 id=taylor_id,
@@ -81,7 +96,14 @@ async def seed_demo_data() -> None:
                 last_name="Smith",
                 email="taylor.smith@example.com",
                 department_id=people_id,
-                status=EmployeeStatus.OFFBOARDING,
+                job_title=("People Operations Specialist"),
+                status=(EmployeeStatus.OFFBOARDING),
+                start_date=date(
+                    2025,
+                    11,
+                    3,
+                ),
+                manager_id=None,
             ),
         ]
 
