@@ -6,11 +6,19 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.exceptions import (
+    HTTPException as StarletteHTTPException,
+)
 
 from app.domain.exceptions import (
     DepartmentNotFound,
     DuplicateDepartmentCode,
+    DuplicateEmployeeEmail,
+    EmployeeNotFound,
+    InactiveDepartment,
+    InvalidAuditDateRange,
+    InvalidEmployeeStatusChange,
+    InvalidManager,
 )
 
 logger = logging.getLogger("portfolio.api.errors")
@@ -164,6 +172,93 @@ def register_exception_handlers(
             },
         )
 
+    @app.exception_handler(EmployeeNotFound)
+    async def handle_employee_not_found(
+        request: Request,
+        _error: EmployeeNotFound,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=404,
+            code=ErrorCode.NOT_FOUND,
+            message="Employee was not found.",
+        )
+
+    @app.exception_handler(DuplicateEmployeeEmail)
+    async def handle_duplicate_employee_email(
+        request: Request,
+        _error: DuplicateEmployeeEmail,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=409,
+            code=ErrorCode.CONFLICT,
+            message=("An employee with this email already exists."),
+            fields={
+                "email": ("This demonstration email is already in use."),
+            },
+        )
+
+    @app.exception_handler(InactiveDepartment)
+    async def handle_inactive_department(
+        request: Request,
+        _error: InactiveDepartment,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=422,
+            code=ErrorCode.VALIDATION_ERROR,
+            message=("The submitted data is invalid."),
+            fields={
+                "departmentId": ("The selected department is inactive."),
+            },
+        )
+
+    @app.exception_handler(InvalidManager)
+    async def handle_invalid_manager(
+        request: Request,
+        error: InvalidManager,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=422,
+            code=ErrorCode.VALIDATION_ERROR,
+            message=("The submitted data is invalid."),
+            fields={
+                "managerId": error.message,
+            },
+        )
+
+    @app.exception_handler(InvalidEmployeeStatusChange)
+    async def handle_invalid_status_change(
+        request: Request,
+        error: InvalidEmployeeStatusChange,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=422,
+            code=ErrorCode.VALIDATION_ERROR,
+            message=("The submitted data is invalid."),
+            fields={
+                "status": error.message,
+            },
+        )
+
+    @app.exception_handler(InvalidAuditDateRange)
+    async def handle_invalid_audit_range(
+        request: Request,
+        _error: InvalidAuditDateRange,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=422,
+            code=ErrorCode.VALIDATION_ERROR,
+            message=("The submitted data is invalid."),
+            fields={
+                "from": ("The start date must be earlier than or equal to the end date."),
+            },
+        )
+
     @app.exception_handler(AppError)
     async def handle_app_error(
         request: Request,
@@ -196,7 +291,7 @@ def register_exception_handlers(
             request=request,
             status_code=422,
             code=ErrorCode.VALIDATION_ERROR,
-            message="The submitted data is invalid.",
+            message=("The submitted data is invalid."),
             fields=fields,
         )
 
@@ -206,7 +301,9 @@ def register_exception_handlers(
         error: StarletteHTTPException,
     ) -> JSONResponse:
         message = (
-            error.detail if isinstance(error.detail, str) else "The request could not be completed."
+            error.detail
+            if isinstance(error.detail, str)
+            else ("The request could not be completed.")
         )
 
         return create_error_response(

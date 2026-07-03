@@ -7,7 +7,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.errors import AppError, ErrorCode
 from app.db.session import get_session
 from app.domain.roles import DemoRole
-from app.services.departments import DepartmentService
+from app.services.audit_events import (
+    AuditEventService,
+)
+from app.services.departments import (
+    DepartmentService,
+)
+from app.services.employees import (
+    EmployeeService,
+)
 
 
 async def get_demo_role(
@@ -80,9 +88,31 @@ def get_department_service(
     return DepartmentService(session)
 
 
+def get_employee_service(
+    session: SessionDep,
+) -> EmployeeService:
+    return EmployeeService(session)
+
+
+def get_audit_event_service(
+    session: SessionDep,
+) -> AuditEventService:
+    return AuditEventService(session)
+
+
 DepartmentServiceDep = Annotated[
     DepartmentService,
     Depends(get_department_service),
+]
+
+EmployeeServiceDep = Annotated[
+    EmployeeService,
+    Depends(get_employee_service),
+]
+
+AuditEventServiceDep = Annotated[
+    AuditEventService,
+    Depends(get_audit_event_service),
 ]
 
 
@@ -91,6 +121,17 @@ AnyDemoRole = Annotated[
     Depends(
         require_demo_roles(
             DemoRole.VIEWER,
+            DemoRole.MANAGER,
+            DemoRole.ADMIN,
+        )
+    ),
+]
+
+
+ManagerOrAdminDemoRole = Annotated[
+    DemoRole,
+    Depends(
+        require_demo_roles(
             DemoRole.MANAGER,
             DemoRole.ADMIN,
         )

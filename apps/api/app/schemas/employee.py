@@ -79,7 +79,6 @@ class EmployeeCreate(RequestModel):
     )
 
     email: EmailStr
-
     department_id: UUID
 
     job_title: str = Field(
@@ -90,7 +89,6 @@ class EmployeeCreate(RequestModel):
     status: EmployeeStatus = EmployeeStatus.ONBOARDING
 
     start_date: date
-
     manager_id: UUID | None = None
 
     @field_validator(
@@ -140,7 +138,6 @@ class EmployeeUpdate(RequestModel):
     )
 
     email: EmailStr | None = None
-
     department_id: UUID | None = None
 
     job_title: str | None = Field(
@@ -150,9 +147,9 @@ class EmployeeUpdate(RequestModel):
     )
 
     status: EmployeeStatus | None = None
-
     start_date: date | None = None
 
+    # Explicit null removes the manager.
     manager_id: UUID | None = None
 
     @field_validator(

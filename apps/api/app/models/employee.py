@@ -148,11 +148,15 @@ class Employee(
     manager: Mapped[Employee | None] = relationship(
         back_populates="direct_reports",
         remote_side=lambda: [Employee.id],
-        foreign_keys=lambda: [Employee.manager_id],
+        foreign_keys=lambda: [
+            Employee.manager_id,
+        ],
     )
 
     direct_reports: Mapped[list[Employee]] = relationship(
         back_populates="manager",
-        foreign_keys=lambda: [Employee.manager_id],
+        foreign_keys=lambda: [
+            Employee.manager_id,
+        ],
         passive_deletes=True,
     )

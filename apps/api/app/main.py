@@ -65,6 +65,14 @@ def create_application() -> FastAPI:
                 "name": "Departments",
                 "description": ("Synthetic department management endpoints."),
             },
+            {
+                "name": "Employees",
+                "description": ("Synthetic employee management endpoints."),
+            },
+            {
+                "name": "Audit Events",
+                "description": ("Read-only synthetic audit history."),
+            },
         ],
     )
 

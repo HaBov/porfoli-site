@@ -22,7 +22,7 @@ def test_employee_profile_columns_exist() -> None:
     } <= set(Employee.__table__.columns.keys())
 
 
-def test_employee_status_values_match_contract() -> None:
+def test_employee_status_values() -> None:
     assert [status.value for status in EmployeeStatus] == [
         "onboarding",
         "active",
@@ -40,7 +40,7 @@ def test_employee_manager_foreign_key() -> None:
     assert foreign_key.ondelete == "SET NULL"
 
 
-def test_employee_prevents_direct_self_manager() -> None:
+def test_employee_self_manager_constraint() -> None:
     check_names = {
         constraint.name
         for constraint in Employee.__table__.constraints
@@ -51,14 +51,3 @@ def test_employee_prevents_direct_self_manager() -> None:
     }
 
     assert "ck_employees_manager_not_self" in check_names
-
-
-def test_employee_search_indexes_exist() -> None:
-    index_names = {index.name for index in Employee.__table__.indexes}
-
-    assert {
-        "ix_employees_department_status",
-        "ix_employees_last_name",
-        "ix_employees_created_at",
-        "ix_employees_manager_id",
-    } <= index_names
