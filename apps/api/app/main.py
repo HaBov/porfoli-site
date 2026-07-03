@@ -10,6 +10,7 @@ from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
 from app.core.request_id import RequestIdMiddleware
+from app.db.session import dispose_engine
 
 
 @asynccontextmanager
@@ -25,9 +26,11 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         },
     )
 
-    yield
-
-    logger.info("API stopped")
+    try:
+        yield
+    finally:
+        await dispose_engine()
+        logger.info("API stopped")
 
 
 def create_application() -> FastAPI:

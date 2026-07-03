@@ -1,6 +1,8 @@
 from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
+from app.db.health import check_database
 from app.schemas.system import HealthResponse
 
 router = APIRouter(
@@ -34,8 +36,29 @@ def check_liveness() -> HealthResponse:
     response_model_by_alias=True,
     summary="Check application readiness",
 )
-def check_readiness() -> HealthResponse:
+async def check_readiness() -> HealthResponse | JSONResponse:
     settings = get_settings()
+
+    database_ready = await check_database()
+
+    if not database_ready:
+        payload = HealthResponse(
+            status="unavailable",
+            service=settings.app_name,
+            version=settings.app_version,
+            checks={
+                "application": "ok",
+                "database": "unavailable",
+            },
+        )
+
+        return JSONResponse(
+            status_code=503,
+            content=payload.model_dump(
+                mode="json",
+                by_alias=True,
+            ),
+        )
 
     return HealthResponse(
         status="ready",
@@ -43,5 +66,6 @@ def check_readiness() -> HealthResponse:
         version=settings.app_version,
         checks={
             "application": "ok",
+            "database": "ok",
         },
     )

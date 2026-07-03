@@ -13,7 +13,11 @@ class ApiModel(BaseModel):
 
 
 class HealthResponse(ApiModel):
-    status: Literal["ok", "ready"]
+    status: Literal[
+        "ok",
+        "ready",
+        "unavailable",
+    ]
     service: str
     version: str
     checks: dict[str, str]
