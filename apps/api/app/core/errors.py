@@ -15,10 +15,12 @@ from app.domain.exceptions import (
     DuplicateDepartmentCode,
     DuplicateEmployeeEmail,
     EmployeeNotFound,
+    IdempotencyConflict,
     InactiveDepartment,
     InvalidAuditDateRange,
     InvalidEmployeeStatusChange,
     InvalidManager,
+    JobNotFound,
 )
 
 logger = logging.getLogger("portfolio.api.errors")
@@ -46,6 +48,7 @@ class AppError(Exception):
         code: ErrorCode,
         message: str,
         fields: Mapping[str, str] | None = None,
+        headers: Mapping[str, str] | None = None,
     ) -> None:
         super().__init__(message)
 
@@ -53,6 +56,7 @@ class AppError(Exception):
         self.code = code
         self.message = message
         self.fields = dict(fields or {})
+        self.headers = dict(headers or {})
 
 
 def get_request_id(request: Request) -> str:
@@ -70,6 +74,7 @@ def create_error_response(
     code: ErrorCode,
     message: str,
     fields: Mapping[str, str] | None = None,
+    headers: Mapping[str, str] | None = None,
 ) -> JSONResponse:
     error: dict[str, Any] = {
         "code": code.value,
@@ -85,6 +90,7 @@ def create_error_response(
         content={
             "error": error,
         },
+        headers=dict(headers or {}),
     )
 
 
@@ -259,6 +265,33 @@ def register_exception_handlers(
             },
         )
 
+    @app.exception_handler(JobNotFound)
+    async def handle_job_not_found(
+        request: Request,
+        _error: JobNotFound,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=404,
+            code=ErrorCode.NOT_FOUND,
+            message=("Background job was not found."),
+        )
+
+    @app.exception_handler(IdempotencyConflict)
+    async def handle_idempotency_conflict(
+        request: Request,
+        _error: IdempotencyConflict,
+    ) -> JSONResponse:
+        return create_error_response(
+            request=request,
+            status_code=409,
+            code=(ErrorCode.IDEMPOTENCY_CONFLICT),
+            message=("The Idempotency-Key was already used with a different request."),
+            fields={
+                "Idempotency-Key": ("Use the original payload or provide a new key."),
+            },
+        )
+
     @app.exception_handler(AppError)
     async def handle_app_error(
         request: Request,
@@ -270,6 +303,7 @@ def register_exception_handlers(
             code=error.code,
             message=error.message,
             fields=error.fields,
+            headers=error.headers,
         )
 
     @app.exception_handler(RequestValidationError)

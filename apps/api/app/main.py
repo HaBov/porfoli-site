@@ -7,6 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
 from app.core.config import get_settings
+from app.core.demo_safety import (
+    DemoBodyLimitMiddleware,
+    DemoRateLimitMiddleware,
+)
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
 from app.core.request_id import RequestIdMiddleware
@@ -73,8 +77,30 @@ def create_application() -> FastAPI:
                 "name": "Audit Events",
                 "description": ("Read-only synthetic audit history."),
             },
+            {
+                "name": "Background Jobs",
+                "description": (
+                    "Database-backed simulated background processing with polling and idempotency."
+                ),
+            },
         ],
     )
+
+    app.add_middleware(
+        DemoBodyLimitMiddleware,
+        max_bytes=settings.demo_json_body_limit_bytes,
+    )
+
+    app.add_middleware(
+        DemoRateLimitMiddleware,
+        read_limit=settings.demo_read_rate_limit,
+        write_limit=settings.demo_write_rate_limit,
+        job_limit=settings.demo_job_rate_limit,
+        window_seconds=settings.demo_rate_limit_window_seconds,
+        salt=settings.demo_rate_limit_salt,
+    )
+
+    app.add_middleware(RequestIdMiddleware)
 
     app.add_middleware(
         CORSMiddleware,
@@ -94,6 +120,10 @@ def create_application() -> FastAPI:
         ],
         expose_headers=[
             "X-Request-ID",
+            "X-RateLimit-Limit",
+            "X-RateLimit-Remaining",
+            "Retry-After",
+            "Idempotency-Replayed",
         ],
     )
 

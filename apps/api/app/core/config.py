@@ -2,7 +2,10 @@ from functools import lru_cache
 from typing import Literal
 
 from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import (
+    BaseSettings,
+    SettingsConfigDict,
+)
 
 
 class Settings(BaseSettings):
@@ -47,6 +50,60 @@ class Settings(BaseSettings):
         default_factory=lambda: [
             "http://localhost:3000",
         ]
+    )
+
+    demo_json_body_limit_bytes: int = Field(
+        default=65_536,
+        ge=1_024,
+        le=1_048_576,
+    )
+
+    demo_read_rate_limit: int = Field(
+        default=60,
+        ge=1,
+        le=1_000,
+    )
+
+    demo_write_rate_limit: int = Field(
+        default=10,
+        ge=1,
+        le=1_000,
+    )
+
+    demo_job_rate_limit: int = Field(
+        default=3,
+        ge=1,
+        le=100,
+    )
+
+    demo_rate_limit_window_seconds: int = Field(
+        default=60,
+        ge=10,
+        le=3_600,
+    )
+
+    demo_rate_limit_salt: str = Field(
+        default="portfolio-demo-development",
+        min_length=16,
+        max_length=256,
+    )
+
+    demo_idempotency_ttl_hours: int = Field(
+        default=24,
+        ge=1,
+        le=168,
+    )
+
+    demo_job_queue_seconds: float = Field(
+        default=1.0,
+        ge=0.1,
+        le=30.0,
+    )
+
+    demo_job_completion_seconds: float = Field(
+        default=4.0,
+        ge=1.0,
+        le=120.0,
     )
 
     docs_url: str = "/api/docs"

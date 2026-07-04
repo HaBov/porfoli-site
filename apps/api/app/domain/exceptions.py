@@ -51,3 +51,16 @@ class InvalidEmployeeStatusChange(Exception):
 class InvalidAuditDateRange(Exception):
     def __init__(self) -> None:
         super().__init__("The audit date range is invalid.")
+
+
+class JobNotFound(Exception):
+    def __init__(self, job_id: UUID) -> None:
+        self.job_id = job_id
+        super().__init__("Background job was not found.")
+
+
+class IdempotencyConflict(Exception):
+    def __init__(self, key: str) -> None:
+        self.key = key
+
+        super().__init__("The idempotency key was already used with a different request.")

@@ -1,10 +1,22 @@
-from collections.abc import Awaitable, Callable
+import re
+from collections.abc import (
+    Awaitable,
+    Callable,
+)
 from typing import Annotated
 
-from fastapi import Depends, Header
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import (
+    Depends,
+    Header,
+)
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+)
 
-from app.core.errors import AppError, ErrorCode
+from app.core.errors import (
+    AppError,
+    ErrorCode,
+)
 from app.db.session import get_session
 from app.domain.roles import DemoRole
 from app.services.audit_events import (
@@ -16,6 +28,9 @@ from app.services.departments import (
 from app.services.employees import (
     EmployeeService,
 )
+from app.services.jobs import JobService
+
+IDEMPOTENCY_KEY_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{8,128}$")
 
 
 async def get_demo_role(
@@ -47,6 +62,39 @@ async def get_demo_role(
                 "X-Demo-Role": ("Use viewer, manager, or admin."),
             },
         ) from error
+
+
+async def get_idempotency_key(
+    idempotency_key: Annotated[
+        str | None,
+        Header(alias="Idempotency-Key"),
+    ] = None,
+) -> str:
+    if idempotency_key is None:
+        raise AppError(
+            status_code=422,
+            code=ErrorCode.VALIDATION_ERROR,
+            message=("The submitted data is invalid."),
+            fields={
+                "Idempotency-Key": ("This header is required."),
+            },
+        )
+
+    normalized_key = idempotency_key.strip()
+
+    if not IDEMPOTENCY_KEY_PATTERN.fullmatch(normalized_key):
+        raise AppError(
+            status_code=422,
+            code=ErrorCode.VALIDATION_ERROR,
+            message=("The submitted data is invalid."),
+            fields={
+                "Idempotency-Key": (
+                    "Use 8-128 letters, numbers, dots, underscores, colons, or hyphens."
+                ),
+            },
+        )
+
+    return normalized_key
 
 
 RoleDependency = Callable[
@@ -100,6 +148,12 @@ def get_audit_event_service(
     return AuditEventService(session)
 
 
+def get_job_service(
+    session: SessionDep,
+) -> JobService:
+    return JobService(session)
+
+
 DepartmentServiceDep = Annotated[
     DepartmentService,
     Depends(get_department_service),
@@ -113,6 +167,16 @@ EmployeeServiceDep = Annotated[
 AuditEventServiceDep = Annotated[
     AuditEventService,
     Depends(get_audit_event_service),
+]
+
+JobServiceDep = Annotated[
+    JobService,
+    Depends(get_job_service),
+]
+
+IdempotencyKeyDep = Annotated[
+    str,
+    Depends(get_idempotency_key),
 ]
 
 
