@@ -50,11 +50,18 @@ class RequestIdMiddleware(BaseHTTPMiddleware):
         request: Request,
         call_next: RequestResponseEndpoint,
     ) -> Response:
-        request_id = resolve_request_id(request.headers.get(REQUEST_ID_HEADER))
+        request_id = getattr(
+            request.state,
+            "request_id",
+            None,
+        )
+
+        if request_id is None:
+            request_id = resolve_request_id(request.headers.get(REQUEST_ID_HEADER))
+
+            request.state.request_id = request_id
 
         token = _request_id_context.set(request_id)
-
-        request.state.request_id = request_id
 
         try:
             response = await call_next(request)
