@@ -15,7 +15,6 @@ import {
     inconsistent status codes and makes it easy to forget
     a check during later development.
 
-
     This example demonstrates a dependency factory that
     converts a permission code into a reusable FastAPI
     dependency and returns an actor whose authorization
@@ -47,6 +46,7 @@ import {
     <li>
       A missing check can expose a sensitive mutation.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -130,6 +130,7 @@ import {
       The route remains focused on the application
       operation.
     </li>
+
   </ol>
 </CodeSampleSection>
 
@@ -163,6 +164,7 @@ import {
       <strong>Test visibility:</strong> the required
       permission appears in the generic denial response.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -175,7 +177,6 @@ import {
     remain distinct. Missing or invalid credentials
     should produce 401, while a valid actor without the
     required capability receives 403.
-
 
     The response exposes a generic permission code for
     debugging and testing, but it does not reveal the
@@ -226,7 +227,6 @@ import {
     period, but cache invalidation must follow role and
     assignment changes.
 
-
     Permission checks at the route boundary also do not
     replace object-level authorization. A user may have
     permission to update employees generally while still
@@ -269,6 +269,7 @@ import {
       Preserve tenant boundaries in every permission
       lookup.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -283,7 +284,6 @@ import {
       tenant representation, and route structure are
       intentionally generic.
 
-
       It does not reproduce proprietary source code,
       internal role assignments, production identifiers,
       or the exact permission matrix of any company
@@ -291,4 +291,3 @@ import {
 
   </ConfidentialityNote>
 </CodeSampleSection>
-

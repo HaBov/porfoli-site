@@ -86,6 +86,8 @@ def create_application() -> FastAPI:
         ],
     )
 
+    app.add_middleware(RequestIdMiddleware)
+
     app.add_middleware(
         DemoBodyLimitMiddleware,
         max_bytes=settings.demo_json_body_limit_bytes,
@@ -99,8 +101,6 @@ def create_application() -> FastAPI:
         window_seconds=settings.demo_rate_limit_window_seconds,
         salt=settings.demo_rate_limit_salt,
     )
-
-    app.add_middleware(RequestIdMiddleware)
 
     app.add_middleware(
         CORSMiddleware,
@@ -126,8 +126,6 @@ def create_application() -> FastAPI:
             "Idempotency-Replayed",
         ],
     )
-
-    app.add_middleware(RequestIdMiddleware)
 
     register_exception_handlers(app)
 

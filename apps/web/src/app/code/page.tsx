@@ -1,17 +1,11 @@
-import {
-  ArrowRight,
-  LockKeyhole,
-} from "lucide-react";
+import { ArrowRight, LockKeyhole } from "lucide-react";
 import Link from "next/link";
 
 import {
   CodeSamplesExplorer,
   type CodeSampleExplorerItem,
 } from "@/components/code/code-samples-explorer";
-import {
-  getProjectById,
-  getPublishedCodeSamples,
-} from "@/content";
+import { getProjectById, getPublishedCodeSamples } from "@/content";
 import { createPageMetadata } from "@/lib/metadata";
 
 export const metadata = createPageMetadata({
@@ -21,19 +15,14 @@ export const metadata = createPageMetadata({
 });
 
 export default function CodeSamplesPage() {
-  const items: CodeSampleExplorerItem[] =
-    getPublishedCodeSamples().map((sample) => {
-      const relatedProject = getProjectById(
-        sample.relatedProjectIds[0],
-      );
+  const items: CodeSampleExplorerItem[] = getPublishedCodeSamples().map((sample) => {
+    const relatedProject = getProjectById(sample.relatedProjectIds[0]);
 
-      return {
-        sample,
-        relatedProjectTitle:
-          relatedProject?.title ??
-          "Portfolio engineering pattern",
-      };
-    });
+    return {
+      sample,
+      relatedProjectTitle: relatedProject?.title ?? "Portfolio engineering pattern",
+    };
+  });
 
   return (
     <main id="main-content">
@@ -48,36 +37,24 @@ export default function CodeSamplesPage() {
           </h1>
 
           <p className="text-secondary mt-6 max-w-3xl text-lg leading-8">
-            Focused examples of API design,
-            authorization, data modeling, background
-            processing, testing, integrations, and
-            production deployment. Each sample includes
-            code, failure behavior, tests, trade-offs,
-            and operational considerations.
+            Focused examples of API design, authorization, data modeling, background processing,
+            testing, integrations, and production deployment. Each sample includes code, failure
+            behavior, tests, trade-offs, and operational considerations.
           </p>
 
           <aside className="border-line bg-elevated mt-8 max-w-4xl rounded-2xl border p-5 sm:p-6">
             <div className="flex gap-4">
               <div className="bg-surface text-accent flex size-10 shrink-0 items-center justify-center rounded-xl">
-                <LockKeyhole
-                  aria-hidden="true"
-                  className="size-5"
-                />
+                <LockKeyhole aria-hidden="true" className="size-5" />
               </div>
 
               <div>
-                <h2 className="text-primary font-semibold">
-                  Independently rewritten examples
-                </h2>
+                <h2 className="text-primary font-semibold">Independently rewritten examples</h2>
 
                 <p className="text-secondary mt-2 text-sm leading-7">
-                  These examples were written
-                  specifically for this portfolio. They
-                  demonstrate engineering patterns
-                  without reproducing proprietary source
-                  code, internal identifiers,
-                  credentials, production data, or
-                  company-specific business rules.
+                  These examples were written specifically for this portfolio. They demonstrate
+                  engineering patterns without reproducing proprietary source code, internal
+                  identifiers, credentials, production data, or company-specific business rules.
                 </p>
               </div>
             </div>
@@ -99,10 +76,8 @@ export default function CodeSamplesPage() {
             </h2>
 
             <p className="text-secondary mt-3 max-w-2xl text-sm leading-7">
-              Project case studies connect the
-              implementation patterns to architecture,
-              constraints, testing, and measurable
-              operational outcomes.
+              Project case studies connect the implementation patterns to architecture, constraints,
+              testing, and measurable operational outcomes.
             </p>
           </div>
 
@@ -111,11 +86,7 @@ export default function CodeSamplesPage() {
             className="bg-accent text-background hover:bg-accent-hover focus-visible:ring-accent inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none"
           >
             View Projects
-
-            <ArrowRight
-              aria-hidden="true"
-              className="size-4"
-            />
+            <ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>
       </section>

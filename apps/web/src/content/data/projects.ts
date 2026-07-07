@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 import { projectListSchema, type ProjectRecord } from "../schemas/project.schema";
 
@@ -24,7 +24,7 @@ const projectsInput = [
     teamContext:
       "Developed independently across backend and frontend with requirements and workflow feedback from internal operational stakeholders.",
 
-    timeframeLabel: "November 2025 – Present",
+    timeframeLabel: "November 2025 вЂ“ Present",
     startDate: "2025-11",
     ongoing: true,
 
@@ -138,7 +138,7 @@ const projectsInput = [
     ],
 
     resultSummary:
-      "The workflow archives approximately 90,000–150,000 recording files per 90-day cycle and extends the available retention workflow from approximately 90 days to two years.",
+      "The workflow archives approximately 90,000вЂ“150,000 recording files per 90-day cycle and extends the available retention workflow from approximately 90 days to two years.",
 
     confidentiality: {
       level: 2,
@@ -279,7 +279,7 @@ const projectsInput = [
     ],
 
     resultSummary:
-      "The workflow increased approximate weekly media delivery from 150 videos to 1,500–2,000 videos, representing roughly 10–13× throughput growth.",
+      "The workflow increased approximate weekly media delivery from 150 videos to 1,500вЂ“2,000 videos, representing roughly 10вЂ“13Г— throughput growth.",
 
     confidentiality: {
       level: 2,
@@ -320,7 +320,7 @@ const projectsInput = [
     timeframeLabel: "Internal deployed workflow",
 
     featured: false,
-    versionOne: true,
+    versionOne: false,
     priority: 7,
 
     technologyIds: [
@@ -387,7 +387,7 @@ const projectsInput = [
     teamContext:
       "Developed as a corporate internal application; the original repository and internal operational data are not public.",
 
-    timeframeLabel: "Active development · 2026",
+    timeframeLabel: "Active development В· 2026",
 
     featured: false,
     versionOne: false,

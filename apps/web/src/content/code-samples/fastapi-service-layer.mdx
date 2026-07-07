@@ -1,4 +1,3 @@
-
 import {
   employeeRouteCode,
   employeeSchemasCode,
@@ -18,11 +17,10 @@ import {
     response in one function.
   </p>
 
-  <p>
-    That approach is quick initially but becomes
-    difficult to reuse and test as the number of API
-    modules grows.
-  </p>
+<p>
+  That approach is quick initially but becomes difficult to reuse and test as the number of API
+  modules grows.
+</p>
 
   <p>
     This sample uses a small employee-onboarding resource
@@ -62,6 +60,7 @@ import {
       Tests require full API setup even when only one
       rule needs validation.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -77,19 +76,13 @@ import {
     caption="Pydantic request and response contracts keep validation separate from ORM entities."
   />
 
-  <CodeBlock
-    filename="app/api/routes/employees.py"
-    language="python"
-    code={employeeRouteCode}
-    highlightLines={[
-      13,
-      14,
-      15,
-      16,
-      17,
-    ]}
-    caption="The route translates HTTP input into a service call and returns a validated response."
-  />
+<CodeBlock
+  filename="app/api/routes/employees.py"
+  language="python"
+  code={employeeRouteCode}
+  highlightLines={[13, 14, 15, 16, 17]}
+  caption="The route translates HTTP input into a service call and returns a validated response."
+/>
 
   <CodeBlock
     filename="app/services/employees.py"
@@ -150,6 +143,7 @@ import {
       The route serializes the ORM object through
       <code>EmployeeRead</code>.
     </li>
+
   </ol>
 </CodeSampleSection>
 
@@ -183,6 +177,7 @@ import {
       <strong>Testable rules:</strong> the service can
       be tested without constructing an HTTP request.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -197,11 +192,10 @@ import {
     <code>department_not_found</code>.
   </p>
 
-  <p>
-    Unexpected persistence errors trigger a rollback and
-    are re-raised for centralized logging and HTTP error
-    mapping.
-  </p>
+<p>
+  Unexpected persistence errors trigger a rollback and are re-raised for centralized logging and
+  HTTP error mapping.
+</p>
 
   <p>
     Catching a broad exception is limited to the
@@ -278,21 +272,16 @@ import {
       Keep transaction retries bounded and limited to
       known transient failures.
     </li>
+
   </ul>
 </CodeSampleSection>
 
-<CodeSampleSection
-  id="confidentiality"
-  eyebrow="Publication boundary"
-  title="Confidentiality"
->
+<CodeSampleSection id="confidentiality" eyebrow="Publication boundary" title="Confidentiality">
   <ConfidentialityNote>
     <p>
-      This sample was independently written for the
-      portfolio. The employee entity, permission
-      boundary, error codes, repository methods, and
-      workflow rules are generic and do not reproduce an
-      internal source file or company-specific process.
+      This sample was independently written for the portfolio. The employee entity, permission
+      boundary, error codes, repository methods, and workflow rules are generic and do not reproduce
+      an internal source file or company-specific process.
     </p>
   </ConfidentialityNote>
 </CodeSampleSection>

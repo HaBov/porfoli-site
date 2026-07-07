@@ -1,5 +1,5 @@
-import { existsSync } from "node:fs";
-import { basename, join, } from "node:path";
+﻿import { existsSync } from "node:fs";
+import { basename, join } from "node:path";
 import { contactLinks, getContactLink } from "./data/contact-links";
 import { educationEntries } from "./data/education";
 import { experienceEntries } from "./data/experience";
@@ -89,7 +89,6 @@ function validateExperienceTechnologyRelations(): void {
 function validateProjectRelations(): void {
   const projectIds = new Set(projects.map((project) => project.id));
 
-
   const technologyIds = new Set(technologies.map((technology) => technology.id));
 
   const experienceIds = new Set(experienceEntries.map((experience) => experience.id));
@@ -98,28 +97,28 @@ function validateProjectRelations(): void {
 
   for (const project of projects) {
     if (project.publicationStatus === "draft") {
-  assertCondition(
-    project.versionOne === false,
-    `Draft project "${project.id}" cannot be included in Version 1.`,
-  );
+      assertCondition(
+        project.versionOne === false,
+        `Draft project "${project.id}" cannot be included in Version 1.`,
+      );
 
-  assertCondition(
-    project.featured === false,
-    `Draft project "${project.id}" cannot be featured.`,
-  );
-}
+      assertCondition(
+        project.featured === false,
+        `Draft project "${project.id}" cannot be featured.`,
+      );
+    }
 
-if (project.tier === 4) {
-  assertCondition(
-    project.versionOne === false,
-    `Backlog project "${project.id}" cannot be included in Version 1.`,
-  );
+    if (project.tier === 4) {
+      assertCondition(
+        project.versionOne === false,
+        `Backlog project "${project.id}" cannot be included in Version 1.`,
+      );
 
-  assertCondition(
-    project.featured === false,
-    `Backlog project "${project.id}" cannot be featured.`,
-  );
-}
+      assertCondition(
+        project.featured === false,
+        `Backlog project "${project.id}" cannot be featured.`,
+      );
+    }
     for (const technologyId of project.technologyIds) {
       assertCondition(
         technologyIds.has(technologyId),
@@ -192,34 +191,20 @@ if (project.tier === 4) {
 }
 
 function validateCodeSampleRelations(): void {
-  const projectMap = new Map(
-    projects.map((project) => [
-      project.id,
-      project,
-    ]),
-  );
+  const projectMap = new Map(projects.map((project) => [project.id, project]));
 
-  const technologyIds = new Set(
-    technologies.map(
-      (technology) => technology.id,
-    ),
-  );
+  const technologyIds = new Set(technologies.map((technology) => technology.id));
 
-  const registeredSlugs = new Set<string>(
-    CODE_SAMPLE_SLUGS,
-  );
+  const registeredSlugs = new Set<string>(CODE_SAMPLE_SLUGS);
 
   assertCondition(
-    codeSamples.length ===
-      CODE_SAMPLE_SLUGS.length,
+    codeSamples.length === CODE_SAMPLE_SLUGS.length,
     "Version 1 must contain exactly eight code samples.",
   );
 
   for (const slug of CODE_SAMPLE_SLUGS) {
     assertCondition(
-      codeSamples.some(
-        (sample) => sample.slug === slug,
-      ),
+      codeSamples.some((sample) => sample.slug === slug),
       `Code sample registry references missing slug "${slug}".`,
     );
   }
@@ -236,14 +221,12 @@ function validateCodeSampleRelations(): void {
     );
 
     assertCondition(
-      new Set(sample.relatedProjectIds).size ===
-        sample.relatedProjectIds.length,
+      new Set(sample.relatedProjectIds).size === sample.relatedProjectIds.length,
       `Code sample "${sample.id}" contains duplicate project relations.`,
     );
 
     assertCondition(
-      new Set(sample.relatedTechnologyIds).size ===
-        sample.relatedTechnologyIds.length,
+      new Set(sample.relatedTechnologyIds).size === sample.relatedTechnologyIds.length,
       `Code sample "${sample.id}" contains duplicate technology relations.`,
     );
 
@@ -266,8 +249,7 @@ function validateCodeSampleRelations(): void {
       );
 
       assertCondition(
-        project.confidentiality
-          .rewrittenCodeAllowed,
+        project.confidentiality.rewrittenCodeAllowed,
         `Project "${project.id}" does not allow rewritten public code samples.`,
       );
     }
@@ -280,15 +262,9 @@ function validateCodeSampleRelations(): void {
     }
   }
 
-  for (const project of projects.filter(
-    (candidate) => candidate.featured,
-  )) {
+  for (const project of projects.filter((candidate) => candidate.featured)) {
     assertCondition(
-      codeSamples.some((sample) =>
-        sample.relatedProjectIds.includes(
-          project.id,
-        ),
-      ),
+      codeSamples.some((sample) => sample.relatedProjectIds.includes(project.id)),
       `Featured project "${project.id}" requires at least one related code sample.`,
     );
   }
@@ -316,55 +292,29 @@ function validatePortfolioScope(): void {
   );
 }
 
-function resolvePublicFile(
-  publicPath: string,
-): string | undefined {
-  const relativePath = publicPath.replace(
-    /^\/+/,
-    "",
-  );
+function resolvePublicFile(publicPath: string): string | undefined {
+  const relativePath = publicPath.replace(/^\/+/, "");
 
   const candidates = [
-    join(
-      process.cwd(),
-      "public",
-      relativePath,
-    ),
-    join(
-      process.cwd(),
-      "apps",
-      "web",
-      "public",
-      relativePath,
-    ),
+    join(process.cwd(), "public", relativePath),
+    join(process.cwd(), "apps", "web", "public", relativePath),
   ];
 
-  return candidates.find((candidate) =>
-    existsSync(candidate),
-  );
+  return candidates.find((candidate) => existsSync(candidate));
 }
 
 function validateResume(): void {
-  assertCondition(
-    activeResume.active,
-    "The configured resume must be active.",
-  );
+  assertCondition(activeResume.active, "The configured resume must be active.");
+
+  assertCondition(activeResume.format === "pdf", "The public resume must use PDF format.");
 
   assertCondition(
-    activeResume.format === "pdf",
-    "The public resume must use PDF format.",
-  );
-
-  assertCondition(
-    basename(activeResume.publicPath) ===
-      activeResume.filename,
+    basename(activeResume.publicPath) === activeResume.filename,
     "Resume filename does not match its public path.",
   );
 
   assertCondition(
-    resolvePublicFile(
-      activeResume.publicPath,
-    ) !== undefined,
+    resolvePublicFile(activeResume.publicPath) !== undefined,
     `Resume PDF is missing at "${activeResume.publicPath}".`,
   );
 }
@@ -449,19 +399,19 @@ function validateContent(): void {
   );
 
   assertUnique(
-  codeSamples.map((sample) => sample.id),
-  "code sample ID",
-);
+    codeSamples.map((sample) => sample.id),
+    "code sample ID",
+  );
 
-assertUnique(
-  codeSamples.map((sample) => sample.slug),
-  "code sample slug",
-);
+  assertUnique(
+    codeSamples.map((sample) => sample.slug),
+    "code sample slug",
+  );
 
-assertUnique(
-  codeSamples.map((sample) => sample.priority),
-  "code sample priority",
-);
+  assertUnique(
+    codeSamples.map((sample) => sample.priority),
+    "code sample priority",
+  );
 
   assertUnique(
     skillGroups.map((skillGroup) => skillGroup.id),
@@ -515,9 +465,7 @@ assertUnique(
   console.log(`Projects: ${projects.length}`);
   console.log(`Featured projects: ${projects.filter((project) => project.featured).length}`);
   console.log(`Case studies: ${CASE_STUDY_SLUGS.length}`);
-  console.log(
-  `Resume: ${activeResume.filename}`,
-);
+  console.log(`Resume: ${activeResume.filename}`);
 }
 
 function validateSkillRelations(): void {
@@ -585,8 +533,8 @@ function validateCaseStudyRelations(): void {
     );
 
     assertCondition(
-      project.tier === 1,
-      `Case study project "${project.id}" must be Tier 1 during the flagship case-study phase.`,
+      project.tier === 1 || project.tier === 2,
+      `Case study project "${project.id}" must be Tier 1 or Tier 2 when it has a case-study page.`,
     );
 
     assertCondition(

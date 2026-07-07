@@ -14,7 +14,6 @@ import {
     network availability, and a database record that
     tracks progress.
 
-
     Moving this work to Celery keeps the HTTP request
     short while allowing retries, monitoring, and
     recoverable execution.
@@ -30,7 +29,6 @@ import {
     once. Workers may restart, brokers may redeliver a
     message, external APIs may fail temporarily, and the
     same item may be queued more than once.
-
 
   <ul>
     <li>
@@ -54,55 +52,18 @@ import {
       Logs must identify the task without exposing source
       URLs or credentials.
     </li>
+
   </ul>
 </CodeSampleSection>
 
-<CodeSampleSection
-  id="code"
-  eyebrow="Implementation"
-  title="Code"
->
+<CodeSampleSection id="code" eyebrow="Implementation" title="Code">
   <CodeBlock
     filename="app/tasks/archive_items.py"
     language="python"
     code={celeryArchiveTaskCode}
     highlightLines={[
-      39,
-      40,
-      41,
-      42,
-      43,
-      44,
-      45,
-      46,
-      47,
-      48,
-      49,
-      50,
-      51,
-      52,
-      53,
-      54,
-      55,
-      67,
-      68,
-      69,
-      70,
-      71,
-      72,
-      73,
-      74,
-      75,
-      76,
-      77,
-      78,
-      79,
-      80,
-      81,
-      82,
-      83,
-      84,
-      85,
+      39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 67, 68, 69, 70, 71, 72,
+      73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85,
     ]}
     caption="The task uses persisted state for idempotency and distinguishes retryable failures from terminal failures."
   />
@@ -149,6 +110,7 @@ import {
       Successful transfer metadata is committed before
       the task returns.
     </li>
+
   </ol>
 </CodeSampleSection>
 
@@ -183,6 +145,7 @@ import {
       <strong>Structured context:</strong> logs carry
       technical identifiers but not sensitive URLs.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -194,7 +157,6 @@ import {
     Retryable failures represent conditions such as
     connection resets, temporary storage unavailability,
     or external rate limiting.
-
 
     Permanent failures represent invalid content,
     unsupported media, or an external resource that no
@@ -254,7 +216,6 @@ import {
     but it makes retries and operational support
     observable.
 
-
     Holding a database lock during the external transfer
     would reduce concurrency, so the sample commits the
     processing state before network work begins.
@@ -300,6 +261,7 @@ import {
       Verify file size and content type before marking the
       item complete.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -317,4 +279,3 @@ import {
 
   </ConfidentialityNote>
 </CodeSampleSection>
-

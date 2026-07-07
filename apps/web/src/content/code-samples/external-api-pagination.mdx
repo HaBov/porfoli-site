@@ -12,7 +12,6 @@ import {
     an external API before downloading or archiving
     individual records.
 
-
     The provider may return only one page at a time and
     require an opaque continuation token for the next
     request.
@@ -28,7 +27,6 @@ import {
     forever when a provider returns an unexpected token.
     Large exports must also respect rate limits and
     temporary server failures.
-
 
   <ul>
     <li>
@@ -50,61 +48,18 @@ import {
     <li>
       Client and server errors need different handling.
     </li>
+
   </ul>
 </CodeSampleSection>
 
-<CodeSampleSection
-  id="code"
-  eyebrow="Implementation"
-  title="Code"
->
+<CodeSampleSection id="code" eyebrow="Implementation" title="Code">
   <CodeBlock
     filename="app/integrations/recordings.py"
     language="python"
     code={externalApiPaginationCode}
     highlightLines={[
-      46,
-      47,
-      48,
-      49,
-      50,
-      51,
-      52,
-      53,
-      54,
-      55,
-      56,
-      57,
-      58,
-      59,
-      60,
-      61,
-      62,
-      63,
-      64,
-      65,
-      66,
-      67,
-      68,
-      69,
-      70,
-      71,
-      72,
-      73,
-      74,
-      97,
-      98,
-      99,
-      100,
-      101,
-      102,
-      103,
-      104,
-      105,
-      106,
-      107,
-      108,
-      109,
+      46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68,
+      69, 70, 71, 72, 73, 74, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
     ]}
     caption="The iterator hides continuation tokens from consumers while preserving retry and loop-protection behavior."
   />
@@ -147,6 +102,7 @@ import {
     <li>
       A missing token ends iteration normally.
     </li>
+
   </ol>
 </CodeSampleSection>
 
@@ -180,6 +136,7 @@ import {
       <strong>Bounded resilience:</strong> retry behavior
       has a clear maximum.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -192,7 +149,6 @@ import {
     <code>Retry-After</code> header when available.
     Numeric seconds and HTTP-date formats are both
     supported.
-
 
     Server errors receive bounded exponential delays.
     Other client errors fail immediately because retrying
@@ -263,7 +219,6 @@ import {
     automatically provide resumability after the process
     stops.
 
-
     For very large exports, the application should
     persist the last successful token or date checkpoint
     outside the iterator.
@@ -310,6 +265,7 @@ import {
       <code>example.com</code> in tests and public
       documentation.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -323,11 +279,9 @@ import {
       synthetic response fields, a reserved example
       domain, and generic continuation tokens.
 
-
       It does not expose a production endpoint, account
       identifier, access token, real recording metadata,
       retention rule, or copied integration code.
 
   </ConfidentialityNote>
 </CodeSampleSection>
-

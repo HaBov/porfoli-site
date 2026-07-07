@@ -1,7 +1,4 @@
-import {
-  ArrowRight,
-  Code2,
-} from "lucide-react";
+import { ArrowRight, Code2 } from "lucide-react";
 import Link from "next/link";
 
 import { CodeSampleCard } from "@/components/code/code-sample-card";
@@ -12,10 +9,7 @@ type RelatedCodeSamplesProps = {
   samples: CodeSampleRecord[];
 };
 
-export function RelatedCodeSamples({
-  projectTitle,
-  samples,
-}: RelatedCodeSamplesProps) {
+export function RelatedCodeSamples({ projectTitle, samples }: RelatedCodeSamplesProps) {
   if (samples.length === 0) {
     return null;
   }
@@ -29,11 +23,7 @@ export function RelatedCodeSamples({
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-accent inline-flex items-center gap-2 font-mono text-xs tracking-[0.1em] uppercase">
-            <Code2
-              aria-hidden="true"
-              className="size-4"
-            />
-
+            <Code2 aria-hidden="true" className="size-4" />
             Related implementation
           </p>
 
@@ -45,8 +35,7 @@ export function RelatedCodeSamples({
           </h2>
 
           <p className="text-secondary mt-4 max-w-2xl text-sm leading-7">
-            Independently rewritten examples of the
-            engineering patterns discussed in this case
+            Independently rewritten examples of the engineering patterns discussed in this case
             study.
           </p>
         </div>
@@ -56,11 +45,7 @@ export function RelatedCodeSamples({
           className="text-accent focus-visible:ring-accent inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md text-sm font-semibold hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
           Browse all samples
-
-          <ArrowRight
-            aria-hidden="true"
-            className="size-4"
-          />
+          <ArrowRight aria-hidden="true" className="size-4" />
         </Link>
       </div>
 

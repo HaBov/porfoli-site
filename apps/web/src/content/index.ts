@@ -46,11 +46,7 @@ export {
   CODE_SAMPLE_COMPLEXITY_LABELS,
 } from "./registries/code";
 
-export type {
-  CodeLanguage,
-  CodeSampleCategory,
-  CodeSampleComplexity,
-} from "./registries/code";
+export type { CodeLanguage, CodeSampleCategory, CodeSampleComplexity } from "./registries/code";
 
 export type { ResumeDocument } from "./schemas/resume.schema";
 
@@ -64,9 +60,7 @@ export {
   getPublishedCodeSamples,
 } from "./data/code-samples";
 
-export type {
-  CodeSampleRecord,
-} from "./schemas/code-sample.schema";
+export type { CodeSampleRecord } from "./schemas/code-sample.schema";
 
 export {
   FACT_VERIFICATION_STATUSES,
@@ -129,12 +123,6 @@ export { CASE_STUDY_SLUGS, hasCaseStudy } from "./registries/case-study";
 
 export type { CaseStudySlug } from "./registries/case-study";
 
-export {
-  CODE_SAMPLE_SLUGS,
-  hasCodeSample,
-} from "./registries/code-sample";
+export { CODE_SAMPLE_SLUGS, hasCodeSample } from "./registries/code-sample";
 
-export type {
-  CodeSampleSlug,
-} from "./registries/code-sample";
-
+export type { CodeSampleSlug } from "./registries/code-sample";

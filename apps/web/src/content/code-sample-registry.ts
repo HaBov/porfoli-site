@@ -24,8 +24,7 @@ const IMPLEMENTED_CODE_SAMPLE_SLUGS = [
   "docker-production-setup",
 ] as const;
 
-type ImplementedCodeSampleSlug =
-  (typeof IMPLEMENTED_CODE_SAMPLE_SLUGS)[number];
+type ImplementedCodeSampleSlug = (typeof IMPLEMENTED_CODE_SAMPLE_SLUGS)[number];
 
 type CodeSampleEntry = {
   slug: ImplementedCodeSampleSlug;
@@ -33,48 +32,35 @@ type CodeSampleEntry = {
   Component: ComponentType;
 };
 
-function requireCodeSample(
-  slug: ImplementedCodeSampleSlug,
-): CodeSampleRecord {
+function requireCodeSample(slug: ImplementedCodeSampleSlug): CodeSampleRecord {
   const sample = getCodeSampleBySlug(slug);
 
   if (!sample) {
-    throw new Error(
-      `Code sample references unknown slug "${slug}".`,
-    );
+    throw new Error(`Code sample references unknown slug "${slug}".`);
   }
 
   return sample;
 }
 
-const codeSampleComponents: Record<
-  ImplementedCodeSampleSlug,
-  ComponentType
-> = {
+const codeSampleComponents: Record<ImplementedCodeSampleSlug, ComponentType> = {
   "fastapi-service-layer": FastApiServiceLayer,
   "rbac-permission-check": RbacPermissionCheck,
   "sqlalchemy-data-model": SqlalchemyDataModel,
   "celery-background-task": CeleryBackgroundTask,
   "pytest-api-workflow": PytestApiWorkflow,
   "external-api-pagination": ExternalApiPagination,
-  "typescript-webhook-handler":
-    TypescriptWebhookHandler,
+  "typescript-webhook-handler": TypescriptWebhookHandler,
   "docker-production-setup": DockerProductionSetup,
 };
 
-export const codeSampleEntries: CodeSampleEntry[] =
-  IMPLEMENTED_CODE_SAMPLE_SLUGS.map((slug) => ({
-    slug,
-    sample: requireCodeSample(slug),
-    Component: codeSampleComponents[slug],
-  }));
+export const codeSampleEntries: CodeSampleEntry[] = IMPLEMENTED_CODE_SAMPLE_SLUGS.map((slug) => ({
+  slug,
+  sample: requireCodeSample(slug),
+  Component: codeSampleComponents[slug],
+}));
 
-export function getCodeSampleEntry(
-  slug: string,
-): CodeSampleEntry | undefined {
-  return codeSampleEntries.find(
-    (entry) => entry.slug === slug,
-  );
+export function getCodeSampleEntry(slug: string): CodeSampleEntry | undefined {
+  return codeSampleEntries.find((entry) => entry.slug === slug);
 }
 
 export function getCodeSampleStaticParams(): Array<{
@@ -85,24 +71,18 @@ export function getCodeSampleStaticParams(): Array<{
   }));
 }
 
-export function getAdjacentCodeSamples(
-  slug: string,
-): {
+export function getAdjacentCodeSamples(slug: string): {
   previousSample?: CodeSampleRecord;
   nextSample?: CodeSampleRecord;
 } {
-  const index = codeSampleEntries.findIndex(
-    (entry) => entry.slug === slug,
-  );
+  const index = codeSampleEntries.findIndex((entry) => entry.slug === slug);
 
   if (index === -1) {
     return {};
   }
 
   return {
-    previousSample:
-      codeSampleEntries[index - 1]?.sample,
-    nextSample:
-      codeSampleEntries[index + 1]?.sample,
+    previousSample: codeSampleEntries[index - 1]?.sample,
+    nextSample: codeSampleEntries[index + 1]?.sample,
   };
 }

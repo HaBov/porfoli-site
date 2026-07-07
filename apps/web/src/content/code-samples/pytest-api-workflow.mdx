@@ -1,7 +1,4 @@
-import {
-  pytestPermissionCaseCode,
-  pytestWorkflowCode,
-} from "../code-snippets/pytest-api-workflow";
+import { pytestPermissionCaseCode, pytestWorkflowCode } from "../code-snippets/pytest-api-workflow";
 
 <CodeSampleSection
   id="context"
@@ -24,7 +21,6 @@ import {
     pass while the wrong lifecycle state is stored, an
     audit event is missing, or an unauthorized role
     reaches the service.
-
 
     A useful workflow test checks the complete path at
     the level where regressions matter.
@@ -106,6 +102,7 @@ import {
       A separate role fixture verifies the authorization
       boundary.
     </li>
+
   </ol>
 </CodeSampleSection>
 
@@ -137,6 +134,7 @@ import {
       <strong>Independent verification:</strong> database
       assertions do not reuse the response object.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -147,7 +145,6 @@ import {
 >
     Negative tests should assert the stable application
     error code rather than a full human message.
-
 
     This allows wording to improve without weakening the
     contract. Unexpected stack traces must never appear in
@@ -185,6 +182,7 @@ import {
     <li>
       A failed transaction leaves no partial audit record.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -195,7 +193,6 @@ import {
 >
     Full workflow tests are slower than unit tests and
     require reliable fixture isolation.
-
 
     They should cover critical paths, while smaller
     service and repository tests provide faster feedback
@@ -232,6 +229,7 @@ import {
       Track flaky tests as defects rather than rerunning
       until green.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -248,4 +246,3 @@ import {
 
   </ConfidentialityNote>
 </CodeSampleSection>
-

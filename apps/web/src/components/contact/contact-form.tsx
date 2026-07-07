@@ -1,14 +1,7 @@
-"use client";
+﻿"use client";
 
-import {
-  Send,
-  TriangleAlert,
-} from "lucide-react";
-import {
-  type FormEvent,
-  useRef,
-  useState,
-} from "react";
+import { Send, TriangleAlert } from "lucide-react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import {
   contactSubmissionSchema,
@@ -32,16 +25,9 @@ type ContactFormValues = {
   website: string;
 };
 
-type ContactFieldErrors = Partial<
-  Record<ContactVisibleField, string>
->;
+type ContactFieldErrors = Partial<Record<ContactVisibleField, string>>;
 
-type SubmissionStatus =
-  | "idle"
-  | "submitting"
-  | "success"
-  | "error"
-  | "rate-limited";
+type SubmissionStatus = "idle" | "submitting" | "success" | "error" | "rate-limited";
 
 type ContactApiResponse = {
   ok?: boolean;
@@ -50,13 +36,7 @@ type ContactApiResponse = {
   requestId?: string;
 };
 
-const FIELD_ORDER: ContactVisibleField[] = [
-  "name",
-  "email",
-  "company",
-  "subject",
-  "message",
-];
+const FIELD_ORDER: ContactVisibleField[] = ["name", "email", "company", "subject", "message"];
 
 const INITIAL_VALUES: ContactFormValues = {
   name: "",
@@ -67,47 +47,34 @@ const INITIAL_VALUES: ContactFormValues = {
   website: "",
 };
 
-function focusField(
-  field: ContactVisibleField,
-): void {
+function focusField(field: ContactVisibleField): void {
   window.requestAnimationFrame(() => {
-    document
-      .getElementById(`contact-${field}`)
-      ?.focus();
+    document.getElementById(`contact-${field}`)?.focus();
   });
 }
 
-export function ContactForm({
-  fallbackEmail,
-}: ContactFormProps) {
-  const [values, setValues] =
-    useState<ContactFormValues>(INITIAL_VALUES);
+export function ContactForm({ fallbackEmail }: ContactFormProps) {
+  const [values, setValues] = useState<ContactFormValues>(INITIAL_VALUES);
 
-  const [errors, setErrors] =
-    useState<ContactFieldErrors>({});
+  const [errors, setErrors] = useState<ContactFieldErrors>({});
 
-  const [status, setStatus] =
-    useState<SubmissionStatus>("idle");
+  const [status, setStatus] = useState<SubmissionStatus>("idle");
 
-  const [statusMessage, setStatusMessage] =
-    useState("");
+  const [statusMessage, setStatusMessage] = useState("");
 
-  const startedAtRef = useRef(Date.now());
+  const startedAtRef = useRef<number | null>(null);
 
-  function updateField(
-    field: keyof ContactFormValues,
-    value: string,
-  ): void {
+  useEffect(() => {
+    startedAtRef.current = Date.now();
+  }, []);
+
+  function updateField(field: keyof ContactFormValues, value: string): void {
     setValues((current) => ({
       ...current,
       [field]: value,
     }));
 
-    if (
-      FIELD_ORDER.includes(
-        field as ContactVisibleField,
-      )
-    ) {
+    if (FIELD_ORDER.includes(field as ContactVisibleField)) {
       setErrors((current) => {
         const next = { ...current };
 
@@ -123,19 +90,17 @@ export function ContactForm({
     }
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ): Promise<void> {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault();
+
+    const startedAt = startedAtRef.current ?? Date.now();
 
     const payload = {
       ...values,
-      elapsedMs:
-        Date.now() - startedAtRef.current,
+      elapsedMs: Date.now() - startedAt,
     };
 
-    const parsed =
-      contactSubmissionSchema.safeParse(payload);
+    const parsed = contactSubmissionSchema.safeParse(payload);
 
     if (!parsed.success) {
       const nextErrors: ContactFieldErrors = {};
@@ -145,29 +110,18 @@ export function ContactForm({
 
         if (
           typeof field === "string" &&
-          FIELD_ORDER.includes(
-            field as ContactVisibleField,
-          ) &&
-          !nextErrors[
-            field as ContactVisibleField
-          ]
+          FIELD_ORDER.includes(field as ContactVisibleField) &&
+          !nextErrors[field as ContactVisibleField]
         ) {
-          nextErrors[
-            field as ContactVisibleField
-          ] = issue.message;
+          nextErrors[field as ContactVisibleField] = issue.message;
         }
       }
 
       setErrors(nextErrors);
       setStatus("error");
-      setStatusMessage(
-        "Review the highlighted fields and submit the form again.",
-      );
+      setStatusMessage("Review the highlighted fields and submit the form again.");
 
-      const firstInvalidField =
-        FIELD_ORDER.find(
-          (field) => nextErrors[field],
-        );
+      const firstInvalidField = FIELD_ORDER.find((field) => nextErrors[field]);
 
       if (firstInvalidField) {
         focusField(firstInvalidField);
@@ -180,30 +134,22 @@ export function ContactForm({
     setStatusMessage("");
 
     try {
-      const response = await fetch(
-        "/api/contact",
-        {
-          method: "POST",
-          headers: {
-            "content-type":
-              "application/json",
-          },
-          body: JSON.stringify(parsed.data),
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
         },
-      );
+        body: JSON.stringify(parsed.data),
+      });
 
-      const result =
-        (await response
-          .json()
-          .catch(() => ({}))) as ContactApiResponse;
+      const result = (await response.json().catch(() => ({}))) as ContactApiResponse;
 
       if (response.ok) {
         setValues(INITIAL_VALUES);
         setErrors({});
         setStatus("success");
         setStatusMessage(
-          result.message ??
-            "Thanks for reaching out. Your message has been received.",
+          result.message ?? "Thanks for reaching out. Your message has been received.",
         );
 
         startedAtRef.current = Date.now();
@@ -223,38 +169,22 @@ export function ContactForm({
 
       setStatus("error");
       setStatusMessage(
-        result.message ??
-          "The message could not be sent. Please contact me directly by email.",
+        result.message ?? "The message could not be sent. Please contact me directly by email.",
       );
     } catch {
       setStatus("error");
-      setStatusMessage(
-        "The message could not be sent. Please contact me directly by email.",
-      );
+      setStatusMessage("The message could not be sent. Please contact me directly by email.");
     }
   }
 
-  const errorCount = Object.values(
-    errors,
-  ).filter(Boolean).length;
+  const errorCount = Object.values(errors).filter(Boolean).length;
 
   return (
-    <form
-      noValidate
-      onSubmit={handleSubmit}
-      className="grid gap-6"
-    >
+    <form noValidate onSubmit={handleSubmit} className="grid gap-6">
       {errorCount > 1 ? (
-        <div
-          role="alert"
-          className="border-error/40 bg-error/10 rounded-xl border p-5"
-        >
+        <div role="alert" className="border-error/40 bg-error/10 rounded-xl border p-5">
           <div className="text-error flex items-center gap-2 font-semibold">
-            <TriangleAlert
-              aria-hidden="true"
-              className="size-5"
-            />
-
+            <TriangleAlert aria-hidden="true" className="size-5" />
             Check the form
           </div>
 
@@ -270,9 +200,7 @@ export function ContactForm({
                 <li key={field}>
                   <button
                     type="button"
-                    onClick={() =>
-                      focusField(field)
-                    }
+                    onClick={() => focusField(field)}
                     className="focus-visible:ring-accent rounded text-left underline underline-offset-4 focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {message}
@@ -286,10 +214,7 @@ export function ContactForm({
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label
-            htmlFor="contact-name"
-            className="text-foreground text-sm font-medium"
-          >
+          <label htmlFor="contact-name" className="text-foreground text-sm font-medium">
             Name
           </label>
 
@@ -299,35 +224,20 @@ export function ContactForm({
             autoComplete="name"
             value={values.name}
             invalid={Boolean(errors.name)}
-            aria-describedby={
-              errors.name
-                ? "contact-name-error"
-                : undefined
-            }
-            onChange={(event) =>
-              updateField(
-                "name",
-                event.target.value,
-              )
-            }
+            aria-describedby={errors.name ? "contact-name-error" : undefined}
+            onChange={(event) => updateField("name", event.target.value)}
             className="mt-2"
           />
 
           {errors.name ? (
-            <p
-              id="contact-name-error"
-              className="text-error mt-2 text-sm"
-            >
+            <p id="contact-name-error" className="text-error mt-2 text-sm">
               {errors.name}
             </p>
           ) : null}
         </div>
 
         <div>
-          <label
-            htmlFor="contact-email"
-            className="text-foreground text-sm font-medium"
-          >
+          <label htmlFor="contact-email" className="text-foreground text-sm font-medium">
             Email
           </label>
 
@@ -339,25 +249,13 @@ export function ContactForm({
             autoComplete="email"
             value={values.email}
             invalid={Boolean(errors.email)}
-            aria-describedby={
-              errors.email
-                ? "contact-email-error"
-                : undefined
-            }
-            onChange={(event) =>
-              updateField(
-                "email",
-                event.target.value,
-              )
-            }
+            aria-describedby={errors.email ? "contact-email-error" : undefined}
+            onChange={(event) => updateField("email", event.target.value)}
             className="mt-2"
           />
 
           {errors.email ? (
-            <p
-              id="contact-email-error"
-              className="text-error mt-2 text-sm"
-            >
+            <p id="contact-email-error" className="text-error mt-2 text-sm">
               {errors.email}
             </p>
           ) : null}
@@ -365,14 +263,8 @@ export function ContactForm({
       </div>
 
       <div>
-        <label
-          htmlFor="contact-company"
-          className="text-foreground text-sm font-medium"
-        >
-          Company{" "}
-          <span className="text-muted">
-            (optional)
-          </span>
+        <label htmlFor="contact-company" className="text-foreground text-sm font-medium">
+          Company <span className="text-muted">(optional)</span>
         </label>
 
         <Input
@@ -381,35 +273,20 @@ export function ContactForm({
           autoComplete="organization"
           value={values.company}
           invalid={Boolean(errors.company)}
-          aria-describedby={
-            errors.company
-              ? "contact-company-error"
-              : undefined
-          }
-          onChange={(event) =>
-            updateField(
-              "company",
-              event.target.value,
-            )
-          }
+          aria-describedby={errors.company ? "contact-company-error" : undefined}
+          onChange={(event) => updateField("company", event.target.value)}
           className="mt-2"
         />
 
         {errors.company ? (
-          <p
-            id="contact-company-error"
-            className="text-error mt-2 text-sm"
-          >
+          <p id="contact-company-error" className="text-error mt-2 text-sm">
             {errors.company}
           </p>
         ) : null}
       </div>
 
       <div>
-        <label
-          htmlFor="contact-subject"
-          className="text-foreground text-sm font-medium"
-        >
+        <label htmlFor="contact-subject" className="text-foreground text-sm font-medium">
           Subject
         </label>
 
@@ -418,25 +295,13 @@ export function ContactForm({
           name="subject"
           value={values.subject}
           invalid={Boolean(errors.subject)}
-          aria-describedby={
-            errors.subject
-              ? "contact-subject-error"
-              : undefined
-          }
-          onChange={(event) =>
-            updateField(
-              "subject",
-              event.target.value,
-            )
-          }
+          aria-describedby={errors.subject ? "contact-subject-error" : undefined}
+          onChange={(event) => updateField("subject", event.target.value)}
           className="mt-2"
         />
 
         {errors.subject ? (
-          <p
-            id="contact-subject-error"
-            className="text-error mt-2 text-sm"
-          >
+          <p id="contact-subject-error" className="text-error mt-2 text-sm">
             {errors.subject}
           </p>
         ) : null}
@@ -444,16 +309,11 @@ export function ContactForm({
 
       <div>
         <div className="flex items-end justify-between gap-4">
-          <label
-            htmlFor="contact-message"
-            className="text-foreground text-sm font-medium"
-          >
+          <label htmlFor="contact-message" className="text-foreground text-sm font-medium">
             Message
           </label>
 
-          <span className="text-muted text-xs">
-            {values.message.length} / 5000
-          </span>
+          <span className="text-muted text-xs">{values.message.length} / 5000</span>
         </div>
 
         <Textarea
@@ -462,46 +322,27 @@ export function ContactForm({
           rows={8}
           value={values.message}
           invalid={Boolean(errors.message)}
-          aria-describedby={
-            errors.message
-              ? "contact-message-error"
-              : "contact-message-help"
-          }
-          onChange={(event) =>
-            updateField(
-              "message",
-              event.target.value,
-            )
-          }
+          aria-describedby={errors.message ? "contact-message-error" : "contact-message-help"}
+          onChange={(event) => updateField("message", event.target.value)}
           className="mt-2"
         />
 
         {errors.message ? (
-          <p
-            id="contact-message-error"
-            className="text-error mt-2 text-sm"
-          >
+          <p id="contact-message-error" className="text-error mt-2 text-sm">
             {errors.message}
           </p>
         ) : (
-          <p
-            id="contact-message-help"
-            className="text-muted mt-2 text-sm"
-          >
-            Please do not include passwords,
-            access tokens, or confidential
-            company information.
+          <p id="contact-message-help" className="text-muted mt-2 text-sm">
+            Please do not include passwords, access tokens, or confidential company information.
           </p>
         )}
       </div>
 
       <div
         aria-hidden="true"
-        className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden"
+        className="absolute top-auto -left-[10000px] h-px w-px overflow-hidden"
       >
-        <label htmlFor="contact-website">
-          Website
-        </label>
+        <label htmlFor="contact-website">Website</label>
 
         <input
           id="contact-website"
@@ -510,30 +351,18 @@ export function ContactForm({
           tabIndex={-1}
           autoComplete="off"
           value={values.website}
-          onChange={(event) =>
-            updateField(
-              "website",
-              event.target.value,
-            )
-          }
+          onChange={(event) => updateField("website", event.target.value)}
         />
       </div>
 
       {status === "success" ? (
-        <Callout
-          variant="success"
-          title="Message received"
-          role="status"
-        >
+        <Callout variant="success" title="Message received" role="status">
           {statusMessage}
         </Callout>
       ) : null}
 
       {status === "error" ? (
-        <Callout
-          variant="error"
-          title="Message not sent"
-        >
+        <Callout variant="error" title="Message not sent">
           {statusMessage}{" "}
           <a
             href={`mailto:${fallbackEmail}`}
@@ -546,11 +375,7 @@ export function ContactForm({
       ) : null}
 
       {status === "rate-limited" ? (
-        <Callout
-          variant="warning"
-          title="Please try again later"
-          role="alert"
-        >
+        <Callout variant="warning" title="Please try again later" role="alert">
           {statusMessage}{" "}
           <a
             href={`mailto:${fallbackEmail}`}
@@ -568,20 +393,14 @@ export function ContactForm({
           size="lg"
           loading={status === "submitting"}
           loadingLabel="Sending..."
-          leftIcon={
-            <Send
-              aria-hidden="true"
-              className="size-4"
-            />
-          }
+          leftIcon={<Send aria-hidden="true" className="size-4" />}
           className="w-full sm:w-auto"
         >
           Send Message
         </Button>
 
         <p className="text-muted text-sm leading-6">
-          Contact details are used only to
-          respond to your message.
+          Contact details are used only to respond to your message.
         </p>
       </div>
     </form>

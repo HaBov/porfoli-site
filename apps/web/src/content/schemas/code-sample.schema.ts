@@ -6,11 +6,7 @@ import {
   CODE_SAMPLE_COMPLEXITIES,
 } from "../registries/code";
 import { PUBLICATION_STATUSES } from "../registries/content";
-import {
-  contentIdSchema,
-  isoDateSchema,
-  slugSchema,
-} from "./shared.schema";
+import { contentIdSchema, isoDateSchema, slugSchema } from "./shared.schema";
 
 export const codeSampleSchema = z.object({
   id: contentIdSchema,
@@ -25,13 +21,9 @@ export const codeSampleSchema = z.object({
   language: z.enum(CODE_LANGUAGES),
   framework: z.string().min(2).max(60).optional(),
 
-  relatedTechnologyIds: z
-    .array(contentIdSchema)
-    .min(1),
+  relatedTechnologyIds: z.array(contentIdSchema).min(1),
 
-  relatedProjectIds: z
-    .array(contentIdSchema)
-    .min(1),
+  relatedProjectIds: z.array(contentIdSchema).min(1),
 
   featured: z.boolean(),
   priority: z.number().int().positive(),
@@ -39,11 +31,7 @@ export const codeSampleSchema = z.object({
   filename: z.string().min(3).max(160),
   lineCount: z.number().int().positive(),
 
-  estimatedReadingMinutes: z
-    .number()
-    .int()
-    .min(2)
-    .max(30),
+  estimatedReadingMinutes: z.number().int().min(2).max(30),
 
   portfolioRewritten: z.literal(true),
   confidentialityReviewed: z.literal(true),
@@ -52,10 +40,6 @@ export const codeSampleSchema = z.object({
   updatedAt: isoDateSchema,
 });
 
-export const codeSampleListSchema = z
-  .array(codeSampleSchema)
-  .min(1);
+export const codeSampleListSchema = z.array(codeSampleSchema).min(1);
 
-export type CodeSampleRecord = z.infer<
-  typeof codeSampleSchema
->;
+export type CodeSampleRecord = z.infer<typeof codeSampleSchema>;

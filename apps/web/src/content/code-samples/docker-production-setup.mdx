@@ -16,7 +16,6 @@ import {
     volumes, health checks, and controlled network
     exposure.
 
-
     This example demonstrates a small production-oriented
     Docker stack for a FastAPI service.
 
@@ -31,7 +30,6 @@ import {
     service port, runs containers as root, writes anywhere
     in the filesystem, and starts services without
     checking readiness.
-
 
   <ul>
     <li>
@@ -56,6 +54,7 @@ import {
       Configuration and secrets should remain outside the
       image.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -108,54 +107,16 @@ import {
     caption="The multi-stage image installs dependencies separately and runs the application as a non-root user."
   />
 
-  <CodeBlock
-    filename="compose.production.yaml"
-    language="yaml"
-    code={productionComposeCode}
-    highlightLines={[
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28,
-      29,
-      30,
-      31,
-      32,
-      33,
-      34,
-      35,
-      36,
-      37,
-      38,
-      39,
-      40,
-      41,
-      42,
-    ]}
-    caption="Only Nginx publishes a host port; PostgreSQL and Redis remain on an internal network."
-  />
+<CodeBlock
+  filename="compose.production.yaml"
+  language="yaml"
+  code={productionComposeCode}
+  highlightLines={[
+    3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+    29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+  ]}
+  caption="Only Nginx publishes a host port; PostgreSQL and Redis remain on an internal network."
+/>
 
   <CodeBlock
     filename="deploy/nginx.conf"
@@ -199,6 +160,7 @@ import {
       External traffic reaches Nginx, while internal
       service ports remain unpublished.
     </li>
+
   </ol>
 </CodeSampleSection>
 
@@ -233,6 +195,7 @@ import {
       <strong>Persistent state:</strong> database and
       Redis data use named volumes.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -244,7 +207,6 @@ import {
     A failed readiness check prevents Nginx from routing
     traffic to an application that cannot reach its
     dependencies.
-
 
     Restart policies recover ordinary process failures,
     but they do not replace alerting or investigation of
@@ -311,7 +273,6 @@ import {
     single-server deployment, but it does not provide
     multi-node scheduling or automatic high availability.
 
-
     A read-only filesystem improves containment but
     requires every writable application path to be
     identified explicitly.
@@ -362,6 +323,7 @@ import {
       Test database migrations before the application
       receives traffic.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -375,7 +337,6 @@ import {
       filenames, health paths, and resource assumptions
       are generic portfolio examples.
 
-
       The configuration does not contain production
       domains, server addresses, credentials, database
       passwords, private image names, or copied deployment
@@ -383,4 +344,3 @@ import {
 
   </ConfidentialityNote>
 </CodeSampleSection>
-

@@ -12,7 +12,6 @@ import {
     belong to departments, may reference a manager,
     change status, and require searchable audit fields.
 
-
     The model must express these rules without publishing
     an entire internal schema.
 
@@ -30,31 +29,12 @@ import {
 
 </CodeSampleSection>
 
-<CodeSampleSection
-  id="code"
-  eyebrow="Implementation"
-  title="Code"
->
+<CodeSampleSection id="code" eyebrow="Implementation" title="Code">
   <CodeBlock
     filename="app/models/employee.py"
     language="python"
     code={employeeModelCode}
-    highlightLines={[
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      24,
-      31,
-      32,
-      33,
-      34,
-      35,
-      36,
-      37,
-    ]}
+    highlightLines={[18, 19, 20, 21, 22, 23, 24, 31, 32, 33, 34, 35, 36, 37]}
     caption="The model combines typed SQLAlchemy mappings with database-level constraints and indexes."
   />
 </CodeSampleSection>
@@ -92,6 +72,7 @@ import {
       A composite index supports common department and
       status filters.
     </li>
+
   </ol>
 </CodeSampleSection>
 
@@ -125,6 +106,7 @@ import {
       <strong>Controlled public scope:</strong> the
       sample shows a pattern, not a production schema.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -137,18 +119,13 @@ import {
     the transaction boundary and mapped to stable domain
     errors.
 
-
     The API should not return raw database messages
     because they can expose table names and implementation
     details.
 
 </CodeSampleSection>
 
-<CodeSampleSection
-  id="testing"
-  eyebrow="Validation"
-  title="Testing"
->
+<CodeSampleSection id="testing" eyebrow="Validation" title="Testing">
   <CodeBlock
     filename="tests/models/test_employee_constraints.py"
     language="python"
@@ -164,7 +141,6 @@ import {
 >
     Database enums provide strong constraints but require
     migrations when values change.
-
 
     A lookup table may be preferable when administrators
     must configure states dynamically. The choice should
@@ -200,6 +176,7 @@ import {
       Keep sensitive fields out of default response
       schemas.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -216,4 +193,3 @@ import {
 
   </ConfidentialityNote>
 </CodeSampleSection>
-

@@ -15,7 +15,6 @@ import {
     prevent duplicate processing, and dispatch supported
     events without keeping the request open unnecessarily.
 
-
     This example uses Hono, Zod, Cloudflare Workers, and
     D1 to create a small but explicit webhook boundary.
 
@@ -28,7 +27,6 @@ import {
 >
     Webhook payloads cannot be trusted simply because
     they appear to come from an expected integration.
-
 
   <ul>
     <li>
@@ -53,6 +51,7 @@ import {
       Logging complete payloads can expose personal
       information.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -166,6 +165,7 @@ import {
       The route immediately returns
       <code>202 Accepted</code>.
     </li>
+
   </ol>
 </CodeSampleSection>
 
@@ -199,6 +199,7 @@ import {
       <strong>Minimal stored data:</strong> only technical
       event metadata is persisted by default.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -210,7 +211,6 @@ import {
     Invalid authentication returns 403 before JSON
     processing. Malformed JSON and unsupported payloads
     return separate 400 codes.
-
 
     Duplicate events are not treated as failures because
     webhook redelivery is expected behavior.
@@ -286,7 +286,6 @@ import {
     successful acknowledgement if background processing
     later fails.
 
-
     Persisting the event before dispatch makes recovery
     possible. A scheduled reconciliation process can
     retry records that remain accepted but unprocessed.
@@ -328,6 +327,7 @@ import {
       Monitor invalid payload rate and dispatch failure
       rate.
     </li>
+
   </ul>
 </CodeSampleSection>
 
@@ -341,11 +341,9 @@ import {
       synthetic users, generic callback actions, and a
       minimal database schema.
 
-
       It does not contain a real bot token, webhook
       secret, chat identifier, employee profile, internal
       group structure, or copied company bot source code.
 
   </ConfidentialityNote>
 </CodeSampleSection>
-

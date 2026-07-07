@@ -1,7 +1,4 @@
-import {
-  codeSampleListSchema,
-  type CodeSampleRecord,
-} from "../schemas/code-sample.schema";
+import { codeSampleListSchema, type CodeSampleRecord } from "../schemas/code-sample.schema";
 
 const codeSamplesInput = [
   {
@@ -15,16 +12,8 @@ const codeSamplesInput = [
     complexity: "production-pattern",
     language: "python",
     framework: "FastAPI",
-    relatedTechnologyIds: [
-      "python",
-      "fastapi",
-      "pydantic",
-      "sqlalchemy",
-      "postgresql",
-    ],
-    relatedProjectIds: [
-      "project-internal-hr-platform",
-    ],
+    relatedTechnologyIds: ["python", "fastapi", "pydantic", "sqlalchemy", "postgresql"],
+    relatedProjectIds: ["project-internal-hr-platform"],
     featured: true,
     priority: 1,
     filename: "app/services/employees.py",
@@ -46,15 +35,8 @@ const codeSamplesInput = [
     complexity: "production-pattern",
     language: "python",
     framework: "FastAPI",
-    relatedTechnologyIds: [
-      "python",
-      "fastapi",
-      "pydantic",
-    ],
-    relatedProjectIds: [
-      "project-internal-hr-platform",
-      "project-access-lifecycle-automation",
-    ],
+    relatedTechnologyIds: ["python", "fastapi", "pydantic"],
+    relatedProjectIds: ["project-internal-hr-platform", "project-access-lifecycle-automation"],
     featured: true,
     priority: 2,
     filename: "app/api/dependencies/permissions.py",
@@ -76,14 +58,8 @@ const codeSamplesInput = [
     complexity: "production-pattern",
     language: "python",
     framework: "SQLAlchemy 2.0",
-    relatedTechnologyIds: [
-      "python",
-      "sqlalchemy",
-      "postgresql",
-    ],
-    relatedProjectIds: [
-      "project-internal-hr-platform",
-    ],
+    relatedTechnologyIds: ["python", "sqlalchemy", "postgresql"],
+    relatedProjectIds: ["project-internal-hr-platform"],
     featured: false,
     priority: 3,
     filename: "app/models/employee.py",
@@ -105,15 +81,8 @@ const codeSamplesInput = [
     complexity: "production-pattern",
     language: "python",
     framework: "Celery",
-    relatedTechnologyIds: [
-      "python",
-      "celery",
-      "redis",
-      "sqlalchemy",
-    ],
-    relatedProjectIds: [
-      "project-call-recording-archive",
-    ],
+    relatedTechnologyIds: ["python", "celery", "redis", "sqlalchemy"],
+    relatedProjectIds: ["project-call-recording-archive"],
     featured: false,
     priority: 4,
     filename: "app/tasks/archive_items.py",
@@ -135,15 +104,8 @@ const codeSamplesInput = [
     complexity: "intermediate",
     language: "python",
     framework: "Pytest",
-    relatedTechnologyIds: [
-      "python",
-      "fastapi",
-      "pytest",
-      "sqlalchemy",
-    ],
-    relatedProjectIds: [
-      "project-internal-hr-platform",
-    ],
+    relatedTechnologyIds: ["python", "fastapi", "pytest", "sqlalchemy"],
+    relatedProjectIds: ["project-internal-hr-platform"],
     featured: false,
     priority: 5,
     filename: "tests/api/test_employees.py",
@@ -165,13 +127,8 @@ const codeSamplesInput = [
     complexity: "production-pattern",
     language: "python",
     framework: "HTTP API",
-    relatedTechnologyIds: [
-      "python",
-      "ringcentral-api",
-    ],
-    relatedProjectIds: [
-      "project-call-recording-archive",
-    ],
+    relatedTechnologyIds: ["python", "ringcentral-api"],
+    relatedProjectIds: ["project-call-recording-archive"],
     featured: true,
     priority: 6,
     filename: "app/integrations/recordings.py",
@@ -201,10 +158,7 @@ const codeSamplesInput = [
       "cloudflare-d1",
       "telegram-bot-api",
     ],
-    relatedProjectIds: [
-      "project-access-lifecycle-automation",
-      "project-fleet-safety-media",
-    ],
+    relatedProjectIds: ["project-access-lifecycle-automation", "project-fleet-safety-media"],
     featured: true,
     priority: 7,
     filename: "src/routes/telegram-webhook.ts",
@@ -226,17 +180,8 @@ const codeSamplesInput = [
     complexity: "production-pattern",
     language: "yaml",
     framework: "Docker Compose",
-    relatedTechnologyIds: [
-      "docker",
-      "docker-compose",
-      "linux",
-      "nginx",
-      "postgresql",
-      "redis",
-    ],
-    relatedProjectIds: [
-      "project-internal-hr-platform",
-    ],
+    relatedTechnologyIds: ["docker", "docker-compose", "linux", "nginx", "postgresql", "redis"],
+    relatedProjectIds: ["project-internal-hr-platform"],
     featured: false,
     priority: 8,
     filename: "compose.production.yaml",
@@ -249,49 +194,28 @@ const codeSamplesInput = [
   },
 ] satisfies CodeSampleRecord[];
 
-export const codeSamples =
-  codeSampleListSchema.parse(codeSamplesInput);
+export const codeSamples = codeSampleListSchema.parse(codeSamplesInput);
 
 export function getCodeSamples(): CodeSampleRecord[] {
-  return [...codeSamples].sort(
-    (left, right) => left.priority - right.priority,
-  );
+  return [...codeSamples].sort((left, right) => left.priority - right.priority);
 }
 
 export function getPublishedCodeSamples(): CodeSampleRecord[] {
-  return getCodeSamples().filter(
-    (sample) =>
-      sample.publicationStatus === "published",
-  );
+  return getCodeSamples().filter((sample) => sample.publicationStatus === "published");
 }
 
 export function getFeaturedCodeSamples(): CodeSampleRecord[] {
-  return getPublishedCodeSamples().filter(
-    (sample) => sample.featured,
-  );
+  return getPublishedCodeSamples().filter((sample) => sample.featured);
 }
 
-export function getCodeSampleById(
-  id: string,
-): CodeSampleRecord | undefined {
-  return codeSamples.find(
-    (sample) => sample.id === id,
-  );
+export function getCodeSampleById(id: string): CodeSampleRecord | undefined {
+  return codeSamples.find((sample) => sample.id === id);
 }
 
-export function getCodeSampleBySlug(
-  slug: string,
-): CodeSampleRecord | undefined {
-  return codeSamples.find(
-    (sample) => sample.slug === slug,
-  );
+export function getCodeSampleBySlug(slug: string): CodeSampleRecord | undefined {
+  return codeSamples.find((sample) => sample.slug === slug);
 }
 
-export function getCodeSamplesForProject(
-  projectId: string,
-): CodeSampleRecord[] {
-  return getPublishedCodeSamples().filter(
-    (sample) =>
-      sample.relatedProjectIds.includes(projectId),
-  );
+export function getCodeSamplesForProject(projectId: string): CodeSampleRecord[] {
+  return getPublishedCodeSamples().filter((sample) => sample.relatedProjectIds.includes(projectId));
 }

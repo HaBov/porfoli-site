@@ -7,12 +7,7 @@ type CodeSampleSectionProps = {
   children: ReactNode;
 };
 
-export function CodeSampleSection({
-  id,
-  eyebrow,
-  title,
-  children,
-}: CodeSampleSectionProps) {
+export function CodeSampleSection({ id, eyebrow, title, children }: CodeSampleSectionProps) {
   return (
     <section
       id={id}
@@ -20,9 +15,7 @@ export function CodeSampleSection({
       className="border-line scroll-mt-28 border-b pb-12 last:border-b-0 last:pb-0"
     >
       {eyebrow ? (
-        <p className="text-accent font-mono text-xs tracking-[0.12em] uppercase">
-          {eyebrow}
-        </p>
+        <p className="text-accent font-mono text-xs tracking-[0.12em] uppercase">{eyebrow}</p>
       ) : null}
 
       <h2
@@ -32,9 +25,7 @@ export function CodeSampleSection({
         {title}
       </h2>
 
-      <div className="mt-6 grid gap-5">
-        {children}
-      </div>
+      <div className="mt-6 grid gap-5">{children}</div>
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { ExternalLink, LockKeyhole, ServerCog, ArrowRight } from "lucide-react";
+﻿import { ExternalLink, LockKeyhole, ServerCog, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 import {
@@ -10,7 +10,6 @@ import {
   type ProjectRecord,
   hasCaseStudy,
 } from "@/content";
-import { link } from "fs";
 
 type ProjectCardProps = {
   project: ProjectRecord;

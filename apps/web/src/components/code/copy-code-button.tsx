@@ -10,10 +10,7 @@ type CopyCodeButtonProps = {
   className?: string;
 };
 
-export function CopyCodeButton({
-  code,
-  className,
-}: CopyCodeButtonProps) {
+export function CopyCodeButton({ code, className }: CopyCodeButtonProps) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -53,15 +50,9 @@ export function CopyCodeButton({
       )}
     >
       {copied ? (
-        <Check
-          aria-hidden="true"
-          className="size-4"
-        />
+        <Check aria-hidden="true" className="size-4" />
       ) : (
-        <Copy
-          aria-hidden="true"
-          className="size-4"
-        />
+        <Copy aria-hidden="true" className="size-4" />
       )}
 
       <span>{copied ? "Copied" : "Copy"}</span>

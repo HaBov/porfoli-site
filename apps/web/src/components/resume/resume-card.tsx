@@ -1,5 +1,4 @@
-
-import {
+﻿import {
   ArrowDownToLine,
   BriefcaseBusiness,
   CalendarDays,
@@ -17,13 +16,9 @@ type ResumeCardProps = {
 };
 
 function formatUpdatedDate(value: string): string {
-  const [year, month, day] = value
-    .split("-")
-    .map(Number);
+  const [year, month, day] = value.split("-").map(Number);
 
-  const date = new Date(
-    Date.UTC(year, month - 1, day),
-  );
+  const date = new Date(Date.UTC(year, month - 1, day));
 
   return new Intl.DateTimeFormat("en", {
     dateStyle: "long",
@@ -31,9 +26,7 @@ function formatUpdatedDate(value: string): string {
   }).format(date);
 }
 
-export function ResumeCard({
-  resume,
-}: ResumeCardProps) {
+export function ResumeCard({ resume }: ResumeCardProps) {
   return (
     <section
       aria-labelledby="resume-download-heading"
@@ -43,10 +36,7 @@ export function ResumeCard({
         <div>
           <div className="flex items-center gap-3">
             <span className="bg-accent-muted text-accent inline-flex size-11 shrink-0 items-center justify-center rounded-xl">
-              <FileText
-                aria-hidden="true"
-                className="size-5"
-              />
+              <FileText aria-hidden="true" className="size-5" />
             </span>
 
             <div>
@@ -63,67 +53,43 @@ export function ResumeCard({
             </div>
           </div>
 
-          <p className="text-secondary mt-6 max-w-2xl text-base leading-8">
-            {resume.description}
-          </p>
+          <p className="text-secondary mt-6 max-w-2xl text-base leading-8">{resume.description}</p>
 
           <dl className="border-line mt-7 grid gap-5 border-t pt-6 sm:grid-cols-2">
             <div>
-              <dt className="text-muted text-xs">
-                Filename
-              </dt>
+              <dt className="text-muted text-xs">Filename</dt>
 
-              <dd className="text-foreground mt-1 break-words font-mono text-sm">
+              <dd className="text-foreground mt-1 font-mono text-sm break-words">
                 {resume.filename}
               </dd>
             </div>
 
             <div>
-              <dt className="text-muted text-xs">
-                Format
-              </dt>
+              <dt className="text-muted text-xs">Format</dt>
 
               <dd className="text-foreground mt-1 flex items-center gap-2 text-sm font-medium">
-                <FileText
-                  aria-hidden="true"
-                  className="text-accent size-4"
-                />
-
+                <FileText aria-hidden="true" className="text-accent size-4" />
                 PDF
               </dd>
             </div>
 
             <div>
-              <dt className="text-muted text-xs">
-                Language
-              </dt>
+              <dt className="text-muted text-xs">Language</dt>
 
               <dd className="text-foreground mt-1 flex items-center gap-2 text-sm font-medium">
-                <Languages
-                  aria-hidden="true"
-                  className="text-accent size-4"
-                />
+                <Languages aria-hidden="true" className="text-accent size-4" />
 
-                {resume.language === "en"
-                  ? "English"
-                  : "Russian"}
+                {resume.language === "en" ? "English" : "Russian"}
               </dd>
             </div>
 
             <div>
-              <dt className="text-muted text-xs">
-                Last updated
-              </dt>
+              <dt className="text-muted text-xs">Last updated</dt>
 
               <dd className="text-foreground mt-1 flex items-center gap-2 text-sm font-medium">
-                <CalendarDays
-                  aria-hidden="true"
-                  className="text-accent size-4"
-                />
+                <CalendarDays aria-hidden="true" className="text-accent size-4" />
 
-                {formatUpdatedDate(
-                  resume.updatedAt,
-                )}
+                {formatUpdatedDate(resume.updatedAt)}
               </dd>
             </div>
           </dl>
@@ -131,18 +97,15 @@ export function ResumeCard({
 
         <div className="grid gap-3">
           <a
-            href="/resume/download"
+            href={resume.publicPath}
+            download={resume.filename}
             className={buttonStyles({
               variant: "primary",
               size: "lg",
               className: "w-full",
             })}
           >
-            <ArrowDownToLine
-              aria-hidden="true"
-              className="size-5"
-            />
-
+            <ArrowDownToLine aria-hidden="true" className="size-5" />
             Download PDF
           </a>
 
@@ -154,11 +117,7 @@ export function ResumeCard({
               className: "w-full",
             })}
           >
-            <BriefcaseBusiness
-              aria-hidden="true"
-              className="size-4"
-            />
-
+            <BriefcaseBusiness aria-hidden="true" className="size-4" />
             View Experience
           </Link>
 
@@ -170,11 +129,7 @@ export function ResumeCard({
               className: "w-full",
             })}
           >
-            <FolderKanban
-              aria-hidden="true"
-              className="size-4"
-            />
-
+            <FolderKanban aria-hidden="true" className="size-4" />
             View Projects
           </Link>
         </div>

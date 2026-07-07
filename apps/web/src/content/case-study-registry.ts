@@ -35,7 +35,7 @@ const caseStudyComponents: Record<CaseStudySlug, ComponentType> = {
 
   "fleet-safety-media-delivery-pipeline": FleetSafetyMediaDeliveryPipeline,
 
-  "multilingual-school-website":  MultilingualSchoolWebsite,
+  "multilingual-school-website": MultilingualSchoolWebsite,
 };
 
 export const caseStudyEntries: CaseStudyEntry[] = CASE_STUDY_SLUGS.map((slug) => ({

@@ -7,9 +7,7 @@ import { TechnicalDecision } from "@/components/case-study/technical-decision";
 import { CodeBlock } from "@/components/code/code-block";
 import { CodeSampleSection } from "@/components/code/code-sample-section";
 
-export function useMDXComponents(
-  components: MDXComponents,
-): MDXComponents {
+export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     CaseStudySection,
     ArchitectureFlow,
@@ -18,16 +16,10 @@ export function useMDXComponents(
     CodeBlock,
     CodeSampleSection,
 
-    p: ({ children }) => (
-      <p className="text-secondary text-base leading-8">
-        {children}
-      </p>
-    ),
+    p: ({ children }) => <p className="text-secondary text-base leading-8">{children}</p>,
 
     ul: ({ children }) => (
-      <ul className="text-secondary grid gap-3 text-base leading-7">
-        {children}
-      </ul>
+      <ul className="text-secondary grid gap-3 text-base leading-7">{children}</ul>
     ),
 
     ol: ({ children }) => (
@@ -36,17 +28,9 @@ export function useMDXComponents(
       </ol>
     ),
 
-    li: ({ children }) => (
-      <li className="marker:text-accent pl-1">
-        {children}
-      </li>
-    ),
+    li: ({ children }) => <li className="marker:text-accent pl-1">{children}</li>,
 
-    strong: ({ children }) => (
-      <strong className="text-foreground font-semibold">
-        {children}
-      </strong>
-    ),
+    strong: ({ children }) => <strong className="text-foreground font-semibold">{children}</strong>,
 
     code: ({ children }) => (
       <code className="bg-elevated text-foreground rounded px-1.5 py-0.5 font-mono text-[0.9em]">

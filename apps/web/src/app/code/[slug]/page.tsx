@@ -21,9 +21,7 @@ export function generateStaticParams() {
   return getCodeSampleStaticParams();
 }
 
-export async function generateMetadata({
-  params,
-}: CodeSamplePageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: CodeSamplePageProps): Promise<Metadata> {
   const { slug } = await params;
   const entry = getCodeSampleEntry(slug);
 
@@ -34,14 +32,11 @@ export async function generateMetadata({
   return createPageMetadata({
     title: entry.sample.title,
     description: entry.sample.summary,
-    draft:
-      entry.sample.publicationStatus !== "published",
+    draft: entry.sample.publicationStatus !== "published",
   });
 }
 
-export default async function CodeSamplePage({
-  params,
-}: CodeSamplePageProps) {
+export default async function CodeSamplePage({ params }: CodeSamplePageProps) {
   const { slug } = await params;
   const entry = getCodeSampleEntry(slug);
 
@@ -49,19 +44,12 @@ export default async function CodeSamplePage({
     notFound();
   }
 
-  const {
-    previousSample,
-    nextSample,
-  } = getAdjacentCodeSamples(slug);
+  const { previousSample, nextSample } = getAdjacentCodeSamples(slug);
 
   const SampleContent = entry.Component;
 
   return (
-    <CodeSampleLayout
-      sample={entry.sample}
-      previousSample={previousSample}
-      nextSample={nextSample}
-    >
+    <CodeSampleLayout sample={entry.sample} previousSample={previousSample} nextSample={nextSample}>
       <SampleContent />
     </CodeSampleLayout>
   );
