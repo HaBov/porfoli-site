@@ -20,6 +20,10 @@
     "api:reset": "cd apps/api && python -m app.db.reset_demo",
     "content:validate": "pnpm --dir apps/web run content:validate",
     "content:report": "pnpm --dir apps/web run content:report",
+    "docker:prod:build": "docker compose -f deploy/compose.prod.yaml --env-file deploy/.env build",
+    "docker:prod:up": "docker compose -f deploy/compose.prod.yaml --env-file deploy/.env up -d",
+    "docker:prod:down": "docker compose -f deploy/compose.prod.yaml --env-file deploy/.env down",
+    "docker:prod:ps": "docker compose -f deploy/compose.prod.yaml --env-file deploy/.env ps",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm content:validate && pnpm build && pnpm api:lint && pnpm api:test"
   },
   "devDependencies": {
