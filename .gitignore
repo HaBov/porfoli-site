@@ -48,3 +48,8 @@ desktop.ini
 *.temp
 *.bak
 *.ps1
+
+# Production environment files
+deploy/.env
+apps/api/.env.production
+apps/web/.env.production
