@@ -1,7 +1,7 @@
 from functools import lru_cache
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
@@ -108,6 +108,35 @@ class Settings(BaseSettings):
 
     docs_url: str = "/api/docs"
     openapi_url: str = "/api/openapi.json"
+
+    @model_validator(mode="after")
+    def validate_production_settings(self) -> Self:
+        if self.environment != "production":
+            return self
+
+        if self.debug:
+            raise ValueError("PORTFOLIO_API_DEBUG must be false in production.")
+
+        if self.demo_rate_limit_salt == "portfolio-demo-development":
+            raise ValueError(
+                "PORTFOLIO_API_DEMO_RATE_LIMIT_SALT must be changed in production.",
+            )
+
+        localhost_origins = [
+            origin
+            for origin in self.cors_origins
+            if origin.startswith("http://localhost")
+            or origin.startswith("https://localhost")
+            or origin.startswith("http://127.0.0.1")
+            or origin.startswith("https://127.0.0.1")
+        ]
+
+        if localhost_origins:
+            raise ValueError(
+                "PORTFOLIO_API_CORS_ORIGINS must not include localhost origins in production.",
+            )
+
+        return self
 
 
 @lru_cache
