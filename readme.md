@@ -24,3 +24,4 @@ Start the API database:
 cd apps/api
 docker compose -f compose.dev.yaml up -d
 cd ../..
+```

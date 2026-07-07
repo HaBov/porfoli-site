@@ -241,8 +241,8 @@ export function DemoApiExplorer() {
 
       <Callout title="Demo safety boundary" variant="information">
         This explorer only uses predefined endpoints, synthetic records, bounded request bodies, and
-        simulated roles. It does not expose internal company systems, real employee data, secrets, or
-        arbitrary API calls.
+        simulated roles. It does not expose internal company systems, real employee data, secrets,
+        or arbitrary API calls.
       </Callout>
 
       {availabilityStatus === "unavailable" ? (
@@ -277,7 +277,9 @@ export function DemoApiExplorer() {
                   >
                     <span className="flex flex-wrap items-center gap-2">
                       <Badge variant={methodBadgeVariant(endpoint.method)}>{endpoint.method}</Badge>
-                      <span className="text-foreground text-sm font-semibold">{endpoint.label}</span>
+                      <span className="text-foreground text-sm font-semibold">
+                        {endpoint.label}
+                      </span>
                       <Badge variant="outline">Min role: {endpoint.requiredRole}</Badge>
                     </span>
 
@@ -285,7 +287,7 @@ export function DemoApiExplorer() {
                       {endpoint.description}
                     </span>
 
-                    <code className="text-muted mt-3 block break-all font-mono text-xs">
+                    <code className="text-muted mt-3 block font-mono text-xs break-all">
                       {endpoint.path}
                     </code>
                   </button>
@@ -341,7 +343,7 @@ export function DemoApiExplorer() {
 
                 <div className="grid gap-1 sm:grid-cols-[140px_1fr]">
                   <dt className="text-muted">Endpoint</dt>
-                  <dd className="text-foreground break-all font-mono">{selectedEndpoint.path}</dd>
+                  <dd className="text-foreground font-mono break-all">{selectedEndpoint.path}</dd>
                 </div>
 
                 <div className="grid gap-1 sm:grid-cols-[140px_1fr]">
@@ -356,7 +358,7 @@ export function DemoApiExplorer() {
 
                 <div className="grid gap-1 sm:grid-cols-[140px_1fr]">
                   <dt className="text-muted">Health check</dt>
-                  <dd className="text-foreground break-all font-mono">{getDemoApiHealthUrl()}</dd>
+                  <dd className="text-foreground font-mono break-all">{getDemoApiHealthUrl()}</dd>
                 </div>
               </dl>
             </div>
@@ -444,8 +446,7 @@ export function DemoApiExplorer() {
 
             {result?.rateLimitRemaining ? (
               <p className="text-muted text-sm">
-                Rate limit remaining:{" "}
-                <span className="font-mono">{result.rateLimitRemaining}</span>
+                Rate limit remaining: <span className="font-mono">{result.rateLimitRemaining}</span>
               </p>
             ) : null}
 

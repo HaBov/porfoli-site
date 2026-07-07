@@ -248,9 +248,7 @@ export async function sendDemoApiRequest({
     statusText: response.statusText,
     durationMs,
     requestId:
-      response.headers.get("X-Request-ID") ??
-      response.headers.get("x-request-id") ??
-      undefined,
+      response.headers.get("X-Request-ID") ?? response.headers.get("x-request-id") ?? undefined,
     rateLimitRemaining:
       response.headers.get("X-RateLimit-Remaining") ??
       response.headers.get("x-ratelimit-remaining") ??
