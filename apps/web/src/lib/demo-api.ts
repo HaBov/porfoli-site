@@ -2,13 +2,15 @@ export type DemoApiRole = "viewer" | "manager" | "admin";
 
 export type DemoApiMethod = "GET" | "POST";
 
+export type DemoApiAvailabilityStatus = "checking" | "available" | "unavailable";
+
 export type DemoApiEndpoint = {
   id: string;
   label: string;
   description: string;
   method: DemoApiMethod;
   path: string;
-  requiredRole: "viewer" | "manager" | "admin";
+  requiredRole: DemoApiRole;
   supportsBody?: boolean;
   requiresIdempotencyKey?: boolean;
   sampleBody?: unknown;
@@ -98,6 +100,16 @@ export const DEMO_API_ENDPOINTS: DemoApiEndpoint[] = [
   },
 ];
 
+const ROLE_RANK: Record<DemoApiRole, number> = {
+  viewer: 1,
+  manager: 2,
+  admin: 3,
+};
+
+export function canRoleAccessEndpoint(role: DemoApiRole, endpoint: DemoApiEndpoint): boolean {
+  return ROLE_RANK[role] >= ROLE_RANK[endpoint.requiredRole];
+}
+
 export function getDemoApiBaseUrl(): string {
   const configuredUrl = process.env.NEXT_PUBLIC_DEMO_API_BASE_URL;
 
@@ -120,6 +132,16 @@ export function getDemoApiDocsUrl(): string {
   }
 
   return "/api/docs";
+}
+
+export function getDemoApiHealthUrl(): string {
+  const baseUrl = getDemoApiBaseUrl();
+
+  if (baseUrl.length > 0) {
+    return `${baseUrl}/api/health/ready`;
+  }
+
+  return "/api/health/ready";
 }
 
 function resolveDemoApiUrl(path: string): string {
@@ -157,6 +179,22 @@ async function readResponsePayload(response: Response): Promise<unknown> {
     return {
       raw: text,
     };
+  }
+}
+
+export async function checkDemoApiAvailability(): Promise<DemoApiAvailabilityStatus> {
+  try {
+    const response = await fetch(getDemoApiHealthUrl(), {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    return response.ok ? "available" : "unavailable";
+  } catch {
+    return "unavailable";
   }
 }
 

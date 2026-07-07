@@ -1,12 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   DEMO_API_ENDPOINTS,
   DEMO_API_ROLES,
+  canRoleAccessEndpoint,
+  checkDemoApiAvailability,
   getDemoApiDocsUrl,
+  getDemoApiHealthUrl,
   sendDemoApiRequest,
+  type DemoApiAvailabilityStatus,
   type DemoApiEndpoint,
   type DemoApiResult,
   type DemoApiRole,
@@ -47,6 +51,32 @@ function methodBadgeVariant(method: string): "accent" | "information" {
   return method === "GET" ? "information" : "accent";
 }
 
+function availabilityBadgeVariant(
+  status: DemoApiAvailabilityStatus,
+): "neutral" | "success" | "warning" {
+  if (status === "available") {
+    return "success";
+  }
+
+  if (status === "unavailable") {
+    return "warning";
+  }
+
+  return "neutral";
+}
+
+function availabilityLabel(status: DemoApiAvailabilityStatus): string {
+  if (status === "available") {
+    return "API available";
+  }
+
+  if (status === "unavailable") {
+    return "API unavailable";
+  }
+
+  return "Checking API";
+}
+
 export function DemoApiExplorer() {
   const [selectedEndpointId, setSelectedEndpointId] = useState(DEMO_API_ENDPOINTS[0]?.id ?? "");
   const [role, setRole] = useState<DemoApiRole>("viewer");
@@ -55,6 +85,9 @@ export function DemoApiExplorer() {
   const [result, setResult] = useState<DemoApiResult | null>(null);
   const [clientError, setClientError] = useState<string | null>(null);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
+  const [availabilityStatus, setAvailabilityStatus] =
+    useState<DemoApiAvailabilityStatus>("checking");
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const selectedEndpoint = useMemo(
@@ -64,7 +97,40 @@ export function DemoApiExplorer() {
     [selectedEndpointId],
   );
 
+  const selectedRole = DEMO_API_ROLES.find((demoRole) => demoRole.value === role);
+  const roleCanAccessSelectedEndpoint = canRoleAccessEndpoint(role, selectedEndpoint);
   const responseText = result ? formatJson(result.payload) : "";
+
+  async function refreshAvailability() {
+    setIsCheckingAvailability(true);
+    setAvailabilityStatus("checking");
+
+    const status = await checkDemoApiAvailability();
+
+    setAvailabilityStatus(status);
+    setIsCheckingAvailability(false);
+  }
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function checkInitialAvailability() {
+      const status = await checkDemoApiAvailability();
+
+      if (!isActive) {
+        return;
+      }
+
+      setAvailabilityStatus(status);
+      setIsCheckingAvailability(false);
+    }
+
+    void checkInitialAvailability();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   function selectEndpoint(endpoint: DemoApiEndpoint) {
     setSelectedEndpointId(endpoint.id);
@@ -110,10 +176,15 @@ export function DemoApiExplorer() {
       });
 
       setResult(response);
+
+      if (availabilityStatus !== "available") {
+        setAvailabilityStatus("available");
+      }
     } catch (error) {
       if (error instanceof SyntaxError) {
         setClientError("Request body must be valid JSON.");
       } else {
+        setAvailabilityStatus("unavailable");
         setClientError(
           "The demonstration API is temporarily unavailable. Static code samples and project details remain available.",
         );
@@ -130,6 +201,9 @@ export function DemoApiExplorer() {
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="accent">Interactive Demo</Badge>
             <Badge variant="outline">Synthetic Data Only</Badge>
+            <Badge variant={availabilityBadgeVariant(availabilityStatus)}>
+              {availabilityLabel(availabilityStatus)}
+            </Badge>
           </div>
 
           <h2 className="text-foreground mt-4 text-2xl font-semibold tracking-[-0.02em]">
@@ -143,14 +217,26 @@ export function DemoApiExplorer() {
           </p>
         </div>
 
-        <a
-          className="text-accent hover:text-accent-hover text-sm font-medium underline-offset-4 hover:underline"
-          href={getDemoApiDocsUrl()}
-          rel="noreferrer"
-          target="_blank"
-        >
-          Open OpenAPI docs
-        </a>
+        <div className="flex flex-wrap gap-3">
+          <Button
+            loading={isCheckingAvailability}
+            loadingLabel="Checking"
+            onClick={refreshAvailability}
+            size="sm"
+            variant="outline"
+          >
+            Check API
+          </Button>
+
+          <a
+            className="text-accent hover:text-accent-hover inline-flex min-h-10 items-center text-sm font-medium underline-offset-4 hover:underline"
+            href={getDemoApiDocsUrl()}
+            rel="noreferrer"
+            target="_blank"
+          >
+            Open OpenAPI docs
+          </a>
+        </div>
       </div>
 
       <Callout title="Demo safety boundary" variant="information">
@@ -158,6 +244,14 @@ export function DemoApiExplorer() {
         simulated roles. It does not expose internal company systems, real employee data, secrets, or
         arbitrary API calls.
       </Callout>
+
+      {availabilityStatus === "unavailable" ? (
+        <Callout title="API currently unavailable" variant="warning">
+          The API health endpoint did not respond successfully. Start the FastAPI service locally or
+          configure <code className="font-mono">NEXT_PUBLIC_DEMO_API_BASE_URL</code>. Static project
+          pages and code samples remain available.
+        </Callout>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
         <div className="grid gap-6">
@@ -184,6 +278,7 @@ export function DemoApiExplorer() {
                     <span className="flex flex-wrap items-center gap-2">
                       <Badge variant={methodBadgeVariant(endpoint.method)}>{endpoint.method}</Badge>
                       <span className="text-foreground text-sm font-semibold">{endpoint.label}</span>
+                      <Badge variant="outline">Min role: {endpoint.requiredRole}</Badge>
                     </span>
 
                     <span className="text-secondary mt-2 block text-sm leading-6">
@@ -239,22 +334,40 @@ export function DemoApiExplorer() {
               <h3 className="text-foreground text-sm font-semibold">Request</h3>
 
               <dl className="mt-3 grid gap-2 text-sm">
-                <div className="grid gap-1 sm:grid-cols-[120px_1fr]">
+                <div className="grid gap-1 sm:grid-cols-[140px_1fr]">
                   <dt className="text-muted">Method</dt>
                   <dd className="text-foreground font-mono">{selectedEndpoint.method}</dd>
                 </div>
 
-                <div className="grid gap-1 sm:grid-cols-[120px_1fr]">
+                <div className="grid gap-1 sm:grid-cols-[140px_1fr]">
                   <dt className="text-muted">Endpoint</dt>
                   <dd className="text-foreground break-all font-mono">{selectedEndpoint.path}</dd>
                 </div>
 
-                <div className="grid gap-1 sm:grid-cols-[120px_1fr]">
-                  <dt className="text-muted">Header</dt>
+                <div className="grid gap-1 sm:grid-cols-[140px_1fr]">
+                  <dt className="text-muted">Role header</dt>
                   <dd className="text-foreground font-mono">X-Demo-Role: {role}</dd>
+                </div>
+
+                <div className="grid gap-1 sm:grid-cols-[140px_1fr]">
+                  <dt className="text-muted">Minimum role</dt>
+                  <dd className="text-foreground font-mono">{selectedEndpoint.requiredRole}</dd>
+                </div>
+
+                <div className="grid gap-1 sm:grid-cols-[140px_1fr]">
+                  <dt className="text-muted">Health check</dt>
+                  <dd className="text-foreground break-all font-mono">{getDemoApiHealthUrl()}</dd>
                 </div>
               </dl>
             </div>
+
+            {!roleCanAccessSelectedEndpoint ? (
+              <Callout title="Expected permission error" variant="warning">
+                The selected <strong>{selectedRole?.label ?? role}</strong> role is below the
+                minimum role for this endpoint. You can still send the request to inspect the
+                structured permission error response.
+              </Callout>
+            ) : null}
 
             {selectedEndpoint.requiresIdempotencyKey ? (
               <label className="grid gap-2">
@@ -264,6 +377,9 @@ export function DemoApiExplorer() {
                   onChange={(event) => setIdempotencyKey(event.target.value)}
                   value={idempotencyKey}
                 />
+                <span className="text-muted text-sm">
+                  Send the same key again to verify idempotent behavior.
+                </span>
               </label>
             ) : null}
 
