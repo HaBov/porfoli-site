@@ -53,3 +53,4 @@ desktop.ini
 deploy/.env
 apps/api/.env.production
 apps/web/.env.production
+apps/api/.env
