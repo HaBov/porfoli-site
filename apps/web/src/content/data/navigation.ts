@@ -49,6 +49,21 @@ const navigationInput = [
     displayOrder: 3,
   },
   {
+    id: "navigation-demo-api",
+    label: "Demo API",
+    href: "/demo-api",
+
+    group: "primary",
+
+    enabled: true,
+
+    showInDesktop: true,
+    showInMobile: true,
+    showInFooter: true,
+
+    displayOrder: 4,
+  },
+  {
     id: "navigation-experience",
     label: "Experience",
     href: "/experience",
@@ -61,7 +76,7 @@ const navigationInput = [
     showInMobile: true,
     showInFooter: true,
 
-    displayOrder: 4,
+    displayOrder: 5,
   },
   {
     id: "navigation-about",
@@ -76,7 +91,7 @@ const navigationInput = [
     showInMobile: true,
     showInFooter: true,
 
-    displayOrder: 5,
+    displayOrder: 6,
   },
   {
     id: "navigation-contact",
@@ -91,7 +106,7 @@ const navigationInput = [
     showInMobile: true,
     showInFooter: true,
 
-    displayOrder: 6,
+    displayOrder: 7,
   },
   {
     id: "navigation-resume",
@@ -106,7 +121,7 @@ const navigationInput = [
     showInMobile: true,
     showInFooter: true,
 
-    displayOrder: 7,
+    displayOrder: 8,
   },
   {
     id: "navigation-privacy",
@@ -121,7 +136,7 @@ const navigationInput = [
     showInMobile: false,
     showInFooter: true,
 
-    displayOrder: 8,
+    displayOrder: 9,
   },
 ] satisfies z.input<typeof navigationListSchema>;
 
