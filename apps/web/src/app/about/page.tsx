@@ -6,7 +6,6 @@ export const metadata = createPageMetadata({
   title: "About Me",
   description:
     "Backend-focused Software Developer from Tajikistan with experience in business systems, automation, integrations, Docker, and Linux.",
-  draft: true,
 });
 
 export default function AboutPage() {

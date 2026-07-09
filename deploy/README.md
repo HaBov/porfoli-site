@@ -14,8 +14,8 @@ Production deployment contains:
 Expected domain layout:
 
 ```text
-https://your-domain.com
-https://api.your-domain.com
+https://khasandzhon-portfolio.vercel.app
+https://khasandjon-demo-api.onrender.com
 
 Required production files
 
@@ -77,8 +77,8 @@ nano apps/web/.env.production
 
 Required replacements:
 
-your-domain.com
-api.your-domain.com
+khasandzhon-portfolio.vercel.app
+khasandjon-demo-api.onrender.com
 CHANGE_THIS_PASSWORD
 CHANGE_THIS_TO_A_LONG_RANDOM_VALUE
 CHANGE_THIS_TO_A_STRONG_DATABASE_PASSWORD
@@ -103,9 +103,9 @@ nano deploy/nginx/portfolio.conf
 
 Replace:
 
-your-domain.com
-www.your-domain.com
-api.your-domain.com
+khasandzhon-portfolio.vercel.app
+khasandzhon-portfolio.vercel.app
+khasandjon-demo-api.onrender.com
 
 with real domains.
 
@@ -130,24 +130,24 @@ docker compose -f deploy/compose.prod.yaml --env-file deploy/.env exec api pytho
 7. Seed synthetic demo data
 docker compose -f deploy/compose.prod.yaml --env-file deploy/.env exec api python -m app.db.seed_demo
 8. Verify API
-curl -i http://127.0.0.1/api/health/live -H "Host: api.your-domain.com"
-curl -i http://127.0.0.1/api/health/ready -H "Host: api.your-domain.com"
-curl -i http://127.0.0.1/api/demo/v1/employees -H "Host: api.your-domain.com" -H "X-Demo-Role: viewer"
+curl -i http://127.0.0.1/api/health/live -H "Host: khasandjon-demo-api.onrender.com"
+curl -i http://127.0.0.1/api/health/ready -H "Host: khasandjon-demo-api.onrender.com"
+curl -i http://127.0.0.1/api/demo/v1/employees -H "Host: khasandjon-demo-api.onrender.com" -H "X-Demo-Role: viewer"
 
 Browser checks:
 
-http://your-domain.com
-http://api.your-domain.com/api/docs
-http://your-domain.com/demo-api
+https://khasandzhon-portfolio.vercel.app
+https://khasandjon-demo-api.onrender.com/api/docs
+https://khasandzhon-portfolio.vercel.app/demo-api
 9. SSL
 
 After DNS points to the VPS, configure HTTPS.
 
 Recommended production target:
 
-https://your-domain.com
-https://www.your-domain.com
-https://api.your-domain.com
+https://khasandzhon-portfolio.vercel.app
+https://khasandzhon-portfolio.vercel.app
+https://khasandjon-demo-api.onrender.com
 
 You can use Certbot, Cloudflare, or another reverse proxy / SSL termination setup.
 
@@ -206,3 +206,4 @@ API production mode does not use development salt.
 Contact form uses app password or SMTP provider secret.
 Demo API uses synthetic data only.
 ```
+

@@ -8,7 +8,6 @@ export const metadata = createPageMetadata({
   title: "Projects",
   description:
     "Technical case studies covering backend platforms, API integrations, workflow automation, relational data, validation, and Linux deployment.",
-  draft: true,
 });
 
 export default function ProjectsPage() {

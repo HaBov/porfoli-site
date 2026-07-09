@@ -7,7 +7,6 @@ export const metadata = createPageMetadata({
   title: "Experience",
   description:
     "A progression from technical support and business-process analysis to backend development and production automation.",
-  draft: true,
 });
 
 export default function ExperiencePage() {

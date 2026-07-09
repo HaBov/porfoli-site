@@ -6,7 +6,7 @@ This project can be deployed without a VPS by splitting the system across manage
 
 ```text
 Frontend:
-https://khasandjon-portfolio.vercel.app
+https://khasandzhon-portfolio.vercel.app
 
 API:
 https://khasandjon-demo-api.onrender.com
@@ -59,7 +59,7 @@ PORTFOLIO_API_LOG_LEVEL=INFO
 
 PORTFOLIO_API_DATABASE_URL=postgresql+asyncpg://USER:PASSWORD@HOST/DB?ssl=require
 
-PORTFOLIO_API_CORS_ORIGINS=["https://khasandjon-portfolio.vercel.app"]
+PORTFOLIO_API_CORS_ORIGINS=["https://khasandzhon-portfolio.vercel.app"]
 
 PORTFOLIO_API_DEMO_JSON_BODY_LIMIT_BYTES=65536
 PORTFOLIO_API_DEMO_READ_RATE_LIMIT=60
@@ -88,3 +88,4 @@ Create `apps/api/.env` locally with the Neon connection string:
 
 ```env
 PORTFOLIO_API_DATABASE_URL=postgresql+asyncpg://USER:PASSWORD@HOST/DB?ssl=require
+
